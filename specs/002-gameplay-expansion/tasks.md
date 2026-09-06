@@ -230,9 +230,9 @@
 - [X] T091 執行 `run_tests.cmd`、compileall 與受影響工具完整驗證，確認純規則不依賴引擎及所有新舊契約回歸，保存命令／退出碼至 `artifacts/002-gameplay-expansion/verification.md`；只因新修改或失敗重跑相關檢查。
 - [X] T092 更新 `README.md`、`SPEC-KIT.md`、`docs/DECISIONS.md` 及 `specs/002-gameplay-expansion/quickstart.md` 為實際完成的 v2 操作／保存／工具說明，檢查繁體中文與相對連結，歷史 001 證據不改寫。
 - [X] T093 依 speckit-converge 檢查實作與 spec／plan／`specs/002-gameplay-expansion/tasks.md`，將真實缺口追加任務並完成必要重驗，在 `artifacts/002-gameplay-expansion/acceptance.md` 逐項連結 34 FR／12 SC 證據，未驗項不得標通過。
-- [ ] T094 確認驗收完成後在 `artifacts/002-gameplay-expansion/pr-body.md` 撰寫問題、改變、規格與實際驗證；核對分支／main 目標及 gh 認證，以 gh 原生命令或 gh api 發佈工作分支並建立 PR，正文使用 --body-file，記錄 PR URL。
-- [ ] T095 以 gh 結構化結果核對必要檢查／審查後完成 PR 合併，將目標分支、合併結果與變更納入證據記於 `artifacts/002-gameplay-expansion/delivery.md`；不得直接推送 main 或將 PR 關閉視為合併。
-- [ ] T096 確認無未保存／未納入提交及其他工作樹佔用後，透過 gh 同步目標遠端內容並切回本機 main，使用本機 git 清除工作分支及失效追蹤參照、gh 清除遠端分支；核對兩端均不存在並補記 `artifacts/002-gameplay-expansion/delivery.md`，不能確認時保留並記錄原因。
+- [X] T094 確認驗收完成後在 `artifacts/002-gameplay-expansion/pr-body.md` 撰寫問題、改變、規格與實際驗證；核對分支／main 目標及 gh 認證，以 gh 原生命令或 gh api 發佈工作分支並建立 PR，正文使用 --body-file，記錄 PR URL。
+- [X] T095 以 gh 結構化結果核對必要檢查／審查後完成 PR 合併，將目標分支、合併結果與變更納入證據記於 `artifacts/002-gameplay-expansion/delivery.md`；不得直接推送 main 或將 PR 關閉視為合併。
+- [X] T096 確認無未保存／未納入提交及其他工作樹佔用後，透過 gh 同步目標遠端內容並切回本機 main，使用本機 git 清除工作分支及失效追蹤參照、gh 清除遠端分支；核對兩端均不存在並補記 `artifacts/002-gameplay-expansion/delivery.md`，不能確認時保留並記錄原因。
 
 **關卡**：所有需求具真實證據且交付狀態可查；失敗或未驗證項保持未勾選。
 
@@ -345,5 +345,5 @@ T010–T011 提供共用驗證／保存框架；T075、T082、T086 在十二處�
 
 本階段為收斂檢查追加；既有任務順序與編號維持不變。檢查 34 項 FR、12 項 SC、35 個故事驗收情境、11 個邊界情況、9 組技術決策及 8 項憲章原則，發現兩項 partial：HIGH 1 項、LOW 1 項；missing／contradicts／unrequested 均為 0。原生失焦等證據限制依呈現契約明列，未冒充已驗證。
 
-- [ ] T097 完成既有 T094–T096 的 GitHub PR、必要檢查、合併確認及安全分支清理，在 `artifacts/002-gameplay-expansion/delivery.md` 記錄實際結果與來源；依 T094–T096、憲章 VII／VIII（partial，HIGH，F1）。
+- [X] T097 完成既有 T094–T096 的 GitHub PR、必要檢查、合併確認及安全分支清理，在 `artifacts/002-gameplay-expansion/delivery.md` 記錄實際結果與來源；依 T094–T096、憲章 VII／VIII（partial，HIGH，F1）。
 - [X] T098 更新 `specs/002-gameplay-expansion/spec.md` 與 `specs/002-gameplay-expansion/plan.md` 的實作／驗收階段狀態並連結實際證據，保留設計階段的歷史測試基準，核對文件連結與任務統計；依 T092／T093、憲章 III（partial，LOW，F2）。
