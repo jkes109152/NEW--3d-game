@@ -1,0 +1,48 @@
+���b�w�˩T�w�̿�K�����ݭn�����A�� tools/wheels ��������M��֨��C
+���b�w�˩T�w�̿�K�����ݭn�����A�� tools/wheels ��������M��֨��C
+�M��w�ˤu��״_���ѡF�Ьd�� artifacts/dependency-install.log�C
+======================================================================
+ERROR: test_rpg_radius_airborne_no_aircraft_damage (tests.test_rpg_turrets.RpgTurretTests.test_rpg_radius_airborne_no_aircraft_damage)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_rpg_turrets.py", line 9, in test_rpg_radius_airborne_no_aircraft_damage
+    p=new_profile(); p['upgrade_levels']['rpg']=1; p['unlocked_weapons'].append('RPG')
+                     ~^^^^^^^^^^^^^^^^^^
+KeyError: 'upgrade_levels'
+
+======================================================================
+ERROR: test_six_turrets_share_boss_floor (tests.test_rpg_turrets.RpgTurretTests.test_six_turrets_share_boss_floor)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_rpg_turrets.py", line 28, in test_six_turrets_share_boss_floor
+    p=new_profile(); p['upgrade_levels'].update(auto_defense=1,auto_defense_capacity=5)
+                     ~^^^^^^^^^^^^^^^^^^
+KeyError: 'upgrade_levels'
+
+======================================================================
+FAIL: test_partial_factory_failure_rolls_back (tests.test_multi_lock.MultiLockTests.test_partial_factory_failure_rolls_back)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_multi_lock.py", line 42, in test_partial_factory_failure_rolls_back
+    self.assertEqual(b.fire(),'launch_failed'); self.assertEqual(b.missiles,{})
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'lock' != 'launch_failed'
+- lock
++ launch_failed
+
+
+======================================================================
+FAIL: test_twelve_independent_missiles_once_cooldown (tests.test_multi_lock.MultiLockTests.test_twelve_independent_missiles_once_cooldown)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_multi_lock.py", line 18, in test_twelve_independent_missiles_once_cooldown
+    self.assertEqual(b.fire(),'applied')
+AssertionError: 'lock' != 'applied'
+- lock
++ applied
+
+
+----------------------------------------------------------------------
+Ran 104 tests in 0.995s
+
+FAILED (failures=2, errors=2)

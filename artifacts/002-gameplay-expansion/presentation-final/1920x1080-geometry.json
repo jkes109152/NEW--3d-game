@@ -1,0 +1,90 @@
+[
+  {
+    "format": "Array 0:\n  Array format (stride = 12):\n    vertex(3f) float32 point start at 0\nArray 1:\n  Array format (stride = 16):\n    color(4f) float32 color start at 0\nArray 2:\n  Array format (stride = 8):\n    texcoord(2f) float32 texcoord start at 0\nArray 3:\n  Array format (stride = 12):\n    normal(3f) float32 normal start at 0\n",
+    "path": "render/scene/-PandaNode/-PandaNode/-PandaNode/mesh/mesh_geom",
+    "bounds": "(LPoint3f(0.30499997, 0.625, -0.045), LPoint3f(0.53499996, 1.195, 0.205))",
+    "transform": "T:q(pos -2.42 0.91 107.92 hpr 180 0 0 scale 0.23 0.57 0.25)\n",
+    "normal": [
+      0.0,
+      1.0,
+      0.0
+    ]
+  },
+  {
+    "format": "Array 0:\n  Array format (stride = 12):\n    vertex(3f) float32 point start at 0\nArray 1:\n  Array format (stride = 16):\n    color(4f) float32 color start at 0\nArray 2:\n  Array format (stride = 8):\n    texcoord(2f) float32 texcoord start at 0\nArray 3:\n  Array format (stride = 12):\n    normal(3f) float32 normal start at 0\n",
+    "path": "render/scene/-PandaNode/-PandaNode/-PandaNode/mesh/mesh_geom",
+    "bounds": "(LPoint3f(0.075, 0, -0.13), LPoint3f(0.385, 0.4, 0.27))",
+    "transform": "T:q(pos -2.23 0.2 107.93 hpr 180 0 0 scale 0.31 0.4 0.4)\n",
+    "normal": [
+      -0.5773502588272095,
+      -0.5773502588272095,
+      -0.5773502588272095
+    ]
+  },
+  {
+    "format": "Array 0:\n  Array format (stride = 12):\n    vertex(3f) float32 point start at 0\nArray 1:\n  Array format (stride = 16):\n    color(4f) float32 color start at 0\nArray 2:\n  Array format (stride = 8):\n    texcoord(2f) float32 texcoord start at 0\nArray 3:\n  Array format (stride = 12):\n    normal(3f) float32 normal start at 0\n",
+    "path": "render/scene/-PandaNode/-PandaNode/-PandaNode/mesh/mesh_geom",
+    "bounds": "(LPoint3f(0.0975, 1.5200001, 0.29), LPoint3f(0.1625, 1.62, 0.33))",
+    "transform": "T:q(pos -2.13 1.57 107.69 hpr 180 0 0 scale 0.065 0.1 0.04)\n",
+    "normal": [
+      0.0,
+      1.0,
+      0.0
+    ]
+  },
+  {
+    "format": "Array 0:\n  Array format (stride = 12):\n    vertex(3f) float32 point start at 0\nArray 1:\n  Array format (stride = 16):\n    color(4f) float32 color start at 0\nArray 2:\n  Array format (stride = 8):\n    texcoord(2f) float32 texcoord start at 0\nArray 3:\n  Array format (stride = 12):\n    normal(3f) float32 normal start at 0\n",
+    "path": "render/scene/-PandaNode/-PandaNode/-PandaNode/mesh/mesh_geom",
+    "bounds": "(LPoint3f(-0.53499996, 0.625, -0.045), LPoint3f(-0.30499997, 1.195, 0.205))",
+    "transform": "T:q(pos -1.58 0.91 107.92 hpr 180 0 0 scale 0.23 0.57 0.25)\n",
+    "normal": [
+      0.0,
+      1.0,
+      0.0
+    ]
+  },
+  {
+    "format": "Array 0:\n  Array format (stride = 12):\n    vertex(3f) float32 point start at 0\nArray 1:\n  Array format (stride = 16):\n    color(4f) float32 color start at 0\nArray 2:\n  Array format (stride = 8):\n    texcoord(2f) float32 texcoord start at 0\nArray 3:\n  Array format (stride = 12):\n    normal(3f) float32 normal start at 0\n",
+    "path": "render/scene/-PandaNode/-PandaNode/-PandaNode/mesh/mesh_geom",
+    "bounds": "(LPoint3f(-0.385, 0, -0.13), LPoint3f(-0.075, 0.4, 0.27))",
+    "transform": "T:q(pos -1.77 0.2 107.93 hpr 180 0 0 scale 0.31 0.4 0.4)\n",
+    "normal": [
+      -0.5773502588272095,
+      -0.5773502588272095,
+      -0.5773502588272095
+    ]
+  },
+  {
+    "format": "Array 0:\n  Array format (stride = 12):\n    vertex(3f) float32 point start at 0\nArray 1:\n  Array format (stride = 16):\n    color(4f) float32 color start at 0\nArray 2:\n  Array format (stride = 8):\n    texcoord(2f) float32 texcoord start at 0\nArray 3:\n  Array format (stride = 12):\n    normal(3f) float32 normal start at 0\n",
+    "path": "render/scene/-PandaNode/-PandaNode/-PandaNode/mesh/mesh_geom",
+    "bounds": "(LPoint3f(-0.1625, 1.5200001, 0.29), LPoint3f(-0.0975, 1.62, 0.33))",
+    "transform": "T:q(pos -1.87 1.57 107.69 hpr 180 0 0 scale 0.065 0.1 0.04)\n",
+    "normal": [
+      0.0,
+      1.0,
+      0.0
+    ]
+  },
+  {
+    "format": "Array 0:\n  Array format (stride = 12):\n    vertex(3f) float32 point start at 0\nArray 1:\n  Array format (stride = 16):\n    color(4f) float32 color start at 0\nArray 2:\n  Array format (stride = 8):\n    texcoord(2f) float32 texcoord start at 0\nArray 3:\n  Array format (stride = 12):\n    normal(3f) float32 normal start at 0\n",
+    "path": "render/scene/-PandaNode/-PandaNode/-PandaNode/mesh/mesh_geom",
+    "bounds": "(LPoint3f(-0.265, 1.305, -0.080000005), LPoint3f(0.265, 1.755, 0.32))",
+    "transform": "T:q(pos -2 1.53 107.88 hpr 180 0 0 scale 0.53 0.45 0.4)\n",
+    "normal": [
+      0.0,
+      1.0,
+      0.0
+    ]
+  },
+  {
+    "format": "Array 0:\n  Array format (stride = 12):\n    vertex(3f) float32 point start at 0\nArray 1:\n  Array format (stride = 16):\n    color(4f) float32 color start at 0\nArray 2:\n  Array format (stride = 8):\n    texcoord(2f) float32 texcoord start at 0\nArray 3:\n  Array format (stride = 12):\n    normal(3f) float32 normal start at 0\n",
+    "path": "render/scene/-PandaNode/-PandaNode/-PandaNode/mesh/mesh_geom",
+    "bounds": "(LPoint3f(-0.35, 0.43, -0.29), LPoint3f(0.35, 1.53, 0.29))",
+    "transform": "T:q(pos -2 0.98 108 hpr 180 0 0 scale 0.7 1.1 0.58)\n",
+    "normal": [
+      0.0,
+      1.0,
+      0.0
+    ]
+  }
+]

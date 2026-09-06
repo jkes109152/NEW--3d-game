@@ -35,12 +35,12 @@ class SaveTests(unittest.TestCase):
     def test_T20_atomic_retry(self):
         p=self.repo.create(1); p['coins']=1000; self.repo.save(1,p)
         before=self.repo.path(1).read_bytes()
-        req={'kind':'purchase','upgrade_id':'max_hp'}
+        req={'kind':'upgrade_player','upgrade_id':'max_hp','profile_id':p['profile_id'],'rebirth_count':0}
         with patch('air_defense.save_data.os.replace',side_effect=OSError('fault')):
-            with self.assertRaises(SaveError): self.repo.transaction(1,p,'x',req)
+            with self.assertRaises(SaveError): self.repo.transaction(1,p,'1'*32,req)
         self.assertEqual(p['coins'],750)
         self.assertEqual(self.repo.path(1).read_bytes(),before)
-        self.repo.transaction(1,p,'x',req)
+        self.repo.save(1,p)
         self.assertEqual(self.repo.load(1)['coins'],750)
-        self.repo.transaction(1,self.repo.load(1),'x',req)
+        self.repo.transaction(1,self.repo.load(1),'1'*32,req)
         self.assertEqual(self.repo.load(1)['coins'],750)

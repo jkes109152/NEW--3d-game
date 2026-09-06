@@ -1,0 +1,12 @@
+Known pipe types:
+  wglGraphicsPipe
+(3 aux display modules not yet loaded.)
+:display(warning): FrameBufferProperties available less than requested.
+  requested: depth_bits=1 color_bits=3 red_bits=1 green_bits=1 blue_bits=1 alpha_bits=1 back_buffers=1 force_hardware 
+  got: depth_bits=24 color_bits=24 red_bits=8 green_bits=8 blue_bits=8 alpha_bits=8 stencil_bits=8 force_hardware 
+:prc(warning): changing default value for ConfigVariable paste-emit-keystrokes from '1' to '0'.
+:pnmimage:png(warning): iCCP: known incorrect sRGB profile
+info: Using primary monitor: Monitor(x=0, y=0, width=2560, height=1440, width_mm=None, height_mm=None, name=None, is_primary=True)
+set window position: Vec2(640, 360)
+package_folder: C:\Users\lamuness\Desktop\game\artifacts\launcher-copies\糖果 防線 中文\.venv\Lib\site-packages\ursina
+asset_folder: C:\Users\lamuness\Desktop\game\artifacts\launcher-copies\糖果 防線 中文\assets

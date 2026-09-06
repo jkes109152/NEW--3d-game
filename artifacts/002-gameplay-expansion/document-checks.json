@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-06T22:30:17.076963+08:00",
+  "markdown_files": 33,
+  "local_links_checked": 223,
+  "broken_links": [],
+  "text_review_findings": [],
+  "tasks": 98,
+  "unchecked_tasks": [
+    "T094",
+    "T095",
+    "T096",
+    "T097"
+  ],
+  "FR": 34,
+  "SC": 12,
+  "checklists": [
+    {
+      "file": "specs\\002-gameplay-expansion\\checklists\\requirements.md",
+      "total": 16,
+      "unchecked": 0
+    }
+  ],
+  "status": "PASS"
+}

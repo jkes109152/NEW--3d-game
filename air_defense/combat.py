@@ -1,9 +1,7 @@
 """鎖定、距離與攻擊驗證；視覺效果不持有傷害權限。"""
 from dataclasses import dataclass, field
 from math import ceil, radians, tan
-from .config import WEAPONS, RANGES, COOLDOWNS
 from .entities import Aircraft, Enemy, V3, clamp, direction, ray_box, visible_between, world_boxes
-from .progression import cooldown_multiplier, upgrade_level
 
 
 @dataclass
@@ -67,32 +65,21 @@ def ray_target(player, enemies):
     return key,distance
 
 
-def validate_attack(battle, target, visible=True, ray_distance=None):
-    player=battle.player
-    slot=player.weapon_slot
-    if WEAPONS[slot-1] not in battle.profile['unlocked_weapons']: return 'weapon_locked'
-    if battle.phase!='active': return 'phase'
-    if target is None or (slot in (1,5))!=isinstance(target,Aircraft): return 'target_type'
-    if target.hp<=0: return 'dead'
-    # 地面武器使用實際射線交點；人物中心被掩體遮住時，露出的頭部仍可命中。
-    hit_point=player.eye+player.forward*ray_distance if slot not in (1,5) and ray_distance is not None else target.center
-    if not visible or not visible_between(player.eye,hit_point): return 'blocked'
-    distance=(target.center-player.position).horizontal().length() if slot==5 else \
-        (ray_distance if ray_distance is not None else (target.center-player.eye).length())
-    if distance>RANGES[slot-1]+1e-9: return 'range'
-    if player.cooldowns[slot]>1e-9: return 'cooldown'
-    if slot==4 and player.rpg_ammo<=0: return 'ammo'
-    if slot in (1,5) and (not player.aiming or not battle.lock.ready() or target.id not in battle.lock.valid): return 'lock'
+def can_fire(battle, runtime):
+    if battle.phase!='active':return 'phase'
+    error=runtime.error(battle.elapsed)
+    if error:return error
+    if battle.stats.category=='anti_air' and (not battle.player.aiming or not battle.lock.ready() or any(k not in battle.candidates() for k in battle.lock.valid)):return 'lock'
     return None
 
 
-def turret_damage(enemy):
-    if enemy.kind=='GROUND_BOSS': return max(0,min(1,enemy.hp-ceil(enemy.max_hp*.5)))
-    return min(1,enemy.hp)
+def turret_damage(enemy,damage=1):
+    if enemy.kind=='GROUND_BOSS': return max(0,min(damage,enemy.hp-enemy.max_hp*.5))
+    return min(damage,enemy.hp)
 
 
 def aim_assist(profile, player, target, dt):
-    if not player.aiming or not upgrade_level(profile,'aa_aim_assist') or target is None: return (0,0)
+    if not player.aiming or not profile['owned_weapons']['W01']['upgrade_levels']['aim_assist'] or target is None: return (0,0)
     from .entities import angles
     yaw,pitch=angles(target.center-player.eye)
     dy=(yaw-player.yaw+180)%360-180

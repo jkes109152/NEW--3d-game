@@ -1,0 +1,227 @@
+{
+  "category": "等待實際 Windows 鍵鼠；僅收集引擎接收事件",
+  "seconds": 633.985,
+  "routes": [
+    {
+      "seconds": 0.016,
+      "screen": "slot_select"
+    },
+    {
+      "seconds": 91.063,
+      "screen": "profile_menu"
+    },
+    {
+      "seconds": 116.906,
+      "screen": "prepare_armor"
+    },
+    {
+      "seconds": 127.672,
+      "screen": "prepare_weapons"
+    },
+    {
+      "seconds": 140.641,
+      "screen": "prepare_deployment"
+    },
+    {
+      "seconds": 175.047,
+      "screen": "prepare_confirm"
+    },
+    {
+      "seconds": 183.656,
+      "screen": "battle"
+    },
+    {
+      "seconds": 208.813,
+      "screen": "result_failure"
+    }
+  ],
+  "inputs": [
+    {
+      "key": "left mouse down",
+      "screen": "slot_select",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "profile_menu",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "profile_menu",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "prepare_armor",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "prepare_armor",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "prepare_weapons",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "prepare_weapons",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "prepare_deployment",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "prepare_deployment",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "prepare_confirm",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "prepare_confirm",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "battle",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "result_failure",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "result_failure",
+      "source": "engine_input"
+    }
+  ],
+  "events": [
+    {
+      "kind": "failure",
+      "attempt_id": "bd07747921b04708acabba7b5999a48c",
+      "sequence": 1,
+      "source_id": "W01",
+      "reason": "impact"
+    }
+  ],
+  "state": {
+    "screen": "result_failure",
+    "slot": 2,
+    "coins": 0,
+    "draft": null,
+    "battle": {
+      "attempt_id": "bd07747921b04708acabba7b5999a48c",
+      "state_revision": 3016,
+      "revision": 3016,
+      "phase": "failure",
+      "elapsed": 25.133333333332548,
+      "player": {
+        "position": [
+          -18.0,
+          0,
+          70.0
+        ],
+        "hp": 100,
+        "max_hp": 100,
+        "cooldowns": {
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 0
+        },
+        "ammo": 0,
+        "aiming_factor": 1.0,
+        "armor_id": null
+      },
+      "weapon_slots": [
+        "W01",
+        "W17",
+        "W03",
+        null,
+        null
+      ],
+      "active_weapon_id": "W01",
+      "weapon_runtime": {
+        "W01": {
+          "weapon_id": "W01",
+          "magazine_rounds": null,
+          "quota_remaining": null,
+          "next_shot_at": 0,
+          "reload_finish_at": null,
+          "burst_remaining": 0,
+          "next_burst_start_at": 0
+        },
+        "W17": {
+          "weapon_id": "W17",
+          "magazine_rounds": 5,
+          "quota_remaining": null,
+          "next_shot_at": 0,
+          "reload_finish_at": null,
+          "burst_remaining": 0,
+          "next_burst_start_at": 0
+        },
+        "W03": {
+          "weapon_id": "W03",
+          "magazine_rounds": 12,
+          "quota_remaining": null,
+          "next_shot_at": 0,
+          "reload_finish_at": null,
+          "burst_remaining": 0,
+          "next_burst_start_at": 0
+        }
+      },
+      "city_hp": 100,
+      "aircraft": [
+        {
+          "id": "bd07747921b04708acabba7b5999a48c-air-0",
+          "position": [
+            -0.362773926345558,
+            10.816476995875604,
+            -50.07040430360572
+          ],
+          "hp": 1,
+          "max_hp": 1,
+          "status": "impact"
+        }
+      ],
+      "enemies": [],
+      "turrets": [],
+      "missiles": [],
+      "rockets": [],
+      "locks": {},
+      "diagnostics": {
+        "entities": 1,
+        "missiles": 0,
+        "rockets": 0,
+        "locks": 0,
+        "scheduled_callbacks": 0,
+        "input_handlers": 0
+      },
+      "events": [
+        {
+          "kind": "failure",
+          "attempt_id": "bd07747921b04708acabba7b5999a48c",
+          "sequence": 1,
+          "source_id": "W01",
+          "reason": "impact"
+        }
+      ]
+    },
+    "projection_height": 200
+  },
+  "audio_silent": false,
+  "audio_error": null
+}

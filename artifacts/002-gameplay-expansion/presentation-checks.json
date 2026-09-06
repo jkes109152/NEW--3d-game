@@ -1,0 +1,20 @@
+[
+  {
+    "tool": "presentation_regression_probe.py",
+    "args": [
+      "--size",
+      "1920x1080"
+    ],
+    "exit_code": 0
+  },
+  {
+    "tool": "review_engine_probe.py",
+    "args": [],
+    "exit_code": 0
+  },
+  {
+    "tool": "fallback_probe.py",
+    "args": [],
+    "exit_code": 0
+  }
+]

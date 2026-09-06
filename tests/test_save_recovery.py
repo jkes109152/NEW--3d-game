@@ -18,7 +18,7 @@ class SaveRecoveryTests(unittest.TestCase):
             self.assertEqual(repo.load(1)['coins'],0)
 
     def test_closed_schema_unknown_version_negative_and_wrong_types(self):
-        for key,value in (('schema_version',2),('coins',-1),('coins',True),('rebirth_available',1),('operation_history',{})):
+        for key,value in (('schema_version',99),('coins',-1),('coins',True),('rebirth_available',1),('operation_history',{})):
             p=new_profile(); p[key]=value
             with self.assertRaises(ValueError): validate_profile(p)
         p=new_profile(); p['unknown']=1

@@ -1,0 +1,13 @@
+Known pipe types:
+  wglGraphicsPipe
+(3 aux display modules not yet loaded.)
+:prc(warning): changing default value for ConfigVariable paste-emit-keystrokes from '1' to '0'.
+:pnmimage:png(warning): iCCP: known incorrect sRGB profile
+:display:windisplay(warning): Could not find icon filename textures/ursina.ico
+:display:windisplay(warning): Could not find icon filename textures/ursina.ico
+info: Using primary monitor: Monitor(x=0, y=0, width=2560, height=1440, width_mm=699, height_mm=393, name='\\\\.\\DISPLAY3', is_primary=True)
+set window position: Vec2(640, 360)
+package_folder: C:\Users\lamuness\Desktop\game\.venv\Lib\site-packages\ursina
+asset_folder: C:\Users\lamuness\Desktop\game\assets
+info: changed aspect ratio: 1.778 -> 1.778
+{"summary": {"frames": 4506, "seconds": 59.99428850008553, "average_fps": 75.10714957463952, "p1_fps": 39.35458481728352, "p99_frame_ms": 25.4099999947357, "persistent_stall_indices": [], "passes": false}, "shots": {"W12": 277, "W19": 6, "W20": 10}, "cleanup": {"visuals": 0, "effects": 0, "pooled_effects": 8, "pooled_missiles": 2, "temporary_ui": 0, "engine_entities": 45, "engine_tasks": 9, "input_handlers": 1, "lock_markers": 0, "active_missiles": 0, "active_rockets": 0, "pending_commands": 0, "core_tracers": 0}}

@@ -1,32 +1,18 @@
 import unittest
-from air_defense.entities import Enemy, V3
-from tests.fixtures import battle
-
+from air_defense.entities import Enemy,V3
+from tests.fixtures.expansion import equipped
 
 class WeaponValidationTests(unittest.TestCase):
-    def test_T11_invalid_attacks_preserve_resources(self):
-        b = battle()
-        b.select_weapon(3)
-        before = (b.player.hp, dict(b.player.cooldowns), b.player.rpg_ammo)
-        self.assertEqual(b.fire('air-0'), 'target_type')
-        self.assertEqual(before, (b.player.hp, b.player.cooldowns, b.player.rpg_ammo))
-        e = Enemy('e', 'NORMAL', V3(100, 0, 100), phase='ground')
-        b.enemies[e.id] = e
-        self.assertEqual(b.fire(e.id), 'range')
-        self.assertEqual(e.hp, 3)
-
-    def test_T12_ray_range_boundaries(self):
-        for distance, expected in ((12, 'applied'), (12.01, 'range')):
-            b = battle()
-            b.select_weapon(3)
-            e = Enemy('e', 'NORMAL', V3(-18, 0, 80), phase='ground')
-            b.enemies[e.id] = e
-            self.assertEqual(b.fire(e.id, ray_distance=distance), expected)
-            self.assertEqual(e.hp, 2 if expected == 'applied' else 3)
-
-    def test_blocked_attack_does_not_start_cooldown(self):
-        b = battle()
-        b.enemies['e'] = Enemy('e', 'NORMAL', V3(-18,0,75), phase='ground')
-        b.select_weapon(3)
-        self.assertEqual(b.fire('e', visible=False), 'blocked')
-        self.assertEqual(b.player.cooldowns[3], 0)
+    def test_missed_ground_shot_consumes_ammo_and_cooldown(self):
+        b=equipped();hp=next(iter(b.aircraft.values())).hp
+        self.assertEqual(b.fire(),'applied');self.assertEqual(b.runtime['W03'].magazine_rounds,11)
+        self.assertEqual(next(iter(b.aircraft.values())).hp,hp)
+        self.assertEqual(b.fire(),'cooldown');self.assertEqual(b.runtime['W03'].magazine_rounds,11)
+    def test_pistol_actual_envelope_range_boundary(self):
+        for distance,hp in ((24,2),(24.01,3)):
+            b=equipped();e=Enemy('e','NORMAL',b.player.position+V3(0,0,distance+.3),phase='ground');b.enemies[e.id]=e
+            b.fire();self.assertEqual(e.hp,hp)
+    def test_wall_blocks_damage_but_does_not_prevent_shooting(self):
+        b=equipped();b.player.position=V3(-29,0,72)
+        e=Enemy('e','NORMAL',V3(-29,0,80),phase='ground');b.enemies[e.id]=e
+        self.assertEqual(b.fire(),'applied');self.assertEqual(e.hp,3);self.assertEqual(b.runtime['W03'].magazine_rounds,11)

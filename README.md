@@ -1,27 +1,45 @@
-# 3D 防空守衛
+# 糖果防線｜3D 防空守衛
 
-Windows 單機第一人稱防空遊戲。鎖定來襲飛機，再處理空降敵兵，保護城市並升級裝備。
+Windows 單機第一人稱空地防守遊戲。用二十種武器、六件裝甲與三類砲塔建立防線，擊落飛機、處理空降敵兵並保護城市。新版規格與操作案例見 [002 規格](specs/002-gameplay-expansion/spec.md) 與 [快速驗證](specs/002-gameplay-expansion/quickstart.md)。
 
 ## 啟動
 
-安裝 64 位元 Python 3.12.x 後，雙擊 `start_game.cmd`。首次會在專案 `.venv` 安裝固定依賴；後續可離線遊玩。路徑可含空白與繁體中文。離線首次安裝可將全部依賴的 wheel 套件放入 `tools/wheels/`。
+安裝 64 位元 Python 3.12.x，雙擊 `start_game.cmd`。首次在專案 `.venv` 安裝固定依賴，之後可離線遊玩。路徑可含繁體中文與空白；離線首次安裝可將完整 wheel 放入 `tools/wheels/`。沒有音訊裝置會使用無聲回退。
 
-## 操作
+## 操作與出戰
+
+新欄位提供雲哨防空炮、雲線狙擊槍及糖粒手槍。開始後依序選裝甲、安排五個武器槽、以鳥瞰部署砲塔，再確認保存配置後出戰。至少攜帶一把防空與一把對地武器，其他槽可留空。準備可返回或取消，購買不會自動裝備。
 
 | 按鍵 | 功能 |
-|---|---|
+| --- | --- |
 | WASD／滑鼠 | 移動／視角 |
-| Space | 跳躍；主選單開始 |
-| 左鍵／右鍵 | 攻擊／切換瞄準 |
-| 1～5 | 防空炮、狙擊槍、手槍、RPG、多目標防空炮 |
-| Esc／Enter | 暫停或返回／確認 |
+| Space | 跳躍；主選單開始準備 |
+| 左鍵／右鍵 | 射擊／切換瞄準 |
+| 1～5 | 切換本次安排的武器槽；空槽不切換 |
+| R | 手動換彈；空匣也會自動換彈 |
+| Esc／Enter／方向鍵 | 暫停或返回／確認／選單選擇 |
+| 部署畫面的 WASD／中鍵拖曳 | 平移鳥瞰鏡頭 |
+| 部署畫面的滾輪／縮放按鈕 | 縮放鏡頭 |
+| 部署畫面的左鍵／右鍵／Delete | 放置或移動所選砲塔／取消選取／移除 |
 
-E 與 G 沒有效果。每小關結束後手動開始下一關；重新載入存檔從 1-1 開始。失敗或完成最終關後，可花費金幣重生，保留永久升級。
+一般槍枝有彈匣及無限備彈；火箭每關配額有限；防空炮須先完成鎖定。切槍保留各武器彈藥與冷卻，暫停及失焦停止模擬。E 與 G 沒有效果。
 
-## 存檔與測試
+商店有自身升級、裝甲、自動防禦、槍枝四類。升級、配件及外觀按武器獨立保存。裝甲最多穿一件，也可不穿。砲塔首次重生後開放，逐台購買且跨關保留，部署容量為重生次數 × 2。
 
-五欄位保存於 `%LOCALAPPDATA%/AirDefenseQuality/slot-1.json` 至 `slot-5.json`。損壞檔案需先備份再確認重建。測試一律注入隔離目錄。
+每小關結束後手動開始下一關；失敗可原關重試。失敗或完成最終關可取得重生資格，費用為 `1000 × (目前重生次數 + 1)`。確認重生會清空全部金幣及本輪付費成果，重新配發三把基礎武器，重生加一、回到 1-1；音量與操作偏好保留。
 
-雙擊 `run_tests.cmd` 執行語法檢查與規則測試。完整輸出與退出碼保留於 `artifacts/tests.log`。驗收結果見 `docs/ACCEPTANCE.md`。
+## 保存
 
-啟動或依賴安裝失敗時查看 `artifacts/launcher-error.log`、`artifacts/dependency-install.log`；遊戲執行錯誤見 `artifacts/game-error.log`。沒有音訊裝置時使用無聲回退。
+新版五欄位位於 `%LOCALAPPDATA%/AirDefenseQualityV2/slot-1.json` 至 `slot-5.json`；不讀寫或匯入舊版 `AirDefenseQuality`。重啟會還原擁有成果及最近確認配置，戰役從 1-1 開始。
+
+損壞或未知版本先保留原始位元組，再由玩家確認重建。保存失敗時保留整份候選結果並阻擋後續操作，按「重試保存」不會重扣款或重發獎勵。強制結束程式後，只能恢復最近已成功保存的資料。
+
+開發工具可明確注入 `SlotRepository(root)`，或使用 `AIR_DEFENSE_V2_SAVE_DIR` 指定新版隔離位置。舊版根目錄及其子目錄不可作為新版保存位置。
+
+## 驗證與文件
+
+雙擊 `run_tests.cmd` 執行 compileall 與完整規則測試。退出碼及日誌保存於 `artifacts/tests.log` 和 `artifacts/002-gameplay-expansion/tests.log`。新版 [驗收入口](artifacts/002-gameplay-expansion/acceptance.md) 分別列出純規則、自動引擎、原生鍵鼠、效能與啟動證據；[舊版程式審查](docs/CODE_REVIEW.md) 保留為歷史紀錄。
+
+啟動或依賴失敗時查看 `artifacts/launcher-error.log`、`artifacts/dependency-install.log`；遊戲執行錯誤見 `artifacts/game-error.log`。素材來源見 [授權清單](assets/LICENSES.md)。
+
+專案依 [SDD 流程](SPEC-KIT.md) 開發。功能分支使用 `NNN-short-name`；全部 GitHub 遠端操作使用 `gh` CLI，本機 Git 操作用 `git`。

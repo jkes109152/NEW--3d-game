@@ -1,3 +1,4 @@
+from tests.fixtures.expansion import operation_id, request
 import unittest
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
@@ -10,12 +11,12 @@ class SaveTransactionTests(unittest.TestCase):
         with TemporaryDirectory() as root:
             repo=SlotRepository(root); app=AppState(repo); app.select_slot(1); app.profile['coins']=1000; repo.save(1,app.profile)
             with patch('air_defense.save_data.os.replace',side_effect=PermissionError('故障注入')):
-                self.assertEqual(app.purchase('max_hp','same'),'save_failed')
+                self.assertEqual(app.purchase('max_hp',operation_id()),'save_failed')
             self.assertEqual(app.profile['coins'],750); self.assertTrue(app.pending_save)
             self.assertEqual(app.purchase('max_hp','other'),'phase'); self.assertIsNone(app.start())
             self.assertTrue(app.retry_save()); self.assertEqual(repo.load(1)['coins'],750)
             restarted=repo.load(1)
-            repo.transaction(1,restarted,'same',{'kind':'purchase','upgrade_id':'max_hp'})
+            repo.transaction(1,restarted,operation_id(),request(restarted,'upgrade_player',upgrade_id='max_hp'))
             self.assertEqual(restarted['coins'],750); self.assertEqual(restarted['profile_revision'],1)
 
     def test_backup_failure_never_replaces_original(self):

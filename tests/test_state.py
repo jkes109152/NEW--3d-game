@@ -12,7 +12,7 @@ class StateTests(unittest.TestCase):
         b.pause()
         for _ in range(10): b.advance(20)
         self.assertEqual(b.elapsed, before['elapsed'])
-        self.assertEqual(b.aircraft['air-0'].position.tuple(), before['aircraft'][0]['position'])
+        self.assertEqual(b.aircraft[list(b.aircraft)[0]].position.tuple(), before['aircraft'][0]['position'])
         b.resume()
         b.advance(0)
         self.assertEqual(b.elapsed, before['elapsed'])

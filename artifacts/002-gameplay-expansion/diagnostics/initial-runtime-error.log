@@ -1,0 +1,29 @@
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\air_defense\main.py", line 387, in main
+    else: engine.run()
+          ^^^^^^^^^^^^
+  File "C:\Users\lamuness\Desktop\game\.venv\Lib\site-packages\ursina\main.py", line 369, in run
+    super().run()
+  File "C:\Users\lamuness\Desktop\game\.venv\Lib\site-packages\direct\showbase\ShowBase.py", line 3331, in run
+    self.taskMgr.run()
+  File "C:\Users\lamuness\Desktop\game\.venv\Lib\site-packages\direct\task\Task.py", line 553, in run
+    self.step()
+  File "C:\Users\lamuness\Desktop\game\.venv\Lib\site-packages\direct\task\Task.py", line 504, in step
+    self.mgr.poll()
+  File "C:\Users\lamuness\Desktop\game\.venv\Lib\site-packages\ursina\main.py", line 207, in _update
+    e.update()
+  File "C:\Users\lamuness\Desktop\game\air_defense\main.py", line 317, in update
+    snapshot=battle.advance(dt,frame)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lamuness\Desktop\game\air_defense\state.py", line 109, in advance
+    self.step(TICK,current)
+  File "C:\Users\lamuness\Desktop\game\air_defense\state.py", line 152, in step
+    if not self.held and not self.require_release:self.held=True;self.trigger()
+                                                                 ^^^^^^^^^^^^^^
+  File "C:\Users\lamuness\Desktop\game\air_defense\state.py", line 190, in trigger
+    result=self.fire()
+           ^^^^^^^^^^^
+  File "C:\Users\lamuness\Desktop\game\air_defense\state.py", line 216, in fire
+    for i in range(stats.pellet_count):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: 'float' object cannot be interpreted as an integer

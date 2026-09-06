@@ -29,7 +29,7 @@
 5. `$speckit-implement`：執行實作。
 6. `$speckit-converge`：檢查實作與規格是否一致。
 
-另有 clarify、analyze、checklist 等 skills。專案原則目前仍是官方模板，尚未填入產品需求。
+另有 clarify、analyze、checklist 等 skills。專案憲章已完成產品化，目前為 1.4.0；新版規格與實作計畫位於 `specs/002-gameplay-expansion/`，001 保留為既有版本歷史。新功能先確認 `NNN-short-name` 工作分支及對應規格目錄，再依序執行 SDD；GitHub 操作一律使用 `gh` CLI，本機 Git 操作使用 `git`。規格或計畫完成不代表已完成實作或驗收。
 
 ## 重建本機工具環境
 
@@ -38,10 +38,15 @@
 ```powershell
 $env:UV_CACHE_DIR = Join-Path $PWD '.tools/uv-cache'
 uv venv .tools/spec-kit --python 3.14
-uv pip install --python .tools/spec-kit/Scripts/python.exe 'specify-cli @ git+https://github.com/github/spec-kit.git@cb610277fdea781fcfa83d20522c2db37c94068d'
+gh repo clone github/spec-kit .tools/spec-kit-source -- --branch v1.0.4 --depth 1
+git -C .tools/spec-kit-source rev-parse HEAD
+# 核對上列 SHA 等於文件指定版本，再從本機來源安裝。
+uv pip install --python .tools/spec-kit/Scripts/python.exe .tools/spec-kit-source
 .\specify.ps1 version
 ```
 
 既有 `.specify/` 與 `.agents/skills/` 已初始化，不需再次執行 init。
 
-官方文件：https://github.com/github/spec-kit
+官方文件：[GitHub Spec Kit](https://github.com/github/spec-kit)
+
+002 改版採 Profile v2 獨立資料位置；開發與驗證方式見 [README](README.md)、[快速驗證](specs/002-gameplay-expansion/quickstart.md) 與 [驗收證據](artifacts/002-gameplay-expansion/acceptance.md)。所有執行證據保留於 `artifacts/002-gameplay-expansion/`，不將 001 基準當成新版通過。

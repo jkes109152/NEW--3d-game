@@ -1,3 +1,4 @@
+from tests.fixtures.expansion import start_prepared
 import unittest
 from tempfile import TemporaryDirectory
 from air_defense.state import AppState
@@ -9,7 +10,7 @@ class AppStateTests(unittest.TestCase):
             repo=SlotRepository(root); app=AppState(repo)
             self.assertEqual(app.screen,'slot_select'); self.assertIsNone(app.start())
             app.select_slot(1); self.assertEqual(app.screen,'profile_menu')
-            b=app.start(); self.assertEqual(b.level.level_id,'1-1')
+            b=start_prepared(app); self.assertEqual(b.level.level_id,'1-1')
             for a in b.aircraft.values(): a.hp=0; a.status='destroyed'
             b.check_outcome(); app.settle()
             self.assertEqual(app.cursor,(1,2)); self.assertEqual(app.screen,'result_success')

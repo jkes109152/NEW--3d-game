@@ -11,7 +11,7 @@ class LockMissileTests(unittest.TestCase):
         p=new_profile(); player=Player(); target=Aircraft('t','NORMAL',player.eye+V3(20,10,80))
         player.aiming=True
         self.assertEqual(aim_assist(p,player,target,1),(0,0))
-        p['upgrade_levels']['aa_aim_assist']=1
+        p['owned_weapons']['W01']['upgrade_levels']['aim_assist']=1
         yaw,pitch=aim_assist(p,player,target,.1)
         self.assertLessEqual((yaw*yaw+pitch*pitch)**.5,.3+1e-9)
         player.aiming=False; self.assertEqual(aim_assist(p,player,target,1),(0,0))

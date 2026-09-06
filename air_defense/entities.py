@@ -85,6 +85,10 @@ class Player:
     since_damage: float = 0
     healed: float = 0
     vertical_speed: float = 0
+    move_speed: float = 6
+    jump_height: float = 1.8
+    regen_delay: float = 5
+    regen_rate: float = 2
 
     @property
     def eye(self): return self.position+V3(0,1.6,0)
@@ -104,20 +108,20 @@ class Player:
         self.since_damage+=dt
         for key in self.cooldowns: self.cooldowns[key]=max(0,self.cooldowns[key]-dt)
         if self.hp>0:
-            eligible=max(0,self.since_damage-5)-max(0,before-5)
-            heal=max(0,min(eligible*2,self.max_hp-self.hp,self.max_hp*.2-self.healed))
+            eligible=max(0,self.since_damage-self.regen_delay)-max(0,before-self.regen_delay)
+            heal=max(0,min(eligible*self.regen_rate,self.max_hp-self.hp,self.max_hp*.2-self.healed))
             self.hp+=heal
             self.healed+=heal
 
     def move(self, x, z, jump, dt):
         movement=(direction(self.yaw)*z+direction(self.yaw+90)*x)
         if movement.length()>1: movement=movement.normalized()
-        if jump and self.position.y<=1e-6: self.vertical_speed=sqrt(2*18*1.5)
+        if jump and self.position.y<=1e-6: self.vertical_speed=sqrt(2*18*self.jump_height)
         self.vertical_speed-=18*dt
         y=max(0,self.position.y+self.vertical_speed*dt)
         if y==0: self.vertical_speed=0
         pos=V3(self.position.x,y,self.position.z)
-        for offset in (V3(movement.x*6*dt,0,0),V3(0,0,movement.z*6*dt)):
+        for offset in (V3(movement.x*self.move_speed*dt,0,0),V3(0,0,movement.z*self.move_speed*dt)):
             candidate=pos+offset
             blocked=any(abs(candidate.x-c.x)<s.x/2+.45 and abs(candidate.z-c.z)<s.z/2+.45
                         and candidate.y<c.y+s.y/2 and candidate.y+1.8>c.y-s.y/2
@@ -144,12 +148,22 @@ class Aircraft:
     status: str = 'approaching'
     drop_batch_id: str | None = None
     formation_offset: float = 0
+    max_hp: float | None = None
+    speed_factor: float = 1
+    turn_factor: float = 1
 
     def __post_init__(self):
         if self.hp is None: self.hp=AIRCRAFT[self.kind][0]
+        if self.max_hp is None:self.max_hp=self.hp
 
     @property
-    def duration(self): return AIRCRAFT[self.kind][1]
+    def duration(self): return AIRCRAFT[self.kind][1]/self.speed_factor
+    @property
+    def approach_duration(self):return self.duration
+    @property
+    def turn_rate(self):return AIRCRAFT[self.kind][4]*self.turn_factor
+    @property
+    def max_yaw_deflection(self):return AIRCRAFT[self.kind][5]*self.turn_factor
     @property
     def remaining(self): return max(0,self.duration-self.elapsed)
     @property
@@ -158,12 +172,16 @@ class Aircraft:
     def update(self, dt):
         if self.status!='approaching': return
         self.elapsed+=dt
-        _, duration, amplitude, frequency, yaw_rate, pitch_rate, _ = AIRCRAFT[self.kind]
+        _, _, amplitude, frequency, _, _, _ = AIRCRAFT[self.kind]
+        duration=self.duration; yaw_rate=self.turn_rate; pitch_rate=self.turn_rate
         t=clamp((self.elapsed+1.5)/duration,0,1)
         goal=V3(self.formation_offset*(1-t)+amplitude*sin(self.elapsed*frequency*2*pi)*sin(pi*t),
                 32-22*t, 210-270*t)
         if t>=1: goal=V3(*AIR_END)
         target_yaw,target_pitch=angles(goal-self.position)
+        base_yaw,base_pitch=angles(V3(*AIR_END)-self.position)
+        target_yaw=base_yaw+clamp((target_yaw-base_yaw+180)%360-180,-self.max_yaw_deflection,self.max_yaw_deflection)
+        target_pitch=clamp(target_pitch,base_pitch-self.max_yaw_deflection,base_pitch+self.max_yaw_deflection)
         self.yaw=approach_angle(self.yaw,target_yaw,yaw_rate*dt)
         self.pitch=approach_angle(self.pitch,target_pitch,pitch_rate*dt)
         speed=(V3(*AIR_END)-self.position).length()/max(self.remaining,1)
@@ -188,13 +206,14 @@ class Enemy:
     age: float = 0
     yaw: float = 180
     role: int = 0
+    effective_max_hp: float | None = None
 
     def __post_init__(self):
         if self.hp is None: self.hp=self.max_hp
         if self.drop_height is None: self.drop_height=self.position.y
 
     @property
-    def max_hp(self): return 10 if self.kind=='GROUND_BOSS' else 3
+    def max_hp(self): return self.effective_max_hp if self.effective_max_hp is not None else 10 if self.kind=='GROUND_BOSS' else 3
     @property
     def center(self): return self.position+V3(0,.9,0)
     @property
@@ -235,14 +254,16 @@ class Turret:
     position: V3
     target_id: str | None = None
     cooldown: float = 0
+    turret_type_id: str = "T01"
+    visible_since: float | None = None
 
     @property
-    def center(self): return self.position+V3(0,1,0)
+    def center(self): return self.position+V3(0,1.2,0)
 
     def legal(self, enemy):
-        return enemy.hp>0 and enemy.phase=='ground' and (enemy.center-self.center).length()<=32+1e-9 \
+        return enemy.hp>0 and enemy.phase=='ground' and (enemy.center-self.center).horizontal().length()<=32+1e-9 \
             and visible_between(self.center,enemy.center) \
-            and (enemy.kind!='GROUND_BOSS' or enemy.hp>ceil(enemy.max_hp*.5))
+            and (enemy.kind!='GROUND_BOSS' or enemy.hp>enemy.max_hp*.5)
 
 
 @dataclass
@@ -252,6 +273,8 @@ class Missile:
     position: V3
     forward: V3
     age: float = 0
+    damage: float = 1
+    weapon_id: str = "W01"
 
     def update(self, dt, target):
         if target is None or target.hp<=0 or target.status!='approaching': return 'expired'

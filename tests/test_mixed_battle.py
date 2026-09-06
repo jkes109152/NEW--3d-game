@@ -6,9 +6,9 @@ from air_defense.progression import new_profile, level_for
 class MixedBattleTests(unittest.TestCase):
     def test_two_aircraft_continue_while_crew_descends(self):
         b=BattleState(new_profile(),level_for(2,3,2))
-        b.damage_aircraft('air-0',1); before=b.aircraft['air-1'].position
+        b.damage_aircraft(list(b.aircraft)[0],b.aircraft[list(b.aircraft)[0]].hp); before=b.aircraft[list(b.aircraft)[1]].position
         for _ in range(60): b.advance(1/60,InputFrame())
-        self.assertNotEqual(b.aircraft['air-1'].position,before)
+        self.assertNotEqual(b.aircraft[list(b.aircraft)[1]].position,before)
         self.assertEqual(len(b.enemies),6)
         self.assertTrue(all(e.phase=='descending' for e in b.enemies.values()))
         self.assertEqual(b.phase,'active')
@@ -24,6 +24,6 @@ class MixedBattleTests(unittest.TestCase):
                     b.city.hp=.01
                     b.enemies['e']=Enemy('e','NORMAL',V3(0,0,-45),phase='ground')
                 else:
-                    a=b.aircraft['air-0']; a.position=V3(0,10,-51); a.elapsed=a.duration
+                    a=b.aircraft[list(b.aircraft)[0]]; a.position=V3(0,10,-51); a.elapsed=a.duration
                 b.advance(1/120,InputFrame())
                 self.assertEqual((b.phase,b.failure_reason),('failure',reason))
