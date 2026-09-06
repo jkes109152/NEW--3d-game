@@ -1,0 +1,33 @@
+指令：C:\Users\lamuness\Desktop\game\.venv\Scripts\python.exe -m compileall -q air_defense tools tests
+
+退出碼：0
+指令：C:\Users\lamuness\Desktop\game\.venv\Scripts\python.exe -m unittest discover -v
+test_immutable_input_and_safe_illegal_slot (tests.test_contracts.ContractTests.test_immutable_input_and_safe_illegal_slot) ... ok
+test_rule_import_has_no_engine (tests.test_contracts.ContractTests.test_rule_import_has_no_engine) ... ok
+test_summary_does_not_expose_mutable_state (tests.test_contracts.ContractTests.test_summary_does_not_expose_mutable_state) ... ok
+test_T06_unique_drop_and_airborne_damage (tests.test_enemy_lifecycle.EnemyLifecycleTests.test_T06_unique_drop_and_airborne_damage) ... ok
+test_zero_drop_can_complete (tests.test_enemy_lifecycle.EnemyLifecycleTests.test_zero_drop_can_complete) ... ok
+test_T07_acquire_decay_return_switch (tests.test_lock_and_missiles.LockMissileTests.test_T07_acquire_decay_return_switch) ... ok
+test_T10_swept_hit_wins_expiry_and_target_is_fixed (tests.test_lock_and_missiles.LockMissileTests.test_T10_swept_hit_wins_expiry_and_target_is_fixed) ... ok
+test_T01_campaign_counts_and_invalid (tests.test_progression.ProgressionTests.test_T01_campaign_counts_and_invalid) ... ok
+test_T02_formation_order (tests.test_progression.ProgressionTests.test_T02_formation_order) ... ok
+test_T03_reward_and_duplicate (tests.test_progression.ProgressionTests.test_T03_reward_and_duplicate) ... ok
+test_T16_shop_and_T17_rebirth (tests.test_progression.ProgressionTests.test_T16_shop_and_T17_rebirth) ... ok
+test_conflict_does_not_mutate (tests.test_progression.ProgressionTests.test_conflict_does_not_mutate) ... ok
+test_T19_isolation_corruption_and_delete (tests.test_save_data.SaveTests.test_T19_isolation_corruption_and_delete) ... ok
+test_T20_atomic_retry (tests.test_save_data.SaveTests.test_T20_atomic_retry) ... ok
+test_strict_schema (tests.test_save_data.SaveTests.test_strict_schema) ... ok
+test_T21_teardown_and_old_attempt (tests.test_state.StateTests.test_T21_teardown_and_old_attempt) ... ok
+test_T22_pause_does_not_catch_up (tests.test_state.StateTests.test_T22_pause_does_not_catch_up) ... ok
+test_clock_clamps_hitches (tests.test_state.StateTests.test_clock_clamps_hitches) ... ok
+test_deterministic_input_replay (tests.test_state.StateTests.test_deterministic_input_replay) ... ok
+test_T11_invalid_attacks_preserve_resources (tests.test_weapon_validation.WeaponValidationTests.test_T11_invalid_attacks_preserve_resources) ... ok
+test_T12_ray_range_boundaries (tests.test_weapon_validation.WeaponValidationTests.test_T12_ray_range_boundaries) ... ok
+test_blocked_attack_does_not_start_cooldown (tests.test_weapon_validation.WeaponValidationTests.test_blocked_attack_does_not_start_cooldown) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 0.066s
+
+OK
+
+退出碼：0

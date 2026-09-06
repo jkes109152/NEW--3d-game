@@ -1,0 +1,181 @@
+指令：C:\Users\lamuness\Desktop\game\.venv\Scripts\python.exe -m compileall -q air_defense tools tests
+
+退出碼：0
+指令：C:\Users\lamuness\Desktop\game\.venv\Scripts\python.exe -m unittest tests.test_review_regressions -v
+test_aim_change_survives_frame_without_fixed_step (tests.test_review_regressions.ReviewRegressions.test_aim_change_survives_frame_without_fixed_step) ... FAIL
+test_audio_device_loss_during_status_or_stop_is_nonfatal (tests.test_review_regressions.ReviewRegressions.test_audio_device_loss_during_status_or_stop_is_nonfatal) ... 
+  test_audio_device_loss_during_status_or_stop_is_nonfatal (tests.test_review_regressions.ReviewRegressions.test_audio_device_loss_during_status_or_stop_is_nonfatal) (method='status') ... ERROR
+  test_audio_device_loss_during_status_or_stop_is_nonfatal (tests.test_review_regressions.ReviewRegressions.test_audio_device_loss_during_status_or_stop_is_nonfatal) (method='stop') ... ERROR
+test_changed_backup_is_recreated_before_recovery (tests.test_review_regressions.ReviewRegressions.test_changed_backup_is_recreated_before_recovery) ... FAIL
+test_city_failure_stops_same_enemy_before_player_damage (tests.test_review_regressions.ReviewRegressions.test_city_failure_stops_same_enemy_before_player_damage) ... FAIL
+test_delete_invalidates_other_tokens_for_same_slot (tests.test_review_regressions.ReviewRegressions.test_delete_invalidates_other_tokens_for_same_slot) ... FAIL
+test_invalid_transaction_never_poison_profile (tests.test_review_regressions.ReviewRegressions.test_invalid_transaction_never_poison_profile) ... 
+  test_invalid_transaction_never_poison_profile (tests.test_review_regressions.ReviewRegressions.test_invalid_transaction_never_poison_profile) (request={'kind': 'unknown'}) ... FAIL
+  test_invalid_transaction_never_poison_profile (tests.test_review_regressions.ReviewRegressions.test_invalid_transaction_never_poison_profile) (request={'kind': 'purchase', 'upgrade_id': []}) ... ERROR
+  test_invalid_transaction_never_poison_profile (tests.test_review_regressions.ReviewRegressions.test_invalid_transaction_never_poison_profile) (request={'kind': 'reward', 'a': 1, 'b': 1}) ... ERROR
+  test_invalid_transaction_never_poison_profile (tests.test_review_regressions.ReviewRegressions.test_invalid_transaction_never_poison_profile) (request={'kind': 'save', 'extra': True}) ... FAIL
+test_newer_aim_input_wins_over_pending_frame (tests.test_review_regressions.ReviewRegressions.test_newer_aim_input_wins_over_pending_frame) ... ok
+test_pending_save_cannot_be_discarded_by_slot_selection (tests.test_review_regressions.ReviewRegressions.test_pending_save_cannot_be_discarded_by_slot_selection) ... FAIL
+test_stale_campaign_reward_conflict_does_not_mutate (tests.test_review_regressions.ReviewRegressions.test_stale_campaign_reward_conflict_does_not_mutate) ... FAIL
+test_transaction_validates_destination_before_mutation (tests.test_review_regressions.ReviewRegressions.test_transaction_validates_destination_before_mutation) ... FAIL
+test_visible_head_above_cover_accepts_actual_ray_hit (tests.test_review_regressions.ReviewRegressions.test_visible_head_above_cover_accepts_actual_ray_hit) ... FAIL
+
+======================================================================
+ERROR: test_audio_device_loss_during_status_or_stop_is_nonfatal (tests.test_review_regressions.ReviewRegressions.test_audio_device_loss_during_status_or_stop_is_nonfatal) (method='status')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_regressions.py", line 101, in test_audio_device_loss_during_status_or_stop_is_nonfatal
+    (bus.tick if method=='status' else bus.stop)()
+  File "C:\Users\lamuness\Desktop\game\air_defense\audio.py", line 54, in tick
+    self.voices=[voice for voice in self.voices if voice.status()==voice.PLAYING]
+                                                   ^^^^^^^^^^^^^^
+  File "C:\Users\lamuness\Desktop\game\.tools\python\cpython-3.12-windows-x86_64-none\Lib\unittest\mock.py", line 1139, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lamuness\Desktop\game\.tools\python\cpython-3.12-windows-x86_64-none\Lib\unittest\mock.py", line 1143, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lamuness\Desktop\game\.tools\python\cpython-3.12-windows-x86_64-none\Lib\unittest\mock.py", line 1198, in _execute_mock_call
+    raise effect
+RuntimeError: 音訊裝置已移除
+
+======================================================================
+ERROR: test_audio_device_loss_during_status_or_stop_is_nonfatal (tests.test_review_regressions.ReviewRegressions.test_audio_device_loss_during_status_or_stop_is_nonfatal) (method='stop')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_regressions.py", line 101, in test_audio_device_loss_during_status_or_stop_is_nonfatal
+    (bus.tick if method=='status' else bus.stop)()
+  File "C:\Users\lamuness\Desktop\game\air_defense\audio.py", line 82, in stop
+    for voice in self.voices: voice.stop()
+                              ^^^^^^^^^^^^
+  File "C:\Users\lamuness\Desktop\game\.tools\python\cpython-3.12-windows-x86_64-none\Lib\unittest\mock.py", line 1139, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lamuness\Desktop\game\.tools\python\cpython-3.12-windows-x86_64-none\Lib\unittest\mock.py", line 1143, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lamuness\Desktop\game\.tools\python\cpython-3.12-windows-x86_64-none\Lib\unittest\mock.py", line 1198, in _execute_mock_call
+    raise effect
+RuntimeError: 音訊裝置已移除
+
+======================================================================
+ERROR: test_invalid_transaction_never_poison_profile (tests.test_review_regressions.ReviewRegressions.test_invalid_transaction_never_poison_profile) (request={'kind': 'purchase', 'upgrade_id': []})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_regressions.py", line 55, in test_invalid_transaction_never_poison_profile
+    with self.assertRaises(ValueError): transact(p,'invalid',request)
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lamuness\Desktop\game\air_defense\progression.py", line 81, in transact
+    key=request.get('upgrade_id'); result=purchase_error(work,key) or 'applied'
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lamuness\Desktop\game\air_defense\progression.py", line 64, in purchase_error
+    if key not in CATALOG: return 'invalid_id'
+       ^^^^^^^^^^^^^^^^^^
+TypeError: unhashable type: 'list'
+
+======================================================================
+ERROR: test_invalid_transaction_never_poison_profile (tests.test_review_regressions.ReviewRegressions.test_invalid_transaction_never_poison_profile) (request={'kind': 'reward', 'a': 1, 'b': 1})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_regressions.py", line 55, in test_invalid_transaction_never_poison_profile
+    with self.assertRaises(ValueError): transact(p,'invalid',request)
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lamuness\Desktop\game\air_defense\progression.py", line 93, in transact
+    level=level_for(request['a'],request['b'],request['A'],work['rebirth_count'])
+                                              ~~~~~~~^^^^^
+KeyError: 'A'
+
+======================================================================
+FAIL: test_aim_change_survives_frame_without_fixed_step (tests.test_review_regressions.ReviewRegressions.test_aim_change_survives_frame_without_fixed_step)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_regressions.py", line 39, in test_aim_change_survives_frame_without_fixed_step
+    self.assertTrue(b.player.aiming)
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_changed_backup_is_recreated_before_recovery (tests.test_review_regressions.ReviewRegressions.test_changed_backup_is_recreated_before_recovery)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_regressions.py", line 86, in test_changed_backup_is_recreated_before_recovery
+    self.assertTrue(any(path.read_bytes()==original for path in Path(root).glob('slot-1.corrupt.*.json')))
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_city_failure_stops_same_enemy_before_player_damage (tests.test_review_regressions.ReviewRegressions.test_city_failure_stops_same_enemy_before_player_damage)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_regressions.py", line 32, in test_city_failure_stops_same_enemy_before_player_damage
+    self.assertEqual(b.player.hp,100)
+AssertionError: 92 != 100
+
+======================================================================
+FAIL: test_delete_invalidates_other_tokens_for_same_slot (tests.test_review_regressions.ReviewRegressions.test_delete_invalidates_other_tokens_for_same_slot)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_regressions.py", line 93, in test_delete_invalidates_other_tokens_for_same_slot
+    self.assertFalse(repo.confirm_delete(1,stale))
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_invalid_transaction_never_poison_profile (tests.test_review_regressions.ReviewRegressions.test_invalid_transaction_never_poison_profile) (request={'kind': 'unknown'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_regressions.py", line 55, in test_invalid_transaction_never_poison_profile
+    with self.assertRaises(ValueError): transact(p,'invalid',request)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_transaction_never_poison_profile (tests.test_review_regressions.ReviewRegressions.test_invalid_transaction_never_poison_profile) (request={'kind': 'save', 'extra': True})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_regressions.py", line 55, in test_invalid_transaction_never_poison_profile
+    with self.assertRaises(ValueError): transact(p,'invalid',request)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_pending_save_cannot_be_discarded_by_slot_selection (tests.test_review_regressions.ReviewRegressions.test_pending_save_cannot_be_discarded_by_slot_selection)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_regressions.py", line 76, in test_pending_save_cannot_be_discarded_by_slot_selection
+    with self.assertRaises(SaveError): app.select_slot(2)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: SaveError not raised
+
+======================================================================
+FAIL: test_stale_campaign_reward_conflict_does_not_mutate (tests.test_review_regressions.ReviewRegressions.test_stale_campaign_reward_conflict_does_not_mutate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_regressions.py", line 62, in test_stale_campaign_reward_conflict_does_not_mutate
+    self.assertEqual(p,before)
+AssertionError: {'sch[356 chars]on': 1, 'operation_history': [{'operation_id':[244 chars]'}}]} != {'sch[356 chars]on': 0, 'operation_history': []}
+Diff is 1063 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_transaction_validates_destination_before_mutation (tests.test_review_regressions.ReviewRegressions.test_transaction_validates_destination_before_mutation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_regressions.py", line 68, in test_transaction_validates_destination_before_mutation
+    self.assertEqual(p,before)
+AssertionError: {'sch[21 chars]ns': 250, 'rebirth_count': 0, 'max_aircraft_co[591 chars]'}}]} != {'sch[21 chars]ns': 500, 'rebirth_count': 0, 'max_aircraft_co[318 chars]: []}
+Diff is 1222 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_visible_head_above_cover_accepts_actual_ray_hit (tests.test_review_regressions.ReviewRegressions.test_visible_head_above_cover_accepts_actual_ray_hit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_regressions.py", line 24, in test_visible_head_above_cover_accepts_actual_ray_hit
+    self.assertEqual(b.fire(),'applied')
+AssertionError: 'blocked' != 'applied'
+- blocked
++ applied
+
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.037s
+
+FAILED (failures=10, errors=4)
+
+退出碼：1

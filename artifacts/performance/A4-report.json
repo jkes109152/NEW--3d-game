@@ -1,0 +1,96 @@
+{
+  "category": "原生引擎實測",
+  "A": 4,
+  "resolution": [
+    1280,
+    720
+  ],
+  "quality": "medium",
+  "warmup_seconds": 2.0,
+  "requested_seconds": 6.0,
+  "hardware": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 198 Stepping 2, GenuineIntel",
+    "python": "3.12.13 (main, Jun 23 2026, 15:23:43) [MSC v.1944 64 bit (AMD64)]",
+    "renderer": "Intel(R) Arc(TM) B580 Graphics",
+    "vendor": "Intel",
+    "driver": "4.6.0 - Build 32.0.101.6790"
+  },
+  "summary": {
+    "frames": 209,
+    "seconds": 5.988983999997799,
+    "average_fps": 34.897404968868976,
+    "p1_fps": 20.054307062942474,
+    "p99_frame_ms": 49.86460000145598,
+    "persistent_stall_indices": [],
+    "passes": false
+  },
+  "samples": [
+    {
+      "second": 0.011,
+      "missiles": 0,
+      "effects": 4,
+      "enemies": 12,
+      "aircraft": 4,
+      "turrets": 6
+    },
+    {
+      "second": 1.01,
+      "missiles": 0,
+      "effects": 1,
+      "enemies": 12,
+      "aircraft": 4,
+      "turrets": 6
+    },
+    {
+      "second": 2.021,
+      "missiles": 4,
+      "effects": 2,
+      "enemies": 12,
+      "aircraft": 4,
+      "turrets": 6
+    },
+    {
+      "second": 3.018,
+      "missiles": 0,
+      "effects": 0,
+      "enemies": 16,
+      "aircraft": 4,
+      "turrets": 6
+    },
+    {
+      "second": 4.008,
+      "missiles": 0,
+      "effects": 0,
+      "enemies": 15,
+      "aircraft": 4,
+      "turrets": 6
+    },
+    {
+      "second": 5.004,
+      "missiles": 0,
+      "effects": 0,
+      "enemies": 12,
+      "aircraft": 4,
+      "turrets": 6
+    }
+  ],
+  "monotonically_increasing": {
+    "missiles": false,
+    "effects": false
+  },
+  "cleanup": {
+    "visuals": 0,
+    "effects": 0,
+    "pooled_effects": 11,
+    "pooled_missiles": 0,
+    "temporary_ui": 0,
+    "engine_entities": 45,
+    "engine_tasks": 9,
+    "input_handlers": 1,
+    "lock_markers": 0,
+    "active_missiles": 0
+  },
+  "passes": false,
+  "scenario": "實際規則與繪製；負載驅動器維持飛機與敵兵，補滿玩家／城市以持續量測。"
+}
