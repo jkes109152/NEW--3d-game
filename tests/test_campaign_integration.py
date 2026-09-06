@@ -1,3 +1,4 @@
+from tests.fixtures.expansion import start_prepared
 import unittest
 from tempfile import TemporaryDirectory
 from air_defense.state import AppState
@@ -10,14 +11,14 @@ class CampaignIntegrationTests(unittest.TestCase):
             app=AppState(SlotRepository(root)); app.select_slot(1)
             expected=0
             for level in campaign(2):
-                b=app.start(); self.assertEqual(b.level.level_id,level.level_id)
+                b=start_prepared(app); self.assertEqual(b.level.level_id,level.level_id)
                 for a in b.aircraft.values(): a.status='destroyed'; a.hp=0
                 b.check_outcome(); app.settle(); expected+=level.reward
                 app.show_menu()
             self.assertEqual(app.profile['coins'],expected)
             self.assertEqual(app.purchase('max_hp'),'applied')
-            b=app.start(); b.fail('player'); app.settle(); app.show_menu()
+            b=start_prepared(app); b.fail('player'); app.settle(); app.show_menu()
             self.assertEqual(app.profile['coins'],expected-250)
             self.assertEqual(app.rebirth(),'applied')
-            self.assertEqual((app.profile['max_aircraft_count'],app.profile['coins'],app.cursor),(3,0,(1,1)))
-            self.assertEqual(app.start().player.max_hp,110)
+            self.assertEqual((2+app.profile['rebirth_count'],app.profile['coins'],app.cursor),(3,0,(1,1)))
+            self.assertEqual(start_prepared(app).player.max_hp,100)

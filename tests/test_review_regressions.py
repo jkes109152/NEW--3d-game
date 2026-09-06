@@ -1,3 +1,4 @@
+from tests.fixtures.expansion import operation_id, request
 """本地程式碼審查發現的邊界與故障回歸。"""
 from copy import deepcopy
 from pathlib import Path
@@ -52,13 +53,14 @@ class ReviewRegressions(TestCase):
                         {'kind':'reward','a':1,'b':1},{'kind':'save','extra':True}):
             with self.subTest(request=request):
                 p=new_profile(); before=deepcopy(p)
-                with self.assertRaises(ValueError): transact(p,'invalid',request)
+                self.assertEqual(transact(p,operation_id(),request)['reason'],'invalid_request')
                 self.assertEqual(p,before)
                 validate_profile(p)
 
     def test_stale_campaign_reward_conflict_does_not_mutate(self):
         p=new_profile(); before=deepcopy(p)
-        self.assertEqual(transact(p,'old-attempt',{'kind':'reward','a':1,'b':1,'A':3}),'operation_conflict')
+        req=request(p,'reward',a=1,b=1,A=3);req['rebirth_count']=1
+        self.assertEqual(transact(p,operation_id(),req)['reason'],'invalid_round')
         self.assertEqual(p,before)
 
     def test_transaction_validates_destination_before_mutation(self):
@@ -71,7 +73,7 @@ class ReviewRegressions(TestCase):
         with TemporaryDirectory() as root:
             app=AppState(SlotRepository(root)); app.select_slot(1); app.profile['coins']=1000
             with patch('air_defense.save_data.os.replace',side_effect=PermissionError('故障注入')):
-                self.assertEqual(app.purchase('max_hp','buy'),'save_failed')
+                self.assertEqual(app.purchase('max_hp',operation_id()),'save_failed')
             before=deepcopy(app.profile)
             with self.assertRaises(SaveError): app.select_slot(2)
             self.assertEqual(app.slot,1); self.assertEqual(app.profile,before)

@@ -1,34 +1,25 @@
 import unittest
-from air_defense.entities import Enemy, V3, Turret
-from air_defense.state import BattleState
+from air_defense.entities import Enemy,V3,Turret
 from air_defense.combat import turret_damage
-from air_defense.progression import new_profile, level_for
+from air_defense.state import BattleState
+from air_defense.progression import level_for
+from tests.fixtures.expansion import equipped,profile,operation_id
 
 class RpgTurretTests(unittest.TestCase):
-    def test_rpg_radius_airborne_no_aircraft_damage(self):
-        p=new_profile(); p['upgrade_levels']['rpg']=1; p['unlocked_weapons'].append('RPG')
-        b=BattleState(p,level_for(1,1,2)); b.player.weapon_slot=4
-        center=b.player.eye+V3(0,0,8)
-        for key,delta in (('a',0),('b',6),('c',6.01)):
-            b.enemies[key]=Enemy(key,'GROUND_BOSS',center+V3(delta,-.9,0))
-        b.aircraft['air-0'].position=center
-        self.assertEqual(b.fire('a',ray_distance=8),'applied')
-        self.assertEqual([b.enemies[k].hp for k in ('a','b','c')],[0,0,10])
-        self.assertEqual(b.aircraft['air-0'].hp,1); self.assertEqual(b.player.rpg_ammo,2)
-
-    def test_turret_three_dimensional_boundary_and_boss_floor(self):
-        turret=Turret('t',V3(0,0,100)); boss=Enemy('e','GROUND_BOSS',V3(0,.1,132),phase='ground')
-        self.assertTrue(turret.legal(boss))
-        boss.position=V3(0,.1,132.01); self.assertFalse(turret.legal(boss))
-        for _ in range(10): boss.hp-=turret_damage(boss)
-        self.assertEqual(boss.hp,5)
-        boss.hp=3; self.assertEqual(turret_damage(boss),0)
-
-    def test_six_turrets_share_boss_floor(self):
-        p=new_profile(); p['upgrade_levels'].update(auto_defense=1,auto_defense_capacity=5)
-        b=BattleState(p,level_for(1,1,2))
-        self.assertEqual(len(b.turrets),6)
-        boss=Enemy('boss','GROUND_BOSS',V3(-8,0,55),phase='ground')
-        b.enemies[boss.id]=boss
-        for _ in range(300): b.step(1/120,__import__('air_defense.state',fromlist=['InputFrame']).InputFrame())
-        self.assertGreaterEqual(boss.hp,5)
+    def test_rpg_flight_then_damage_never_aircraft_or_friendlies(self):
+        b=equipped('W19');b.player.position=V3(40,0,100)
+        e=Enemy('e','GROUND_BOSS',V3(40,0,108),phase='ground');b.enemies[e.id]=e
+        a=next(iter(b.aircraft.values()));a.position=V3(40,1.6,104)
+        self.assertEqual(b.fire(),'applied');self.assertEqual(e.hp,10)
+        for _ in range(25):b.step(1/120)
+        self.assertEqual(e.hp,0);self.assertEqual(a.hp,1);self.assertEqual(b.city.hp,100);self.assertEqual(b.runtime['W19'].quota_remaining,2)
+    def test_turret_horizontal_boundary_and_exact_odd_boss_floor(self):
+        t=Turret('t',V3(40,0,100));e=Enemy('e','GROUND_BOSS',V3(40,0,132),phase='ground',effective_max_hp=11)
+        self.assertTrue(t.legal(e));e.position=V3(40,0,132.01);self.assertFalse(t.legal(e))
+        for _ in range(20):e.hp-=turret_damage(e)
+        self.assertEqual(e.hp,5.5)
+    def test_twelve_owned_towers_without_fixed_six_limit(self):
+        p=profile(rebirth_count=6)
+        p['owned_turrets']=[dict(instance_id='turret-'+operation_id(i),turret_id='T01') for i in range(12)]
+        p['confirmed_loadout']['deployments']=[dict(instance_id=t['instance_id'],x=40,z=80+4*i) for i,t in enumerate(p['owned_turrets'])]
+        b=BattleState(p,level_for(1,1,8));self.assertEqual(len(b.turrets),12)

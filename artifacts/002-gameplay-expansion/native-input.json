@@ -1,0 +1,729 @@
+{
+  "category": "等待實際 Windows 鍵鼠；僅收集引擎接收事件",
+  "seconds": 509.172,
+  "routes": [
+    {
+      "seconds": 0.0,
+      "screen": "slot_select"
+    },
+    {
+      "seconds": 76.61,
+      "screen": "profile_menu"
+    },
+    {
+      "seconds": 109.781,
+      "screen": "store"
+    },
+    {
+      "seconds": 130.031,
+      "screen": "weapon_customize"
+    },
+    {
+      "seconds": 166.547,
+      "screen": "store"
+    },
+    {
+      "seconds": 213.61,
+      "screen": "profile_menu"
+    },
+    {
+      "seconds": 221.188,
+      "screen": "prepare_armor"
+    },
+    {
+      "seconds": 241.0,
+      "screen": "prepare_weapons"
+    },
+    {
+      "seconds": 268.391,
+      "screen": "prepare_deployment"
+    },
+    {
+      "seconds": 407.797,
+      "screen": "prepare_confirm"
+    },
+    {
+      "seconds": 415.485,
+      "screen": "battle"
+    },
+    {
+      "seconds": 446.563,
+      "screen": "pause"
+    },
+    {
+      "seconds": 465.719,
+      "screen": "battle"
+    },
+    {
+      "seconds": 474.938,
+      "screen": "result_failure"
+    },
+    {
+      "seconds": 498.656,
+      "screen": "profile_menu"
+    }
+  ],
+  "inputs": [
+    {
+      "key": "1",
+      "screen": "slot_select",
+      "source": "engine_input"
+    },
+    {
+      "key": "1 up",
+      "screen": "profile_menu",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "profile_menu",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "store",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "store",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "store",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "store",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "weapon_customize",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "weapon_customize",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "weapon_customize",
+      "source": "engine_input"
+    },
+    {
+      "key": "escape",
+      "screen": "weapon_customize",
+      "source": "engine_input"
+    },
+    {
+      "key": "escape up",
+      "screen": "store",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "store",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "store",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "store",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "store",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "store",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "store",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "store",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "store",
+      "source": "engine_input"
+    },
+    {
+      "key": "escape",
+      "screen": "store",
+      "source": "engine_input"
+    },
+    {
+      "key": "escape up",
+      "screen": "profile_menu",
+      "source": "engine_input"
+    },
+    {
+      "key": "space",
+      "screen": "profile_menu",
+      "source": "engine_input"
+    },
+    {
+      "key": "space up",
+      "screen": "prepare_armor",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "prepare_armor",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "prepare_armor",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "prepare_armor",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "prepare_weapons",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "prepare_weapons",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "prepare_weapons",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "prepare_weapons",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "prepare_weapons",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "prepare_weapons",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "prepare_deployment",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "prepare_deployment",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "prepare_deployment",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "prepare_deployment",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "prepare_deployment",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "prepare_deployment",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "prepare_deployment",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "prepare_deployment",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "prepare_deployment",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "prepare_deployment",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "prepare_deployment",
+      "source": "engine_input"
+    },
+    {
+      "key": "scroll up",
+      "screen": "prepare_deployment",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "prepare_deployment",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "prepare_confirm",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "prepare_confirm",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "battle",
+      "source": "engine_input"
+    },
+    {
+      "key": "4",
+      "screen": "battle",
+      "source": "engine_input"
+    },
+    {
+      "key": "4 up",
+      "screen": "battle",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "battle",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "battle",
+      "source": "engine_input"
+    },
+    {
+      "key": "r",
+      "screen": "battle",
+      "source": "engine_input"
+    },
+    {
+      "key": "r up",
+      "screen": "battle",
+      "source": "engine_input"
+    },
+    {
+      "key": "escape",
+      "screen": "battle",
+      "source": "engine_input"
+    },
+    {
+      "key": "escape up",
+      "screen": "pause",
+      "source": "engine_input"
+    },
+    {
+      "key": "escape",
+      "screen": "pause",
+      "source": "engine_input"
+    },
+    {
+      "key": "escape up",
+      "screen": "battle",
+      "source": "engine_input"
+    },
+    {
+      "key": "right mouse down",
+      "screen": "result_failure",
+      "source": "engine_input"
+    },
+    {
+      "key": "right mouse up",
+      "screen": "result_failure",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse down",
+      "screen": "result_failure",
+      "source": "engine_input"
+    },
+    {
+      "key": "left mouse up",
+      "screen": "profile_menu",
+      "source": "engine_input"
+    }
+  ],
+  "events": [
+    {
+      "kind": "turret_fire",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 1,
+      "source_id": "turret-cff2a9fbf1ce4f199b69287fa83cae19",
+      "position": [
+        43.333335876464844,
+        1.2,
+        110.83332630247153
+      ],
+      "target": [
+        2.066744206283457,
+        31.16708943732321,
+        199.77791582169397
+      ]
+    },
+    {
+      "kind": "hit",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 2,
+      "source_id": "W01",
+      "position": [
+        3.2499687411022657,
+        30.322262118747492,
+        189.40958054826476
+      ],
+      "target_id": "9d3f025bc5304d7da8b558418df2ad39-air-0"
+    },
+    {
+      "kind": "destroyed",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 3,
+      "source_id": "W01",
+      "position": [
+        3.2499687411022657,
+        30.322262118747492,
+        189.40958054826476
+      ],
+      "target_id": "9d3f025bc5304d7da8b558418df2ad39-air-0"
+    },
+    {
+      "kind": "drop_created",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 4,
+      "source_id": "9d3f025bc5304d7da8b558418df2ad39-air-0",
+      "count": 2
+    },
+    {
+      "kind": "weapon_fire",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 5,
+      "source_id": "W06",
+      "weapon_id": "W06",
+      "weapon_slot": 4,
+      "position": [
+        -18.0,
+        1.6,
+        70.0
+      ],
+      "target": [
+        -18.242405896819758,
+        1.842406609023106,
+        169.99941239035903
+      ],
+      "endpoints": [
+        [
+          -18.242405896819758,
+          1.842406609023106,
+          169.99941239035903
+        ]
+      ],
+      "audio_key": "rifle"
+    },
+    {
+      "kind": "reload_started",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 6,
+      "source_id": "W06",
+      "weapon_id": "W06"
+    },
+    {
+      "kind": "reload_finished",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 7,
+      "source_id": "W06",
+      "weapon_id": "W06"
+    },
+    {
+      "kind": "player_hurt",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 8,
+      "source_id": "W06",
+      "damage": 5,
+      "position": [
+        -9.557625552637026,
+        0.9,
+        107.04471777759932
+      ]
+    },
+    {
+      "kind": "player_hurt",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 9,
+      "source_id": "W06",
+      "damage": 5,
+      "position": [
+        -10.125721278223823,
+        0.9,
+        107.17364907524981
+      ]
+    },
+    {
+      "kind": "player_hurt",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 10,
+      "source_id": "W06",
+      "damage": 5,
+      "position": [
+        -10.534417662265474,
+        0.9,
+        101.1247619353183
+      ]
+    },
+    {
+      "kind": "player_hurt",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 11,
+      "source_id": "W06",
+      "damage": 5,
+      "position": [
+        -10.234472254478485,
+        0.9,
+        106.44842428048509
+      ]
+    },
+    {
+      "kind": "player_hurt",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 12,
+      "source_id": "W06",
+      "damage": 5,
+      "position": [
+        -10.670083233047203,
+        0.9,
+        100.30254584611261
+      ]
+    },
+    {
+      "kind": "player_hurt",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 13,
+      "source_id": "W06",
+      "damage": 5,
+      "position": [
+        -11.124252969289353,
+        0.9,
+        100.51476686877368
+      ]
+    },
+    {
+      "kind": "player_hurt",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 14,
+      "source_id": "W06",
+      "damage": 5,
+      "position": [
+        -11.185612402017773,
+        0.9,
+        97.17812470713096
+      ]
+    },
+    {
+      "kind": "player_hurt",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 15,
+      "source_id": "W06",
+      "damage": 5,
+      "position": [
+        -11.312095564638314,
+        0.9,
+        99.2621058596346
+      ]
+    },
+    {
+      "kind": "player_hurt",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 16,
+      "source_id": "W06",
+      "damage": 5,
+      "position": [
+        -11.9724727125518,
+        0.9,
+        92.40927138973792
+      ]
+    },
+    {
+      "kind": "player_hurt",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 17,
+      "source_id": "W06",
+      "damage": 5,
+      "position": [
+        -11.717440112496599,
+        0.9,
+        96.55899526096607
+      ]
+    },
+    {
+      "kind": "player_hurt",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 18,
+      "source_id": "W06",
+      "damage": 5,
+      "position": [
+        -11.9724727125518,
+        0.9,
+        92.40927138973792
+      ]
+    },
+    {
+      "kind": "player_hurt",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 19,
+      "source_id": "W06",
+      "damage": 5,
+      "position": [
+        -12.498469851052805,
+        0.9,
+        91.35056264401939
+      ]
+    },
+    {
+      "kind": "player_hurt",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 20,
+      "source_id": "W06",
+      "damage": 5,
+      "position": [
+        -12.81359925139852,
+        0.9,
+        87.31153163666261
+      ]
+    },
+    {
+      "kind": "player_hurt",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 21,
+      "source_id": "W06",
+      "damage": 5,
+      "position": [
+        -12.498469851052805,
+        0.9,
+        91.35056264401939
+      ]
+    },
+    {
+      "kind": "player_hurt",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 22,
+      "source_id": "W06",
+      "damage": 5,
+      "position": [
+        -13.274862192056398,
+        0.9,
+        84.51599693336324
+      ]
+    },
+    {
+      "kind": "player_hurt",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 23,
+      "source_id": "W06",
+      "damage": 5,
+      "position": [
+        -13.200407970514712,
+        0.9,
+        86.66956624144706
+      ]
+    },
+    {
+      "kind": "player_hurt",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 24,
+      "source_id": "W06",
+      "damage": 5,
+      "position": [
+        -13.464793991150819,
+        0.9,
+        83.36489440847527
+      ]
+    },
+    {
+      "kind": "player_hurt",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 25,
+      "source_id": "W06",
+      "damage": 5,
+      "position": [
+        -13.684844137467296,
+        0.9,
+        83.43901942840418
+      ]
+    },
+    {
+      "kind": "player_hurt",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 26,
+      "source_id": "W06",
+      "damage": 5,
+      "position": [
+        -14.441586100779267,
+        0.9,
+        77.44493856619425
+      ]
+    },
+    {
+      "kind": "player_hurt",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 27,
+      "source_id": "W06",
+      "damage": 5,
+      "position": [
+        -13.793595113721958,
+        0.9,
+        82.71379463363945
+      ]
+    },
+    {
+      "kind": "failure",
+      "attempt_id": "9d3f025bc5304d7da8b558418df2ad39",
+      "sequence": 28,
+      "source_id": "W06",
+      "reason": "player"
+    }
+  ],
+  "state": {
+    "screen": "profile_menu",
+    "slot": 1,
+    "coins": 97800,
+    "draft": null,
+    "battle": null,
+    "projection_height": 180.0
+  },
+  "audio_silent": false,
+  "audio_error": null
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "tool": "engine_probe.py",
+    "args": [
+      "--size",
+      "1280x720",
+      "--output",
+      "C:\\Users\\lamuness\\Desktop\\game\\artifacts\\002-gameplay-expansion\\1280x720"
+    ],
+    "exit_code": 0
+  },
+  {
+    "tool": "engine_probe.py",
+    "args": [
+      "--size",
+      "1920x1080",
+      "--output",
+      "C:\\Users\\lamuness\\Desktop\\game\\artifacts\\002-gameplay-expansion\\1920x1080"
+    ],
+    "exit_code": 0
+  },
+  {
+    "tool": "presentation_regression_probe.py",
+    "args": [
+      "--size",
+      "1920x1080"
+    ],
+    "exit_code": 0
+  },
+  {
+    "tool": "review_engine_probe.py",
+    "args": [],
+    "exit_code": 0
+  },
+  {
+    "tool": "fallback_probe.py",
+    "args": [],
+    "exit_code": 0
+  },
+  {
+    "tool": "expansion_probe.py",
+    "args": [
+      "--scenario",
+      "catalog",
+      "--output",
+      "C:\\Users\\lamuness\\Desktop\\game\\artifacts\\002-gameplay-expansion\\catalog"
+    ],
+    "exit_code": 0
+  }
+]

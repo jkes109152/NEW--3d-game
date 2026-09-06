@@ -1,0 +1,32 @@
+[
+  {
+    "args": [
+      "tools/performance_probe.py",
+      "--aircraft",
+      "4",
+      "--warmup",
+      "10",
+      "--duration",
+      "60",
+      "--offscreen",
+      "--output",
+      "C:\\Users\\lamuness\\Desktop\\game\\artifacts\\002-gameplay-expansion\\performance-current-A4"
+    ],
+    "exit_code": 0
+  },
+  {
+    "args": [
+      "tools/performance_probe.py",
+      "--aircraft",
+      "8",
+      "--warmup",
+      "10",
+      "--duration",
+      "60",
+      "--offscreen",
+      "--output",
+      "C:\\Users\\lamuness\\Desktop\\game\\artifacts\\002-gameplay-expansion\\performance-current-A8"
+    ],
+    "exit_code": 0
+  }
+]

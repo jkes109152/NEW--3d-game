@@ -16,28 +16,8 @@ class ProgressionTests(unittest.TestCase):
         for args, expected in [((2,2,2),(N,S)),((2,4,2),(B,S)),((2,5,2),(B,B)),((3,5,3),(B,S,S)),((3,7,3),(B,B,B))]:
             self.assertEqual(roster_for(*args), expected)
 
-    def test_T03_reward_and_duplicate(self):
-        for args, reward in [((1,1,2,0),125),((2,5,2,0),490),((3,7,3,1),1027)]:
-            self.assertEqual(level_for(*args).reward,reward)
-        p=new_profile()
-        req={'kind':'reward','a':1,'b':1,'A':2}
-        self.assertEqual(transact(p,'r1',req),'applied')
-        transact(p,'r1',req)
-        self.assertEqual(p['coins'],125)
-
-    def test_T16_shop_and_T17_rebirth(self):
-        p=new_profile(); p['coins']=3000
-        for op in ('first','second'): self.assertEqual(transact(p,op,{'kind':'purchase','upgrade_id':'max_hp'}),'applied')
-        self.assertEqual(p['coins'],2250)
-        self.assertEqual(transact(p,'cap',{'kind':'purchase','upgrade_id':'auto_defense_capacity'}),'prerequisite_missing')
-        p['coins']=1560; p['rebirth_available']=True
-        self.assertEqual(transact(p,'rb',{'kind':'rebirth'}),'applied')
-        self.assertEqual((p['coins'],p['rebirth_count'],p['max_aircraft_count']),(0,1,3))
-        self.assertEqual(p['upgrade_levels']['max_hp'],2)
-        self.assertEqual(caps(1)['max_hp'],6)
-
-    def test_conflict_does_not_mutate(self):
-        p=new_profile(); p['coins']=1000
-        transact(p,'same',{'kind':'purchase','upgrade_id':'max_hp'})
-        self.assertEqual(transact(p,'same',{'kind':'purchase','upgrade_id':'armor'}),'operation_conflict')
-        self.assertEqual(p['coins'],750)
+    def test_reward_replay(self):
+        from tests.fixtures.expansion import request,operation_id
+        p=new_profile();req=request(p,'reward',a=1,b=1,A=2)
+        self.assertEqual(transact(p,operation_id(),req)['result_code'],'applied')
+        self.assertTrue(transact(p,operation_id(),req)['replayed']);self.assertEqual(p['coins'],125)

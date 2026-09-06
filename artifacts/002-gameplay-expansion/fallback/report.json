@@ -1,0 +1,152 @@
+{
+  "category": "引擎繪製與公開輸入情境；非原生鍵鼠",
+  "resolution": [
+    1280,
+    720
+  ],
+  "quality": "low",
+  "audio_backend": "null",
+  "audio_silent": true,
+  "level": {
+    "level": "1-1",
+    "phase": "success",
+    "reason": null,
+    "seconds": 9.592,
+    "shots": {
+      "W01": 1,
+      "W17": 6
+    },
+    "hp": 100,
+    "city_hp": 100,
+    "timeline": [
+      {
+        "time": 0.008,
+        "hp": 100,
+        "city": 100,
+        "air": 1,
+        "ground": 0,
+        "position": [
+          -18.0,
+          0,
+          70.0
+        ]
+      },
+      {
+        "time": 1.008,
+        "hp": 100,
+        "city": 100,
+        "air": 1,
+        "ground": 0,
+        "position": [
+          -18.0,
+          0,
+          70.0
+        ]
+      },
+      {
+        "time": 2.008,
+        "hp": 100,
+        "city": 100,
+        "air": 1,
+        "ground": 0,
+        "position": [
+          -18.0,
+          0,
+          70.0
+        ]
+      },
+      {
+        "time": 3.008,
+        "hp": 100,
+        "city": 100,
+        "air": 1,
+        "ground": 0,
+        "position": [
+          -18.0,
+          0,
+          70.0
+        ]
+      },
+      {
+        "time": 4.008,
+        "hp": 100,
+        "city": 100,
+        "air": 1,
+        "ground": 0,
+        "position": [
+          -18.0,
+          0,
+          70.0
+        ]
+      },
+      {
+        "time": 5.008,
+        "hp": 100,
+        "city": 100,
+        "air": 0,
+        "ground": 2,
+        "position": [
+          -18.0,
+          0,
+          70.0
+        ]
+      },
+      {
+        "time": 6.008,
+        "hp": 100,
+        "city": 100,
+        "air": 0,
+        "ground": 2,
+        "position": [
+          -18.0,
+          0,
+          70.0
+        ]
+      },
+      {
+        "time": 7.008,
+        "hp": 100,
+        "city": 100,
+        "air": 0,
+        "ground": 1,
+        "position": [
+          -18.0,
+          0,
+          70.0
+        ]
+      },
+      {
+        "time": 8.008,
+        "hp": 100,
+        "city": 100,
+        "air": 0,
+        "ground": 1,
+        "position": [
+          -18.0,
+          0,
+          70.0
+        ]
+      },
+      {
+        "time": 9.008,
+        "hp": 100,
+        "city": 100,
+        "air": 0,
+        "ground": 1,
+        "position": [
+          -18.0,
+          0,
+          70.0
+        ]
+      }
+    ],
+    "enemy_air_max_hp": [
+      1
+    ]
+  },
+  "coins_after_optional_cosmetic": 25,
+  "fallbacks": [
+    "textures/stars.png"
+  ],
+  "passed": true
+}

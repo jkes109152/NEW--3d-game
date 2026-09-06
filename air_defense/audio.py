@@ -7,6 +7,7 @@ import wave
 from .config import ASSETS
 
 SOUNDS = {
+    'rifle':(145,.15,.6),'smg':(230,.08,.55),'shotgun':(58,.35,.85),'reload_started':(310,.3,.2),'reload_finished':(450,.12,.1),'bolt_cycled':(380,.13,.35),
     'aa':(110,.24,.45), 'sniper':(75,.30,.75), 'pistol':(180,.11,.50),
     'rpg':(48,.40,.80), 'multi':(140,.35,.55), 'lock_complete':(980,.18,.02),
     'missile_launch':(320,.26,.28), 'hit':(640,.08,.12), 'destroyed':(50,.48,.90),
@@ -60,7 +61,7 @@ class AudioBus:
             self.last_error=str(exc)
             self.stop()
 
-    def play(self, name):
+    def play(self, name, pitch=1):
         self.tick()
         if self.silent or self.muted or self.master*self.effects<=0: return False
         if len(self.voices)>=self.limit:
@@ -72,6 +73,7 @@ class AudioBus:
             # 同音效合併成一個聲道；多種事件仍可同時播放。
             if voice in self.voices: return False
             voice.setVolume(self.master*self.effects)
+            if hasattr(voice,'setPlayRate'):voice.setPlayRate(pitch)
             voice.play()
             self.voices.append(voice)
             return True
@@ -84,8 +86,9 @@ class AudioBus:
     def consume(self, events):
         for event in events:
             key=event['kind']
-            if key=='weapon_fire': key=('aa','sniper','pistol','rpg','multi')[event['weapon_slot']-1]
-            self.play(key)
+            if key=='weapon_fire':key=event.get('audio_key','pistol')
+            wid=event.get('weapon_id','W01')
+            self.play(key,.94+(int(wid[1:])%5)*.03 if key in ('aa','sniper','pistol','rpg','rifle','smg','shotgun') else 1)
 
     def stop(self):
         voices,self.voices=self.voices,[]

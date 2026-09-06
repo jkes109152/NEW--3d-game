@@ -6,6 +6,7 @@ sys.path.insert(0,str(ROOT))
 from tempfile import TemporaryDirectory
 from air_defense.main import create_game
 from air_defense.save_data import SlotRepository
+from tools.engine_probe import start
 
 
 def assert_effective_shader(root,expected):
@@ -19,12 +20,12 @@ def assert_effective_shader(root,expected):
 
 def run():
     from panda3d.core import Filename
-    output=ROOT/'artifacts'/'review'; output.mkdir(parents=True,exist_ok=True)
+    output=ROOT/'artifacts'/'002-gameplay-expansion'/'review'; output.mkdir(parents=True,exist_ok=True)
     with TemporaryDirectory(prefix='air-defense-review-') as profile_root:
         engine,c=create_game(offscreen=True,repository=SlotRepository(profile_root),silent=True)
         c.bridge.update=lambda:None; c.focus_checks=False
         try:
-            c.select_slot(1); c.start(); c.pause(); c.open_settings()
+            c.select_slot(1); start(c); c.pause(); c.open_settings()
             for quality in ('low','high','medium'):
                 c.settings.quality=quality; c.apply_settings()
                 for root in (c.scene.root,c.scene.dynamic,c.scene.weapon):
@@ -39,7 +40,7 @@ def run():
             for _ in range(4): engine.step()
             baseline=c.metrics()
             for _ in range(10):
-                c.start(); c.state.battle.player.aiming=True
+                start(c); c.state.battle.player.aiming=True
                 b=c.state.battle
                 b.lock.update(3,tuple(b.aircraft),set(b.aircraft),True,False,3)
                 c.ui.update_hud(b)

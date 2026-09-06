@@ -8,8 +8,7 @@ import re
 import threading
 import uuid
 import hashlib
-from .progression import new_profile, caps, CATALOG, transact
-from .config import WEAPONS
+from .progression import new_profile, ProfileV2, transact
 
 class SaveError(Exception):
     def __init__(self,code,message):
@@ -18,35 +17,96 @@ class SaveError(Exception):
 def integer(v,minimum=0): return type(v) is int and v>=minimum
 
 def validate_profile(data):
-    if type(data) is not dict or set(data)!=set(new_profile()): raise ValueError('存檔欄位不完整或含未知欄位')
-    if type(data['schema_version']) is not int or data['schema_version']!=1: raise ValueError('不支援的存檔版本')
-    for key in ('coins','rebirth_count','profile_revision','max_aircraft_count'):
-        if not integer(data[key]): raise ValueError('存檔整數欄位無效：'+key)
-    if type(data['rebirth_available']) is not bool: raise ValueError('重生資格型別無效')
-    r=data['rebirth_count']; levels=data['upgrade_levels']
-    if type(levels) is not dict: raise ValueError('升級欄位無效')
-    for key,value in levels.items():
-        if key not in CATALOG or not integer(value) or value>caps(r).get(key,1): raise ValueError('無效升級等級')
-    if levels.get('auto_defense_capacity',0) and not levels.get('auto_defense',0): raise ValueError('缺少砲塔前置')
-    snapshot=data['upgrade_caps']
-    if type(snapshot) is not dict or set(snapshot)!=set(caps(r)) or not all(integer(v) for v in snapshot.values()): raise ValueError('升級上限快照無效')
-    weapons=data['unlocked_weapons']
-    if type(weapons) is not list or any(type(w) is not str or w not in WEAPONS for w in weapons) or len(set(weapons))!=len(weapons): raise ValueError('武器欄位無效')
-    expected=set(WEAPONS[:3])|({'RPG'} if levels.get('rpg') else set())|({'MULTI_ANTI_AIRCRAFT'} if levels.get('multi_anti_aircraft') else set())
-    if set(weapons)!=expected: raise ValueError('武器解鎖與升級不一致')
+    from math import isfinite
+    from .catalog import WEAPONS, ARMORS, TURRETS, ATTACHMENTS, UPGRADE_PRICES, COLORS, PATTERNS, applicable_upgrade, upgrade_cap
+    from .progression import valid_id, new_weapon, REQUEST_FIELDS
+    def require(ok,message='存檔資料無效'):
+        if not ok: raise ValueError(message)
+    def closed(v,keys):return type(v) is dict and set(v)==set(keys)
+    def unique(v,allowed):return type(v) is list and all(type(k) is str and k in allowed for k in v) and len(set(v))==len(v)
+    require(closed(data,ProfileV2.__annotations__),'存檔欄位不完整或含未知欄位')
+    require(type(data['schema_version']) is int and data['schema_version']==2,'不支援的存檔版本')
+    require(valid_id(data['profile_id']),'玩家識別字無效')
+    for key in ('coins','rebirth_count','profile_revision'):require(integer(data[key]),key+' 必須是非負整數')
+    require(type(data['rebirth_available']) is bool)
+    r=data['rebirth_count'];cap=upgrade_cap(r)
+    require(closed(data['player_upgrades'],['max_hp']) and integer(data['player_upgrades']['max_hp']) and data['player_upgrades']['max_hp']<=cap)
+    owned=data['owned_weapons'];require(type(owned) is dict and all(type(k) is str and k in WEAPONS for k in owned) and {'W01','W03','W17'}<=set(owned))
+    for wid,w in owned.items():
+        require(closed(w,new_weapon()));levels=w['upgrade_levels'];require(closed(levels,UPGRADE_PRICES))
+        for key,value in levels.items():require(integer(value) and value<=(1 if key=='aim_assist' else cap) and (applicable_upgrade(wid,key) or value==0))
+        require(unique(w['owned_attachments'],ATTACHMENTS) and all(wid in ATTACHMENTS[k].applicable_weapons for k in w['owned_attachments']))
+        require(closed(w['selected_attachments'],['optic','barrel','feed']))
+        for slot,key in w['selected_attachments'].items():require(key is None or type(key) is str and key in w['owned_attachments'] and ATTACHMENTS[key].slot==slot)
+        for plural,selected,catalog,default in [('owned_colors','selected_color',COLORS,'original'),('owned_patterns','selected_pattern',PATTERNS,'plain')]:
+            require(unique(w[plural],catalog) and default in w[plural] and type(w[selected]) is str and w[selected] in w[plural])
+    require(unique(data['owned_armors'],ARMORS))
+    towers=data['owned_turrets'];require(type(towers) is list and (r>0 or not towers));instances=set()
+    for tower in towers:
+        require(closed(tower,['instance_id','turret_id']))
+        key=tower['instance_id'];require(type(key) is str and key.startswith('turret-') and valid_id(key[7:]) and key not in instances)
+        require(type(tower['turret_id']) is str and tower['turret_id'] in TURRETS);instances.add(key)
+    load=data['confirmed_loadout'];require(closed(load,['armor_id','weapon_slots','deployments']))
+    require(load['armor_id'] is None or type(load['armor_id']) is str and load['armor_id'] in data['owned_armors'])
+    slots=load['weapon_slots'];require(type(slots) is list and len(slots)==5);seen=set()
+    for key in slots:
+        require(key is None or type(key) is str and key in owned and key not in seen)
+        if key:seen.add(key)
+    require(type(load['deployments']) is list);seen=set()
+    for tower in load['deployments']:
+        require(closed(tower,['instance_id','x','z']));key=tower['instance_id']
+        require(type(key) is str and key in instances and key not in seen);seen.add(key)
+        for axis in ('x','z'):require(type(tower[axis]) in (int,float) and isfinite(tower[axis]))
     last=data['last_completed_a_b']
-    if last is not None and (type(last) is not dict or set(last)!={'a','b'} or not all(integer(v,1) for v in last.values()) or last['a']>r+2 or last['b']>2*last['a']+1): raise ValueError('歷史關卡無效')
-    if type(data['operation_history']) is not list: raise ValueError('操作歷史無效')
-    ids=set()
+    require(last is None or closed(last,['a','b']) and all(integer(v,1) for v in last.values()) and last['a']<=r+2 and last['b']<=2*last['a']+1)
+    require(type(data['operation_history']) is list);seen=set();previous=0
     for op in data['operation_history']:
-        if type(op) is not dict or set(op)!={'operation_id','kind','request_fingerprint','result_code','profile_revision','summary'}: raise ValueError('操作歷史欄位無效')
-        if not isinstance(op['operation_id'],str) or not op['operation_id'] or op['operation_id'] in ids: raise ValueError('重複或無效操作 ID')
-        if op['kind'] not in ('purchase','rebirth','reward','save','failure') or op['result_code'] not in ('applied','rejected','operation_conflict','failed_retryable'): raise ValueError('操作類型或結果無效')
-        if not isinstance(op['request_fingerprint'],str) or not re.fullmatch('[0-9a-f]{64}',op['request_fingerprint']): raise ValueError('操作指紋無效')
-        if not integer(op['profile_revision']) or op['profile_revision']>data['profile_revision'] or type(op['summary']) is not dict: raise ValueError('操作版本無效')
-        ids.add(op['operation_id'])
-    data=deepcopy(data); data['max_aircraft_count']=2+r; data['upgrade_caps']=caps(r)
-    return data
+        require(closed(op,['operation_id','kind','request_fingerprint','result_code','reason','profile_revision','rebirth_count','summary']))
+        require(valid_id(op['operation_id']) and op['operation_id'] not in seen);seen.add(op['operation_id'])
+        require(type(op['kind']) is str and op['kind'] in REQUEST_FIELDS and op['result_code'] in ('applied','rejected') and type(op['reason']) is str)
+        require(type(op['request_fingerprint']) is str and re.fullmatch('[0-9a-f]{64}',op['request_fingerprint']))
+        require(integer(op['profile_revision'],1) and previous<op['profile_revision']<=data['profile_revision']);previous=op['profile_revision']
+        require(integer(op['rebirth_count']) and op['rebirth_count']<=r)
+        summary=op['summary'];require(type(summary) is dict and type(summary.get('coins_delta')) is int)
+        fields={'coins_delta'}
+        kind=op['kind']
+        if op['result_code']=='applied':
+            require(op['reason']=='ok')
+            fields|={
+             'purchase_weapon':{'weapon_id'},'purchase_armor':{'armor_id'},'purchase_turret':{'turret_id','instance_id'},
+             'upgrade_player':{'upgrade_id','new_level'},'upgrade_weapon':{'weapon_id','upgrade_id','new_level'},
+             'purchase_attachment':{'weapon_id','attachment_id'},'purchase_cosmetic':{'weapon_id','cosmetic_kind','cosmetic_id'},
+             'customize_weapon':{'weapon_id'},'confirm_loadout':{'deployed_count'},'reward':{'a','b','A'},'failure':{'a','b','A'},'rebirth':{'previous_rebirth_count','new_rebirth_count'}}[kind]
+        else:require(summary['coins_delta']==0 and op['reason'] in {'already_owned','insufficient_coins','not_owned','incompatible','cap_reached','locked','not_eligible','invalid_id','stale_round','invalid_round','invalid_loadout','invalid_slots','duplicate_weapon','missing_target_kind','capacity','outside_map','blocked_ground','spawn_reserved','route_reserved','overlap','invalid_position','duplicate_instance'})
+        require(set(summary)==fields)
+        for k,v in summary.items():
+            if k in ('new_level','deployed_count','a','b','A','previous_rebirth_count','new_rebirth_count'):require(integer(v))
+            elif k!='coins_delta':require(type(v) is str)
+        for field,catalog in [('weapon_id',WEAPONS),('armor_id',ARMORS),('turret_id',TURRETS),('attachment_id',ATTACHMENTS)]:
+            if field in summary:require(summary[field] in catalog)
+        if op['result_code']=='applied':
+            if kind.startswith('purchase_') or kind.startswith('upgrade_'):require(summary['coins_delta']<=0)
+            if kind in ('customize_weapon','confirm_loadout','failure'):require(summary['coins_delta']==0)
+            if 'upgrade_id' in summary:
+                require(summary['upgrade_id']=='max_hp' if kind=='upgrade_player' else applicable_upgrade(summary['weapon_id'],summary['upgrade_id']))
+                require(1<=summary['new_level']<=(1 if summary['upgrade_id']=='aim_assist' else upgrade_cap(op['rebirth_count'])))
+            if kind=='purchase_turret':require(summary['instance_id']=='turret-'+op['operation_id'])
+            if kind=='confirm_loadout':require(summary['deployed_count']<=2*op['rebirth_count'])
+            if kind in ('reward','failure'):
+                from .progression import level_for
+                require(summary['A']==op['rebirth_count']+2)
+                level=level_for(summary['a'],summary['b'],summary['A'])
+                require(summary['coins_delta']==(level.reward if kind=='reward' else 0))
+            if kind=='rebirth':require(summary['previous_rebirth_count']==op['rebirth_count'] and summary['new_rebirth_count']==op['rebirth_count']+1 and summary['coins_delta']<=0)
+            if kind=='purchase_cosmetic':
+                require(summary['cosmetic_kind'] in ('color','pattern'))
+                require(summary['cosmetic_id'] in (COLORS if summary['cosmetic_kind']=='color' else PATTERNS))
+    result=deepcopy(data)
+    result['owned_armors'].sort()
+    for w in result['owned_weapons'].values():
+        for key in ('owned_attachments','owned_colors','owned_patterns'):w[key].sort()
+    return result
+
 
 def strict_object(pairs):
     out={}
@@ -67,7 +127,9 @@ def atomic_json(path,data):
 
 class SlotRepository:
     def __init__(self,root=None):
-        self.root=Path(root or os.environ.get('AIR_DEFENSE_SAVE_DIR') or Path(os.environ.get('LOCALAPPDATA',Path.home()))/'AirDefenseQuality')
+        old=(Path(os.environ.get('LOCALAPPDATA',Path.home()))/'AirDefenseQuality').resolve()
+        self.root=Path(root or os.environ.get('AIR_DEFENSE_V2_SAVE_DIR') or old.with_name('AirDefenseQualityV2')).resolve()
+        if self.root==old or old in self.root.parents:raise ValueError('新版資料位置不能使用舊版資料夾')
         self.lock=threading.RLock(); self.tokens={}; self.recovery_backups={}
 
     def path(self,slot):
@@ -107,7 +169,7 @@ class SlotRepository:
             self.path(slot)
             validate_profile(p)
             code=transact(p,op,request)
-            if code!='operation_conflict': self.save(slot,p)
+            if code['result_code']!='operation_conflict' and not code['replayed']: self.save(slot,p)
             return code
 
     def prepare_recovery(self,slot):

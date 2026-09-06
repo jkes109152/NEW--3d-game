@@ -1,0 +1,10 @@
+test_all_ground_modes_air_shot_reload_pause_and_switch (tests.test_arsenal_matrix.ArsenalMatrixTests.test_all_ground_modes_air_shot_reload_pause_and_switch) ... ok
+test_both_anti_air_lock_and_fixed_launch_snapshot (tests.test_arsenal_matrix.ArsenalMatrixTests.test_both_anti_air_lock_and_fixed_launch_snapshot) ... ok
+test_eighteen_ground_weapons_hit_and_spend_exactly_one_round (tests.test_arsenal_matrix.ArsenalMatrixTests.test_eighteen_ground_weapons_hit_and_spend_exactly_one_round) ... ok
+test_twenty_weapons_upgrade_customize_isolation_caps_and_replay (tests.test_arsenal_matrix.ArsenalMatrixTests.test_twenty_weapons_upgrade_customize_isolation_caps_and_replay) ... ok
+test_each_armor_actual_move_jump_damage_regeneration_and_city (tests.test_armor_matrix.ArmorMatrixTests.test_each_armor_actual_move_jump_damage_regeneration_and_city) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.404s
+
+OK

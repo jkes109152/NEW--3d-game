@@ -2,6 +2,10 @@
 
 本文件記錄規格落地時的必要決策；功能以 `specs/001-air-defense-rebuild/spec.md` 為準。
 
+下列既有紀錄對應已交付的 001 版本。002 改版的核准需求、契約取代及數值預設另見 [新版變更與決策對照](../specs/002-gameplay-expansion/decisions.md)，新版驗收集中於 [002 驗收入口](../artifacts/002-gameplay-expansion/acceptance.md)。
+
+002 依 [實作計畫](../specs/002-gameplay-expansion/plan.md) 與 [研究紀錄](../specs/002-gameplay-expansion/research.md) 新增商品／配置／武器／部署等純規則模組並沿用既有引擎、保存底層及依賴。
+
 - 純規則使用標準庫資料型別與 1/120 秒固定步；Ursina 只讀取結果並呈現。原生輸入與自動情境的證據分開標記。
 - Ursina 8.3.0 的 `destroy` 不會遞迴登出子 Entity。第一次原生十輪驗證發現每輪增加 42 個 UI 實體，改為由葉節點清理，重測差異已全部為 0。詳見 `artifacts/us6/1280x720-engine-probe.json`。
 - Ursina 的 `look_at` 會保留先前旋轉的滾轉分量；主選單相機改用純規則角度公式並固定滾轉為 0。
@@ -11,3 +15,14 @@
 - P1 FPS 定義為第 99 百分位幀時間的倒數：`1000 / P99(frame_ms)`。此值與平均 FPS 分別驗證，完整原始幀時間保留於效能輸出。
 - 自製靜態幾何合併繪製；導彈與短暫特效資源可重用。只限制呈現特效的數量，飛機數、敵人數、多目標鎖定數與傷害計算不設額外容量限制。
 - 隨包提供完整固定版本的 Windows x64／Python 3.12 wheel；Python 執行環境本身仍須預先安裝 3.12.x。
+
+## 002 實作決策
+
+- Profile v2 採獨立根目錄、13 個封閉欄位與十二類交易。完整候選保存成功才公開；保存重試不重跑交易，準備保存重試回最終確認，由玩家再次開始。舊檔與 v1 環境覆寫不參與新版讀寫。
+- 二十把武器以 ID 解析能力，五槽只保存順序。每把 runtime 保留時間餘量及個別彈藥；火箭採首次掃掠接觸與可見性爆炸，防空導彈保存發射時傷害快照。免費七關測量發現原狙擊傷害與 Boss 接近時間不足，先同步 balance／決策後調整；價格及七關獎勵未變。
+- Ursina 切成正交鏡頭後 `camera.lens` 仍指向透視鏡頭；部署點選改由 `camera.orthographic_lens.extrude` 反投影，中心與軸向二十公尺偏移均有引擎斷言。
+- 原生鍵盤適配改用引擎 buttonDown／buttonUp／buttonHold，移除同字母 raw 重複綁定；修飾鍵前綴在按下與放開使用相同正規化，避免只收到一半按鍵週期。滑鼠點擊前更新命中狀態，部署側欄與地圖使用同一幀資料。
+- 武器固定幾何快取上限 128，動畫節點逐實例建立；商品縮圖離屏繪製後只保留紋理，上限 128。圓角盒與球體模板不掛入場景，每次複製 NodePath；修正第三方 Mesh 淺複製被 flattenStrong 改動、導致後續球體縮小偏移的問題。預覽以旋轉後包絡取景，長彈匣與腳架不跨入按鈕。
+- Panda3D 使用 `Cull/Draw` 管線；Ursina 初始化後重新套用 `sync-video false`，繪製時鐘上限 120 FPS。[官方管線說明](https://docs.panda3d.org/1.10/python/programming/rendering-process/multithreaded-render-pipeline) 解釋其吞吐量與延遲取捨；本機結果見效能報告。畫質切換保留至多一份陰影緩衝區，低畫質停用陰影相機並使用基本材質。[Camera 文件](https://docs.panda3d.org/1.10/python/reference/panda3d.core.Camera) 定義停用後不繪製。
+- 自製材質使用 [Panda3D 標準 GLSL 輸入](https://docs.panda3d.org/1.10/cpp/programming/shaders/list-of-glsl-inputs)，保留頂點色、平滑法線及距離霧；清除合併幾何中的舊 shader 覆寫，讓既有／新建物件一致切換畫質。幾何診斷讀取器使用後立即 clear，避免測試本身持有讀取鎖而阻塞下一幀。
+- 原生鍵鼠、純規則、離屏畫面與性能負載分別報告。原生慢速輸入探測的 time_scale=0.1 僅證明綁定，不作時間、通關或性能證據；使用者停止桌面操作後，不再操作桌面，尚未驗證的原生焦點切換保持明列。
