@@ -1,0 +1,286 @@
+{
+  "category": "原生引擎自動情境",
+  "resolution": [
+    1280,
+    720
+  ],
+  "profile_root": "C:\\Users\\lamuness\\Desktop\\game\\artifacts\\profiles\\engine-1280",
+  "baseline": {
+    "visuals": 0,
+    "effects": 0,
+    "pooled_effects": 0,
+    "pooled_missiles": 0,
+    "temporary_ui": 0,
+    "engine_entities": 45,
+    "engine_tasks": 9,
+    "input_handlers": 1,
+    "lock_markers": 0,
+    "active_missiles": 0
+  },
+  "cycles": [
+    {
+      "visuals": 0,
+      "effects": 0,
+      "pooled_effects": 0,
+      "pooled_missiles": 0,
+      "temporary_ui": 0,
+      "engine_entities": 45,
+      "engine_tasks": 9,
+      "input_handlers": 1,
+      "lock_markers": 0,
+      "active_missiles": 0
+    },
+    {
+      "visuals": 0,
+      "effects": 0,
+      "pooled_effects": 0,
+      "pooled_missiles": 0,
+      "temporary_ui": 0,
+      "engine_entities": 45,
+      "engine_tasks": 9,
+      "input_handlers": 1,
+      "lock_markers": 0,
+      "active_missiles": 0
+    },
+    {
+      "visuals": 0,
+      "effects": 0,
+      "pooled_effects": 0,
+      "pooled_missiles": 0,
+      "temporary_ui": 0,
+      "engine_entities": 45,
+      "engine_tasks": 9,
+      "input_handlers": 1,
+      "lock_markers": 0,
+      "active_missiles": 0
+    },
+    {
+      "visuals": 0,
+      "effects": 0,
+      "pooled_effects": 0,
+      "pooled_missiles": 0,
+      "temporary_ui": 0,
+      "engine_entities": 45,
+      "engine_tasks": 9,
+      "input_handlers": 1,
+      "lock_markers": 0,
+      "active_missiles": 0
+    },
+    {
+      "visuals": 0,
+      "effects": 0,
+      "pooled_effects": 0,
+      "pooled_missiles": 0,
+      "temporary_ui": 0,
+      "engine_entities": 45,
+      "engine_tasks": 9,
+      "input_handlers": 1,
+      "lock_markers": 0,
+      "active_missiles": 0
+    },
+    {
+      "visuals": 0,
+      "effects": 0,
+      "pooled_effects": 0,
+      "pooled_missiles": 0,
+      "temporary_ui": 0,
+      "engine_entities": 45,
+      "engine_tasks": 9,
+      "input_handlers": 1,
+      "lock_markers": 0,
+      "active_missiles": 0
+    },
+    {
+      "visuals": 0,
+      "effects": 0,
+      "pooled_effects": 0,
+      "pooled_missiles": 0,
+      "temporary_ui": 0,
+      "engine_entities": 45,
+      "engine_tasks": 9,
+      "input_handlers": 1,
+      "lock_markers": 0,
+      "active_missiles": 0
+    },
+    {
+      "visuals": 0,
+      "effects": 0,
+      "pooled_effects": 0,
+      "pooled_missiles": 0,
+      "temporary_ui": 0,
+      "engine_entities": 45,
+      "engine_tasks": 9,
+      "input_handlers": 1,
+      "lock_markers": 0,
+      "active_missiles": 0
+    },
+    {
+      "visuals": 0,
+      "effects": 0,
+      "pooled_effects": 0,
+      "pooled_missiles": 0,
+      "temporary_ui": 0,
+      "engine_entities": 45,
+      "engine_tasks": 9,
+      "input_handlers": 1,
+      "lock_markers": 0,
+      "active_missiles": 0
+    },
+    {
+      "visuals": 0,
+      "effects": 0,
+      "pooled_effects": 0,
+      "pooled_missiles": 0,
+      "temporary_ui": 0,
+      "engine_entities": 45,
+      "engine_tasks": 9,
+      "input_handlers": 1,
+      "lock_markers": 0,
+      "active_missiles": 0
+    }
+  ],
+  "active_differences": {
+    "visuals": 0,
+    "effects": 0,
+    "engine_entities": 0,
+    "engine_tasks": 0,
+    "input_handlers": 0,
+    "lock_markers": 0,
+    "active_missiles": 0
+  },
+  "events": [
+    {
+      "kind": "lock_complete",
+      "attempt_id": "6431b4bb98cb4f72aac35ad1bcb06ac7",
+      "sequence": 1
+    },
+    {
+      "kind": "missile_launch",
+      "attempt_id": "6431b4bb98cb4f72aac35ad1bcb06ac7",
+      "sequence": 2,
+      "targets": [
+        "air-0"
+      ],
+      "position": [
+        -18.0,
+        1.6,
+        70.0
+      ]
+    },
+    {
+      "kind": "weapon_fire",
+      "attempt_id": "6431b4bb98cb4f72aac35ad1bcb06ac7",
+      "sequence": 3,
+      "weapon_slot": 1,
+      "position": [
+        -18.0,
+        1.6,
+        70.0
+      ],
+      "target": [
+        -1.4174896139490842,
+        29.591102407939974,
+        180.4362568247181
+      ]
+    },
+    {
+      "kind": "hit",
+      "attempt_id": "6431b4bb98cb4f72aac35ad1bcb06ac7",
+      "sequence": 4,
+      "position": [
+        -4.102315998550357,
+        28.67591245339228,
+        169.1376962490588
+      ],
+      "target_id": "air-0"
+    },
+    {
+      "kind": "destroyed",
+      "attempt_id": "6431b4bb98cb4f72aac35ad1bcb06ac7",
+      "sequence": 5,
+      "position": [
+        -4.102315998550357,
+        28.67591245339228,
+        169.1376962490588
+      ],
+      "target_id": "air-0"
+    },
+    {
+      "kind": "drop_created",
+      "attempt_id": "6431b4bb98cb4f72aac35ad1bcb06ac7",
+      "sequence": 6,
+      "source_id": "air-0",
+      "count": 2
+    },
+    {
+      "kind": "hit",
+      "attempt_id": "8b24f41a4735426b8eb4ef97fe838537",
+      "sequence": 1,
+      "position": [
+        -10,
+        10,
+        100
+      ],
+      "target_id": "air-0"
+    },
+    {
+      "kind": "destroyed",
+      "attempt_id": "8b24f41a4735426b8eb4ef97fe838537",
+      "sequence": 2,
+      "position": [
+        -10,
+        10,
+        100
+      ],
+      "target_id": "air-0"
+    },
+    {
+      "kind": "drop_created",
+      "attempt_id": "8b24f41a4735426b8eb4ef97fe838537",
+      "sequence": 3,
+      "source_id": "air-0",
+      "count": 6
+    },
+    {
+      "kind": "missile_launch",
+      "attempt_id": "3ef25b3175f7490e904de83eb8ce4d1d",
+      "sequence": 1,
+      "targets": [
+        "air-0",
+        "air-1",
+        "air-10",
+        "air-11",
+        "air-2",
+        "air-3",
+        "air-4",
+        "air-5",
+        "air-6",
+        "air-7",
+        "air-8",
+        "air-9"
+      ],
+      "position": [
+        -18.0,
+        1.6,
+        70.0
+      ]
+    },
+    {
+      "kind": "weapon_fire",
+      "attempt_id": "3ef25b3175f7490e904de83eb8ce4d1d",
+      "sequence": 2,
+      "weapon_slot": 5,
+      "position": [
+        -18.0,
+        1.6,
+        70.0
+      ],
+      "target": [
+        -34.5,
+        11.6,
+        180.0
+      ]
+    }
+  ],
+  "exit_code": 0
+}
