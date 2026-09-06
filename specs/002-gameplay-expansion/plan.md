@@ -4,7 +4,7 @@
 
 **輸入**：[商品與平衡規則](balance.md)、[契約變更對照](decisions.md)、憲章 1.4.0
 
-**階段狀態**：遊戲實作與自動／引擎驗證已完成，133 項測試通過；[驗收追蹤](../../artifacts/002-gameplay-expansion/acceptance.md) 列出實際證據與原生未驗項。收斂追加 T097／T098，GitHub 交付狀態以 [任務](tasks.md) 為準。
+**階段狀態**：遊戲實作與自動／引擎驗證已完成，133 項測試通過；[驗收追蹤](../../artifacts/002-gameplay-expansion/acceptance.md) 列出實際證據與原生未驗項。收斂追加 T097／T098 已完成，PR #2 已合併至 main 並清理兩端功能分支，見 [交付紀錄](../../artifacts/002-gameplay-expansion/delivery.md)。
 
 ## 摘要
 

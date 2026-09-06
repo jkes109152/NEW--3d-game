@@ -1,0 +1,10 @@
+{
+  "recorded_at": "2026-09-06T22:41:54.996615+08:00",
+  "main_sha": "6b6a59e3fcd58215bd55343616c4b668125da0f5",
+  "feature_branch": "002-gameplay-expansion",
+  "local_branch_present": false,
+  "tracking_ref_present": false,
+  "feature_is_ancestor_of_main": true,
+  "current_branch": "002-delivery-record",
+  "note": "功能分支清理後，在文件收尾分支再次核對；沒有改寫先前的 main 同步結果。"
+}
