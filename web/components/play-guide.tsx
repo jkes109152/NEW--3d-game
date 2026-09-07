@@ -1,0 +1,108 @@
+'use client';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { CONTROL_ROWS, ControlMode } from '@/lib/controls';
+export function PlayGuide({
+  open,
+  onOpenChange,
+  mode,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  mode: ControlMode;
+}) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="play-guide" showCloseButton={false}>
+        <DialogHeader>
+          <DialogTitle>遊玩方法</DialogTitle>
+          <DialogDescription>
+            選單名稱、操作提示與戰場使用相同規則。查看說明時，戰鬥會暫停。
+          </DialogDescription>
+        </DialogHeader>
+        <div className="guide-scroll">
+          <h2>從準備到出戰</h2>
+          <ol>
+            <li>選擇存檔，再按「開始防守」。</li>
+            <li>依序選裝甲、安排五個武器槽、部署砲塔、確認配置。</li>
+            <li>
+              至少攜帶一把防空武器和一把對地武器。購買後要在出戰準備中裝備。
+            </li>
+            <li>
+              按「確認並出戰」後先停在就緒畫面。選擇操作方式，再按「開始遊玩」才會開始計時。
+            </li>
+          </ol>
+          <h2>{mode === 'touch' ? '觸控操作' : '鍵盤與滑鼠'}</h2>
+          <dl className="controls-table">
+            {CONTROL_ROWS.map((row) => (
+              <div key={row.action}>
+                <dt>{row.action}</dt>
+                <dd>{mode === 'touch' ? row.touch : row.desktop}</dd>
+              </div>
+            ))}
+          </dl>
+          <p>
+            滑鼠視角會隱藏並鎖定游標；按 Esc
+            釋放游標並暫停。若瀏覽器不支援，可改用「鍵盤視角」：WASD
+            移動、方向鍵轉向，F 射擊、Q
+            瞄準。觸控可以同時移動、轉向與射擊，拖曳視角不會開火。
+          </p>
+          <h2>防空與對地</h2>
+          <ol>
+            <li>先使用防空炮，切換瞄準，讓敵機保持在方框中。</li>
+            <li>
+              單目標準心隨鎖定進度從框中央靠近原敵機，完成後顯示「可發射」。多目標每架都有獨立標記與進度，全部完成且武器冷卻結束才顯示「可齊射」。
+            </li>
+            <li>
+              基礎鎖定三秒。目標離框或遭遮蔽會立即失去發射資格，完整進度約 0.75
+              秒衰減歸零；期間重新取得同一架可續接。右下角紫色條為獨立武器冷卻。
+            </li>
+            <li>
+              擊落敵機後可能出現空降敵兵。切換對地武器瞄準敵兵；普通槍枝不會傷害飛機。
+            </li>
+            <li>
+              清除所有敵機及敵兵即可過關。敵機突破、生命歸零或城市被摧毀都會失敗。
+            </li>
+          </ol>
+          <h2>彈藥與武器</h2>
+          <p>
+            全自動可按住射擊；半自動、三連發及手動上膛武器需要每次重新按下。一般槍枝有無限備彈，彈匣空了會自動換彈，也可手動換彈。火箭有每關配額，換彈不會增加配額。切槍保留各武器的彈藥與冷卻；空槽不能切換。
+          </p>
+          <h2>砲塔部署</h2>
+          <p>
+            首次重生後開放砲塔，容量為重生次數 ×
+            2。按三種砲塔的「新增」按鈕，再點地圖空地放置；只有持有庫存且容量足夠才能新增。各台砲塔都有種類圖示與編號，點圖示或清單可選取、移動或移除。移除只退回待部署庫存。圓圈為水平射程，實際攻擊仍受目標種類、高度與掩體限制。右鍵取消選取，Delete
+            移除所選砲塔。使用滾輪或 + / − 縮放，方向按鈕或在部署區內使用 WASD
+            平移。掩體、敵軍通道與出生區不可放置。
+          </p>
+          <h2>暫停、結算與存檔</h2>
+          <p>
+            切換分頁、視窗失焦或退出滑鼠鎖定都會暫停。關閉說明後仍保持暫停，按「繼續遊玩」才恢復。勝利後可直接前往下一關，也可回主選單整備；敗北或主動結束後從
+            1-1 再開始。主動結束不發獎勵。重生會清空本輪金幣、購買與升級。
+          </p>
+          <p>
+            五個存檔保存在目前網址的瀏覽器資料中。選檔畫面顯示最後遊玩日期，可按「刪除」並確認移除單一欄位；刪除無法復原。舊存檔再次遊玩後會補上日期。保存失敗請按「重試保存」，不會重扣或重發。右上角喇叭按鈕可切換靜音。
+          </p>
+          <h2>選單快捷鍵</h2>
+          <p>
+            選檔畫面按 1–5 選欄位。未聚焦按鈕或選單時，主選單按 Space
+            開始準備，準備畫面按 Enter 下一步。 Esc
+            在準備畫面返回上一步；改裝返回商店；商店與結算返回主選單。
+            所有按鈕可用 Tab 聚焦、Enter
+            確認。使用下拉選單時，鍵盤只操作該選單。
+          </p>
+        </div>
+        <DialogClose render={<Button className="primary" />}>
+          關閉說明
+        </DialogClose>
+      </DialogContent>
+    </Dialog>
+  );
+}

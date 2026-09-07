@@ -1,0 +1,31 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {loadPyodide} from 'pyodide';
+const py=await loadPyodide();
+py.FS.mkdirTree('/home/pyodide/air_defense');
+for(const name of JSON.parse(await readFile('public/rules/manifest.json','utf8')))py.FS.writeFile('/home/pyodide/air_defense/'+name+'.py',await readFile('public/rules/'+name+'.py','utf8'));
+py.runPython(await readFile('public/bridge.py','utf8'));
+const data=new Map();let fail=false;
+const storage={getItem:k=>data.get(k)??null,setItem:(k,v)=>{if(fail)throw Error('quota');data.set(k,v)}};
+py.globals.get('initialize')(storage);const dispatch=py.globals.get('dispatch');
+const send=(action,payload={})=>JSON.parse(dispatch(JSON.stringify({action,payload})));
+assert.equal(send('select_slot',{slot:1}).screen,'profile_menu');
+assert.equal(send('prepare').screen,'prepare_armor');assert.equal(send('next').screen,'prepare_weapons');
+assert.equal(send('next').screen,'prepare_deployment');assert.equal(send('next').screen,'prepare_confirm');
+let s=send('start');assert.equal(s.screen,'battle');assert.equal(s.battle.aircraft.length,1);
+const elapsed=s.battle.elapsed;s=send('tick',{dt:.02,move_z:1,look_delta:[2,-5],commands:[]});assert.ok(s.battle.elapsed>elapsed);assert.equal(s.battle.yaw,2);
+send('pause');const frozen=send('tick',{dt:.05}).battle.elapsed;assert.equal(send('tick',{dt:.05}).battle.elapsed,frozen);
+send('resume');assert.ok(send('tick',{dt:.02}).battle.elapsed>frozen);
+// 同一 Python 規則下實際開火、鎖定、擊落並驗證結算一次。
+py.runPython("from air_defense.entities import angles\na=next(iter(app.battle.aircraft.values()))\napp.battle.player.yaw,app.battle.player.pitch=angles(a.position-app.battle.player.eye)");
+send('tick',{dt:.05,commands:[{sequence:1,kind:'toggle_aim',value:null}]});
+for(let i=0;i<80;i++){py.runPython('app.battle.player.yaw,app.battle.player.pitch=angles(a.position-app.battle.player.eye)');s=send('tick',{dt:.05})}
+assert.ok(Object.values(s.battle.locks).some(v=>v>=1));
+s=send('tick',{dt:.05,commands:[{sequence:2,kind:'fire_up',value:null},{sequence:3,kind:'fire_down',value:null}]});assert.ok(s.battle.missiles.length>0);
+for(let i=0;i<100;i++)s=send('tick',{dt:.05});assert.equal(s.battle.aircraft[0].hp,0);
+py.runPython("for e in list(app.battle.enemies.values()): app.battle.damage_enemy(e.id,100)\napp.battle.check_outcome()\napp.settle()");
+s=send('tick',{dt:.01});assert.equal(s.screen,'result_success');assert.equal(s.profile.coins,125);send('tick',{dt:.01});assert.equal(send('menu').profile.coins,125);
+send('store');fail=true;s=send('transaction',{kind:'purchase_cosmetic',weapon_id:'W01',cosmetic_kind:'color',cosmetic_id:'mint'});assert.equal(s.screen,'save_error');assert.equal(s.profile.coins,50);fail=false;s=send('retry');assert.equal(s.profile.coins,50);assert.equal(s.screen,'store');
+send('slots');s=send('select_slot',{slot:1});assert.equal(s.profile.coins,50);assert.ok(s.profile.owned_weapons.W01.owned_colors.includes('mint'));
+data.set('candy-defense-web-v2:slot-2','broken');send('slots');s=send('select_slot',{slot:2});assert.match(s.message,/損壞/);assert.equal(data.get('candy-defense-web-v2:slot-2'),'broken');
+console.log('PASS: Pyodide 載入、出戰、移動、暫停、鎖定射擊、擊落、一次結算、保存失敗重試、重載與損壞保留。');

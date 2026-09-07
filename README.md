@@ -1,5 +1,13 @@
 # 糖果防線｜3D 防空守衛
 
+## 網頁版
+
+網頁版位於 `web/`，已透過 Sites 正式部署至 [糖果防線](https://game.jkesbyebye.com/)。部署狀態與驗證限制見 [003 網頁部署紀錄](specs/003-web-deployment/spec.md)。網頁版沿用 Python 純規則，由 Pyodide 與 Three.js 執行，五欄位進度獨立保存在各網址的瀏覽器資料中。
+
+每次修改均將原始碼同步至本 GitHub 儲存庫，網頁發布另沿用 Sites；同步規則見 [AGENTS.md](AGENTS.md)。遊戲主畫面固定於視窗，商店、存檔與部署等長內容只在面板內捲動。
+
+以下為保留的 Windows 桌面版說明。
+
 Windows 單機第一人稱空地防守遊戲。用二十種武器、六件裝甲與三類砲塔建立防線，擊落飛機、處理空降敵兵並保護城市。新版規格與操作案例見 [002 規格](specs/002-gameplay-expansion/spec.md) 與 [快速驗證](specs/002-gameplay-expansion/quickstart.md)。
 
 ## 啟動

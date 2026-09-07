@@ -4,6 +4,33 @@ from air_defense.entities import Missile, Aircraft, V3
 
 
 class LockMissileTests(unittest.TestCase):
+    def test_single_retains_same_target_through_brief_loss(self):
+        lock=LockState()
+        lock.update(1.5,['a','b'],{'a','b'},True,False,3)
+        lock.update(.15,['b'],{'a','b'},True,False,3)
+        self.assertEqual(lock.current,'a')
+        self.assertEqual(lock.valid,())
+        self.assertAlmostEqual(lock.progress['a'],.3)
+        lock.update(.3,['a','b'],{'a','b'},True,False,3)
+        self.assertEqual(lock.valid,('a',))
+        self.assertAlmostEqual(lock.progress['a'],.4)
+        lock.update(.4,['b'],{'a','b'},True,False,3)
+        lock.update(.3,['b'],{'a','b'},True,False,3)
+        self.assertEqual(lock.current,'b')
+        self.assertAlmostEqual(lock.progress['b'],.1)
+
+    def test_multi_new_target_and_loss_do_not_reset_others(self):
+        lock=LockState()
+        lock.update(2.4,['a'],{'a','b'},True,True,3)
+        lock.update(.3,['a','b'],{'a','b'},True,True,3)
+        self.assertAlmostEqual(lock.progress['a'],.9)
+        self.assertAlmostEqual(lock.progress['b'],.1)
+        lock.update(.15,['b'],{'a','b'},True,True,3)
+        self.assertAlmostEqual(lock.progress['a'],.7)
+        self.assertAlmostEqual(lock.progress['b'],.15)
+        lock.update(.1,['b'],{'b'},True,True,3)
+        self.assertNotIn('a',lock.progress)
+
     def test_T08_aim_assist_only_purchased_and_aimed_with_three_degree_limit(self):
         from air_defense.combat import aim_assist
         from air_defense.entities import Aircraft, Player, V3

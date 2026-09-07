@@ -15,3 +15,6 @@ Thumbs.db
 artifacts/profiles/
 artifacts/launcher-copies/
 tools/wheels/
+.pnpm-store/
+artifacts/*-site.tar.gz
+artifacts/003-web-deployment/dns-*.json
