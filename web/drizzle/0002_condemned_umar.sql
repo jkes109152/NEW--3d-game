@@ -1,0 +1,1 @@
+CREATE INDEX `idx_mp_results_pending` ON `mp_results` (`player_id`,`saved_at`,`created_at`);

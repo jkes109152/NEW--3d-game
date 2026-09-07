@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { PlayGuide } from '@/components/play-guide';
 import { BattlePanel } from '@/components/battle-panel';
+import { MultiplayerLobby } from '@/components/multiplayer-lobby';
 import { DeploymentMap } from '@/components/deployment-map';
 import { ArmoryShop } from '@/components/armory-shop';
 import { isEditable } from '@/lib/controls';
@@ -154,6 +155,7 @@ export default function Home() {
         rebirth ||
         end ||
         s.delete_confirmation ||
+        (s.party?.open && screen === 'profile_menu') ||
         isEditable(e.target)
       )
         return;
@@ -326,7 +328,10 @@ export default function Home() {
               </p>
             </section>
           )}
-          {screen === 'profile_menu' && (
+          {s.party?.open && screen === 'profile_menu' && (
+            <MultiplayerLobby party={s.party} runtime={runtime} profile={p} />
+          )}
+          {screen === 'profile_menu' && !s.party?.open && (
             <section className="panel start">
               <span className="eyebrow">
                 存檔 {s.slot} · 下一關 {s.cursor.join('-')}
@@ -339,6 +344,10 @@ export default function Home() {
               <p>裝配你的武器，擊落敵機，再清除空降敵兵。</p>
               <div className="menu-buttons">
                 {btn('開始防守', () => send('prepare'))}
+                {btn(
+                  '多人遊戲',
+                  () => void runtime.current?.partyAction('open'),
+                )}
                 {btn('裝備商店', () => send('store'), true)}
                 {btn('更換存檔', () => send('slots'), true)}
                 {btn('重生', () => setRebirth(true), true)}
@@ -461,7 +470,11 @@ export default function Home() {
               <footer>
                 {btn('返回', () => send('back'), true)}
                 {btn(
-                  screen === 'prepare_confirm' ? '確認並出戰' : '下一步',
+                  screen === 'prepare_confirm'
+                    ? s.party?.room
+                      ? '保存配置並準備'
+                      : '確認並出戰'
+                    : '下一步',
                   () => send(screen === 'prepare_confirm' ? 'start' : 'next'),
                 )}
               </footer>

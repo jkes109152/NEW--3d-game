@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1788798218746,
+      "tag": "0000_moaning_miek",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1788798683071,
+      "tag": "0001_fresh_black_knight",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1788799073786,
+      "tag": "0002_condemned_umar",
+      "breakpoints": true
+    }
+  ]
+}

@@ -10,6 +10,7 @@ import {
   worldVector,
 } from './projectile-visuals';
 import { BattleInput, ControlMode, validMode, isEditable } from './controls';
+import { MultiplayerClient } from './multiplayer-client';
 import { AntiAirHud } from './aiming-hud';
 export async function createGame(
   host: HTMLElement,
@@ -73,6 +74,19 @@ export async function createGame(
     gunId = '',
     requestNumber = 0;
   const input = new BattleInput();
+  let partyRun = '',
+    partyPacket: any = null,
+    partyLocalPaused = true,
+    partyPreparing = false,
+    partyLeaving = false;
+  let partyEventSequence = 0;
+  const partyInputs = new Map<string, number>();
+  const rewarded = new Set<string>();
+  const partyClient = new MultiplayerClient(() => publish(), receivePartyRoom);
+  const pyPartyStart = py.globals.get('party_start'),
+    pyPartyTick = py.globals.get('party_tick'),
+    pyPartyReward = py.globals.get('party_reward');
+
   let mode: ControlMode = matchMedia('(pointer:coarse)').matches
       ? 'touch'
       : 'mouse',
@@ -282,6 +296,10 @@ export async function createGame(
     state = {
       ...state,
       controls: { mode, pauseReason, requesting, sensitivity, muted },
+      party: {
+        ...partyClient.state(),
+        open: partyClient.open && !partyPreparing,
+      },
     };
     onState(state);
     return state;
@@ -308,6 +326,12 @@ export async function createGame(
       void begin();
       return state;
     }
+    if (partyRun && action === 'menu') {
+      void partyAction('leave');
+      return state;
+    }
+    if (action === 'start' && partyClient.room?.status === 'waiting')
+      action = 'party_confirm';
     const before = state.screen;
     state = JSON.parse(invoke(JSON.stringify({ action, payload, expected })));
     if (before !== state.screen && state.screen === 'battle') {
@@ -318,6 +342,12 @@ export async function createGame(
     if (state.screen !== 'battle' || state.battle?.phase !== 'active')
       releaseControl();
     if (action === 'pause') pauseReason = 'paused';
+    if (action === 'party_confirm' && state.screen === 'profile_menu') {
+      partyPreparing = false;
+      void partyClient.action('ready', { ready: true, profile: state.profile });
+    }
+    if (partyPreparing && state.screen === 'profile_menu')
+      partyPreparing = false;
     publish();
     return state;
   }
@@ -325,14 +355,21 @@ export async function createGame(
     state.screen === 'battle' && state.battle?.phase === 'active';
   function pause(reason = 'paused') {
     if (!active() && !requesting) return;
-    state = JSON.parse(invoke(JSON.stringify({ action: 'pause' })));
+    if (partyRun) {
+      partyLocalPaused = true;
+      if (state.battle) state.battle = { ...state.battle, phase: 'paused' };
+      partyClient.setInput({ suspended: true });
+    } else state = JSON.parse(invoke(JSON.stringify({ action: 'pause' })));
     pauseReason = reason;
     releaseControl();
     publish();
   }
   function resumeSimulation() {
     if (state.screen !== 'battle' || state.battle?.phase !== 'paused') return;
-    state = JSON.parse(invoke(JSON.stringify({ action: 'resume' })));
+    if (partyRun) {
+      partyLocalPaused = false;
+      if (state.battle) state.battle = { ...state.battle, phase: 'active' };
+    } else state = JSON.parse(invoke(JSON.stringify({ action: 'resume' })));
     last = performance.now();
     input.start();
     pauseReason = '';
@@ -368,6 +405,165 @@ export async function createGame(
       requesting = false;
       pauseReason = 'capture_failed';
       publish();
+    }
+  }
+  function receivePartyRoom(room: any) {
+    if (partyLeaving || state.screen === 'save_error') return;
+    if (room.connectionLost) {
+      pause('connection_lost');
+      return;
+    }
+    if (room.status === 'playing' && room.runId) {
+      const isHost = room.hostId === partyClient.me?.id;
+      if (partyRun !== room.runId) {
+        if (isHost && room.sequence > 0) {
+          void partyAction('leave');
+          return;
+        }
+        partyRun = room.runId;
+        partyEventSequence = 0;
+        partyInputs.clear();
+        partyLocalPaused = true;
+        partyPreparing = false;
+        pauseReason = 'ready';
+        if (isHost)
+          partyPacket = JSON.parse(
+            pyPartyStart(
+              JSON.stringify({
+                runId: room.runId,
+                level: room.level,
+                roster: room.roster,
+              }),
+            ),
+          );
+      }
+      const view = isHost
+        ? partyPacket?.views?.[partyClient.me.id]
+        : room.snapshot?.view;
+      if (view) applyPartyView(isHost ? view : partyClient.predictView(view));
+    } else if (
+      ['finished', 'closed', 'waiting'].includes(room.status) &&
+      partyRun
+    ) {
+      releaseControl();
+      partyLocalPaused = true;
+      partyRun = '';
+      partyPacket = null;
+      state = JSON.parse(invoke(JSON.stringify({ action: 'menu' })));
+    }
+    for (const receipt of room.receipts || []) {
+      if (rewarded.has(receipt.run_id)) continue;
+      if (state.profile?.profile_id !== receipt.profile_id) continue;
+      state = JSON.parse(pyPartyReward(JSON.stringify(receipt)));
+      if (state.screen !== 'save_error' && !state.message) {
+        rewarded.add(receipt.run_id);
+        void partyClient.acknowledge(receipt.run_id);
+      }
+    }
+  }
+  function applyPartyView(view: any) {
+    const events = (view.events || []).filter(
+      (event: any) => event.sequence > partyEventSequence,
+    );
+    if (events.length)
+      partyEventSequence = Math.max(...events.map((e: any) => e.sequence));
+    state = {
+      ...state,
+      screen: 'battle',
+      battle: {
+        ...view,
+        events,
+        phase: partyLocalPaused ? 'paused' : view.phase,
+        host_paused:
+          view.phase === 'paused' ||
+          (partyClient.room?.hostId === partyClient.me?.id && partyLocalPaused),
+      },
+    };
+    applyEvents();
+  }
+  async function partyAction(action: string, payload: any = {}) {
+    if (action === 'configure') {
+      await partyClient.action('ready', { ready: false });
+      if (!partyClient.error) {
+        partyPreparing = true;
+        send('prepare');
+      }
+      return;
+    }
+    if (action === 'leave') {
+      partyLeaving = true;
+      releaseControl();
+      partyRun = '';
+      partyPacket = null;
+      partyPreparing = false;
+      await partyClient.action('leave');
+      partyLeaving = false;
+      if (!partyClient.room)
+        state = JSON.parse(invoke(JSON.stringify({ action: 'menu' })));
+      publish();
+      return;
+    }
+    await partyClient.action(action, payload);
+  }
+  function partyFrame(dt: number) {
+    const room = partyClient.room;
+    if (!room || !partyRun) return;
+    const mine = partyClient.me.id;
+    const frame = partyLocalPaused
+      ? { suspended: true }
+      : { ...input.frame(dt, sensitivity), aspect: camera.aspect };
+    if (room.hostId === mine) {
+      const frames: any = { [mine]: frame };
+      for (const participant of room.roster) {
+        if (participant.id === mine) continue;
+        const member = room.members.find((m: any) => m.id === participant.id);
+        if (!member) {
+          frames[participant.id] = { suspended: true, departed: true };
+          continue;
+        }
+        if (!member.online) {
+          frames[member.id] = { suspended: true };
+          continue;
+        }
+        const fresh = partyInputs.get(member.id) !== member.inputSeq;
+        partyInputs.set(member.id, member.inputSeq);
+        frames[member.id] = {
+          ...(fresh
+            ? member.input
+            : { ...member.input, commands: [], look_delta: [0, 0] }),
+          ackInput: member.inputSeq,
+        };
+      }
+      if (!partyLocalPaused)
+        partyPacket = JSON.parse(pyPartyTick(JSON.stringify({ dt, frames })));
+      if (partyPacket) {
+        const packet = partyLocalPaused
+          ? {
+              ...partyPacket,
+              phase: 'paused',
+              views: Object.fromEntries(
+                Object.entries(partyPacket.views).map(([k, v]: any) => [
+                  k,
+                  { ...v, phase: 'paused' },
+                ]),
+              ),
+            }
+          : partyPacket;
+        partyClient.setSnapshot(packet);
+        applyPartyView(packet.views[mine]);
+      }
+    } else {
+      partyClient.setInput(frame);
+      if (!partyLocalPaused && state.battle && 'look_delta' in frame) {
+        state.battle = {
+          ...state.battle,
+          yaw: state.battle.yaw + frame.look_delta[0],
+          pitch: Math.max(
+            -85,
+            Math.min(85, state.battle.pitch + frame.look_delta[1]),
+          ),
+        };
+      }
     }
   }
   function command(kind: string, value?: number) {
@@ -521,7 +717,18 @@ export async function createGame(
             scene.add(node);
             nodes.set(e.id, node);
           }
-          node.position.set(e.position[0], e.position[1], -e.position[2]);
+          const targetPosition = new THREE.Vector3(
+            e.position[0],
+            e.position[1],
+            -e.position[2],
+          );
+          if (
+            b.cooperative &&
+            partyClient.room?.hostId !== partyClient.me?.id &&
+            node.position.distanceTo(targetPosition) < 30
+          )
+            node.position.lerp(targetPosition, Math.min(1, dt * 18));
+          else node.position.copy(targetPosition);
           if (kind === 'missiles' || kind === 'rockets') {
             orientProjectile(node, e.forward);
             trails.get(e.id)?.update(e.position, e.age);
@@ -546,6 +753,30 @@ export async function createGame(
             if (chute) chute.visible = e.phase !== 'ground';
           }
         }
+      for (const teammate of b.players || []) {
+        if (teammate.id === b.self_id || teammate.hp <= 0) continue;
+        const key = 'ally-' + teammate.id;
+        seen.add(key);
+        let node = nodes.get(key);
+        if (!node) {
+          node = new THREE.Group();
+          part(node, [0, 0.8, 0], [0.65, 1.1, 0.42], '#52d9cd');
+          part(node, [0, 1.65, 0], [0.48, 0.48, 0.48], '#ffe0b0', 'sphere');
+          part(node, [-0.18, 0.22, 0], [0.22, 0.45, 0.25], '#1a4c65');
+          part(node, [0.18, 0.22, 0], [0.22, 0.45, 0.25], '#1a4c65');
+          scene.add(node);
+          nodes.set(key, node);
+        }
+        node.position.lerp(
+          new THREE.Vector3(
+            teammate.position[0],
+            teammate.position[1],
+            -teammate.position[2],
+          ),
+          Math.min(1, dt * 15),
+        );
+        node.rotation.y = (-teammate.yaw * Math.PI) / 180;
+      }
     } else {
       gun.visible = false;
       camera.fov = 55;
@@ -587,7 +818,19 @@ export async function createGame(
     if (disposed) return;
     const dt = Math.min((now - last) / 1000, 0.06);
     last = now;
-    if (active()) {
+    if (partyRun) {
+      try {
+        partyFrame(dt);
+        if (now - notifyAt > 100) {
+          publish();
+          notifyAt = now;
+        }
+      } catch (e: any) {
+        pause();
+        partyClient.error = '多人戰場已暫停：' + e.message;
+        publish();
+      }
+    } else if (active()) {
       const payload = {
         dt,
         ...input.frame(dt, sensitivity),
@@ -615,6 +858,7 @@ export async function createGame(
   publish();
   return {
     catalog,
+    partyAction,
     send,
     command,
     begin,
@@ -638,6 +882,10 @@ export async function createGame(
       publish();
     },
     dispose() {
+      partyClient.dispose();
+      pyPartyStart.destroy();
+      pyPartyTick.destroy();
+      pyPartyReward.destroy();
       releaseControl();
       unregister();
       disposed = true;

@@ -8,10 +8,11 @@
   "scripts": {
     "dev": "node scripts/prepare.mjs && vinext dev",
     "build": "node scripts/prepare.mjs && vinext build",
-    "test": "node --experimental-strip-types --test scripts/test-controls.mjs && node scripts/test-rules.mjs && node --test scripts/test-adapter.mjs && node --experimental-strip-types --test scripts/test-armory.mjs scripts/test-deployment-aiming.mjs",
+    "test": "node --experimental-strip-types --test scripts/test-controls.mjs && node scripts/test-rules.mjs && node --test scripts/test-adapter.mjs && node --experimental-strip-types --test scripts/test-armory.mjs scripts/test-deployment-aiming.mjs && node --experimental-transform-types --test scripts/test-party-client.mjs",
     "start": "wrangler dev --config dist/server/wrangler.json",
     "lint": "oxlint",
-    "format": "oxfmt"
+    "format": "oxfmt",
+    "test:multiplayer": "node scripts/test-multiplayer.mjs"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",
@@ -20,6 +21,7 @@
     "clsx": "2.1.1",
     "cmdk": "1.1.1",
     "date-fns": "4.1.0",
+    "drizzle-orm": "^0.45.2",
     "embla-carousel-react": "8.5.2",
     "input-otp": "1.4.2",
     "lucide-react": "1.31.0",
@@ -47,6 +49,7 @@
     "@types/three": "^0.185.4",
     "@vitejs/plugin-react": "6.0.2",
     "@vitejs/plugin-rsc": "0.5.26",
+    "drizzle-kit": "^0.31.10",
     "oxfmt": "0.61.0",
     "oxlint": "1.76.0",
     "oxlint-tsgolint": "7.0.2001",

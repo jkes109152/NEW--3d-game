@@ -1,7 +1,7 @@
 import {mkdir,copyFile,writeFile,cp,access} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 const root=fileURLToPath(new URL('../',import.meta.url));
-const modules=['__init__','config','catalog','combat','deployment','entities','loadout','preparation','progression','projectiles','save_data','state','weapons','visual_catalog'];
+const modules=['__init__','config','catalog','combat','deployment','entities','loadout','preparation','progression','projectiles','save_data','state','multiplayer','weapons','visual_catalog'];
 await mkdir(root+'public/rules',{recursive:true});
 let desktop=false;try{await access(root+'../air_defense/state.py');desktop=true}catch{}
 if(desktop)for(const name of modules) await copyFile(root+'../air_defense/'+name+'.py',root+'public/rules/'+name+'.py');

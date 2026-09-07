@@ -1,5 +1,13 @@
 'use client';
 import { useEffect, useId, useRef, useState } from 'react';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import {
   ArrowDown,
@@ -36,6 +44,7 @@ function TowerIcon({ kind }: { kind: string }) {
   return <Icon size={22} aria-hidden="true" />;
 }
 export function DeploymentMap({ c, p, d, tower, setTower, send }: any) {
+  const [kindTab, setKindTab] = useState('T01');
   const [view, setView] = useState({ x: 0, y: 80, zoom: 1 });
   const [aspect, setAspect] = useState(1),
     [feedback, setFeedback] = useState('');
@@ -81,6 +90,8 @@ export function DeploymentMap({ c, p, d, tower, setTower, send }: any) {
   };
   const select = (id: string) => {
     setTower(id);
+    const item = p.owned_turrets.find((t: any) => t.instance_id === id);
+    if (item) setKindTab(item.turret_id);
     setFeedback('');
   };
   return (
@@ -117,65 +128,79 @@ export function DeploymentMap({ c, p, d, tower, setTower, send }: any) {
       )}
       <div className="deployment-layout">
         <aside className="turret-stock" aria-label="砲塔庫存與新增">
-          <h2>新增砲塔</h2>
-          <p>選擇種類，再點地圖空地放置。</p>
-          {TURRET_KINDS.map((kind) => {
-            const item = c.turrets[kind],
-              stock = turretStock(p, d.deployments, kind),
-              visual = visuals[kind];
-            const reason = !p.rebirth_count
-              ? '首次重生後開放'
-              : !stock.total
-                ? '尚未擁有・請至商店購買'
-                : !stock.available.length
-                  ? '已全部部署'
-                  : d.deployments.length >= capacity
-                    ? '部署容量已滿'
-                    : '';
-            return (
-              <article className="turret-card" data-kind={kind} key={kind}>
-                <div className="turret-card-title">
-                  <span className="turret-symbol">
-                    <TowerIcon kind={kind} />
-                  </span>
-                  <div>
-                    <h3>{item.name}</h3>
-                    <span>
-                      {visual.label}・
-                      {item.target_kind === 'aircraft' ? '對空' : '對地'}
-                    </span>
-                  </div>
-                </div>
-                <p>{visual.description}</p>
-                <dl>
-                  <div>
-                    <dt>射程</dt>
-                    <dd>{item.range} 公尺</dd>
-                  </div>
-                  <div>
-                    <dt>射擊間隔</dt>
-                    <dd>{item.interval} 秒</dd>
-                  </div>
-                </dl>
-                <div className="turret-stock-count">
-                  <span>
-                    待部署 <strong>{stock.available.length}</strong>
-                  </span>
-                  <span>持有 {stock.total} 台</span>
-                </div>
-                <Button
-                  className="primary turret-add"
-                  disabled={!!reason}
-                  aria-label={`新增${item.name}`}
-                  onClick={() => select(stock.available[0].instance_id)}
-                >
-                  <Plus size={18} />
-                  新增{visual.label}塔
-                </Button>
-                {reason && <small>{reason}</small>}
-              </article>
-            );
-          })}
+          <Tabs
+            value={kindTab}
+            onValueChange={(v) => setKindTab(String(v))}
+            className="turret-kind-tabs"
+          >
+            <TabsList aria-label="砲塔種類">
+              {TURRET_KINDS.map((kind) => (
+                <TabsTrigger key={kind} value={kind} data-kind={kind}>
+                  <TowerIcon kind={kind} />
+                  <span>{visuals[kind].label}</span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            {TURRET_KINDS.map((kind) => {
+              const item = c.turrets[kind],
+                stock = turretStock(p, d.deployments, kind),
+                visual = visuals[kind];
+              const reason = !p.rebirth_count
+                ? '首次重生後開放'
+                : !stock.total
+                  ? '尚未擁有・請至商店購買'
+                  : !stock.available.length
+                    ? '已全部部署'
+                    : d.deployments.length >= capacity
+                      ? '部署容量已滿'
+                      : '';
+              return (
+                <TabsContent value={kind} key={kind}>
+                  <article className="turret-card" data-kind={kind}>
+                    <div className="turret-card-title">
+                      <span className="turret-symbol">
+                        <TowerIcon kind={kind} />
+                      </span>
+                      <div>
+                        <h3>{item.name}</h3>
+                        <span>
+                          {visual.label}・
+                          {item.target_kind === 'aircraft' ? '對空' : '對地'}
+                        </span>
+                      </div>
+                    </div>
+                    <p>{visual.description}</p>
+                    <dl>
+                      <div>
+                        <dt>射程</dt>
+                        <dd>{item.range} 公尺</dd>
+                      </div>
+                      <div>
+                        <dt>射擊間隔</dt>
+                        <dd>{item.interval} 秒</dd>
+                      </div>
+                    </dl>
+                    <div className="turret-stock-count">
+                      <span>
+                        待部署 <strong>{stock.available.length}</strong>
+                      </span>
+                      <span>持有 {stock.total} 台</span>
+                    </div>
+                    <Button
+                      className="primary turret-add"
+                      disabled={!!reason}
+                      aria-label={`新增${item.name}`}
+                      onClick={() => select(stock.available[0].instance_id)}
+                    >
+                      <Plus size={18} />
+                      新增{visual.label}塔
+                    </Button>
+                    {reason && <small>{reason}</small>}
+                  </article>
+                </TabsContent>
+              );
+            })}
+          </Tabs>
         </aside>
         <section className="deployment-board" aria-label="部署作戰地圖">
           <div className="deployment-board-head">
@@ -394,59 +419,47 @@ export function DeploymentMap({ c, p, d, tower, setTower, send }: any) {
           <p className="map-legend">
             圓圈為水平射程。實際攻擊受高度與掩體限制；掩體、通道和出生區不可放置。滾輪縮放，中鍵拖曳平移。
           </p>
-          {placed && (
+          <div className="deployment-picker">
+            <Select
+              value={placed?.instance_id ?? null}
+              onValueChange={(id) => {
+                const t = d.deployments.find((v: any) => v.instance_id === id);
+                if (t) {
+                  select(t.instance_id);
+                  setView((v) => ({ ...v, x: t.x, y: t.z }));
+                }
+              }}
+            >
+              <SelectTrigger aria-label="選取已部署砲塔">
+                <SelectValue>
+                  {placed && owned
+                    ? name(owned)
+                    : `已部署 ${d.deployments.length} 台・選取砲塔`}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {d.deployments.map((t: any) => {
+                  const item = p.owned_turrets.find(
+                    (v: any) => v.instance_id === t.instance_id,
+                  );
+                  return item ? (
+                    <SelectItem key={t.instance_id} value={t.instance_id}>
+                      <TowerIcon kind={item.turret_id} />
+                      {name(item)}
+                    </SelectItem>
+                  ) : null;
+                })}
+              </SelectContent>
+            </Select>
             <Button
-              className="secondary remove-deployment"
+              className="secondary"
+              disabled={!placed}
               onClick={() => remove(tower)}
             >
               <Trash2 size={18} />
-              移除所選砲塔
+              移除
             </Button>
-          )}
-          <div className="deployed-list">
-            <h3>
-              已部署砲塔 <span>{d.deployments.length} 台</span>
-            </h3>
-            {!d.deployments.length && (
-              <p>尚未部署。新增後，每台砲塔會以專屬圖示與編號顯示在地圖上。</p>
-            )}
-            {d.deployments.map((t: any) => {
-              const item = p.owned_turrets.find(
-                (v: any) => v.instance_id === t.instance_id,
-              );
-              if (!item) return null;
-              return (
-                <div
-                  className="deployed-row"
-                  key={t.instance_id}
-                  data-kind={item.turret_id}
-                >
-                  <Button
-                    className="deployed-select"
-                    aria-pressed={tower === t.instance_id}
-                    onClick={() => {
-                      select(t.instance_id);
-                      setView((v) => ({ ...v, x: t.x, y: t.z }));
-                    }}
-                  >
-                    <TowerIcon kind={item.turret_id} />
-                    <span>{name(item)}</span>
-                  </Button>
-                  <Button
-                    className="slot-delete"
-                    aria-label={`移除${name(item)}`}
-                    onClick={() => remove(t.instance_id)}
-                  >
-                    <Trash2 size={16} />
-                    移除
-                  </Button>
-                </div>
-              );
-            })}
           </div>
-          <p className="map-legend">
-            移除只退回待部署庫存。按「確認並出戰」才保存本次配置。
-          </p>
         </section>
       </div>
     </div>

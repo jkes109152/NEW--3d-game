@@ -76,11 +76,11 @@ def validate_profile(data):
              'purchase_weapon':{'weapon_id'},'purchase_armor':{'armor_id'},'purchase_turret':{'turret_id','instance_id'},
              'upgrade_player':{'upgrade_id','new_level'},'upgrade_weapon':{'weapon_id','upgrade_id','new_level'},
              'purchase_attachment':{'weapon_id','attachment_id'},'purchase_cosmetic':{'weapon_id','cosmetic_kind','cosmetic_id'},
-             'customize_weapon':{'weapon_id'},'confirm_loadout':{'deployed_count'},'reward':{'a','b','A'},'failure':{'a','b','A'},'rebirth':{'previous_rebirth_count','new_rebirth_count'}}[kind]
+             'customize_weapon':{'weapon_id'},'confirm_loadout':{'deployed_count'},'reward':{'a','b','A'},'coop_reward':{'a','b','A','party_size'},'failure':{'a','b','A'},'rebirth':{'previous_rebirth_count','new_rebirth_count'}}[kind]
         else:require(summary['coins_delta']==0 and op['reason'] in {'already_owned','insufficient_coins','not_owned','incompatible','cap_reached','locked','not_eligible','invalid_id','stale_round','invalid_round','invalid_loadout','invalid_slots','duplicate_weapon','missing_target_kind','capacity','outside_map','blocked_ground','spawn_reserved','route_reserved','overlap','invalid_position','duplicate_instance'})
         require(set(summary)==fields)
         for k,v in summary.items():
-            if k in ('new_level','deployed_count','a','b','A','previous_rebirth_count','new_rebirth_count'):require(integer(v))
+            if k in ('new_level','deployed_count','a','b','A','party_size','previous_rebirth_count','new_rebirth_count'):require(integer(v))
             elif k!='coins_delta':require(type(v) is str)
         for field,catalog in [('weapon_id',WEAPONS),('armor_id',ARMORS),('turret_id',TURRETS),('attachment_id',ATTACHMENTS)]:
             if field in summary:require(summary[field] in catalog)
@@ -92,6 +92,13 @@ def validate_profile(data):
                 require(1<=summary['new_level']<=(1 if summary['upgrade_id']=='aim_assist' else upgrade_cap(op['rebirth_count'])))
             if kind=='purchase_turret':require(summary['instance_id']=='turret-'+op['operation_id'])
             if kind=='confirm_loadout':require(summary['deployed_count']<=2*op['rebirth_count'])
+            if kind=='coop_reward':
+                from .progression import level_for
+                from math import floor
+                require(type(summary['party_size']) is int and 1<=summary['party_size']<=4)
+                require(summary['A']<=op['rebirth_count']+2)
+                level=level_for(summary['a'],summary['b'],summary['A'],op['rebirth_count'])
+                require(summary['coins_delta']==floor(level.reward*1.5**(summary['party_size']-1)))
             if kind in ('reward','failure'):
                 from .progression import level_for
                 require(summary['A']==op['rebirth_count']+2)

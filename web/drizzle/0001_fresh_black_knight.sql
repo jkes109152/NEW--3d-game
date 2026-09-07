@@ -1,0 +1,1 @@
+ALTER TABLE `mp_results` ADD `saved_at` integer;

@@ -58,6 +58,17 @@ export function BattlePanel({
   });
   return (
     <>
+      {b.cooperative && (
+        <div className="party-team-hud" aria-label="合作隊伍">
+          {b.players?.map((ally: any) => (
+            <span key={ally.id}>
+              {ally.name}
+              {ally.id === b.self_id ? '（你）' : ''} ·{' '}
+              {ally.hp > 0 ? `${Math.ceil(ally.hp)} 生命` : '已倒下'}
+            </span>
+          ))}
+        </div>
+      )}
       <div className="hud">
         <div>
           <span>
@@ -204,7 +215,12 @@ export function BattlePanel({
       )}
       {paused && (
         <section className="panel ready-panel" aria-label="戰鬥就緒與暫停">
-          <span className="eyebrow">關卡 {b.level} · 時間已停止</span>
+          <span className="eyebrow">
+            關卡 {b.level} ·{' '}
+            {b.cooperative && !b.host_paused
+              ? '個人操作暫停，戰鬥仍持續'
+              : '時間已停止'}
+          </span>
           <h1>
             {controls?.pauseReason === 'ready' ? '防線準備就緒' : '防線已暫停'}
           </h1>
@@ -273,7 +289,11 @@ export function BattlePanel({
               結束本局，返回主選單
             </Button>
           </div>
-          <p className="muted">主動結束本局不發放獎勵，下一次從 1-1 開始。</p>
+          <p className="muted">
+            {b.cooperative
+              ? '離開會退出房間；房主離開時房間關閉。請保持網路連線。'
+              : '主動結束本局不發放獎勵，下一次從 1-1 開始。'}
+          </p>
         </section>
       )}
     </>

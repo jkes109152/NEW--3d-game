@@ -116,23 +116,49 @@ class BattleState:
         frame=frame or InputFrame()
         if frame.pause_requested or any(c.kind=='pause' for c in frame.commands):self.pause();return
         self.elapsed+=dt;self.revision+=1;self.processed_hits.clear();player=self.player
+        self.move_player(dt,frame)
+        self.step_world(dt)
+        if self.phase!='active':return
+        self.step_weapon(dt,frame)
+        self.step_projectiles(dt)
+        self.check_outcome()
+        for key in list(self.enemies):
+            if self.enemies[key].hp<=0:del self.enemies[key]
+        self.finish_player()
+
+    def combat_players(self):return [self.player]
+
+    def move_player(self,dt,frame):
+        player=self.player
         player.yaw+=frame.look_delta[0];player.pitch=clamp(player.pitch+frame.look_delta[1],-85,85)
         if frame.aim_held is not None:player.aiming=frame.aim_held
         player.tick(dt);player.move(clamp(frame.move_x,-1,1),clamp(frame.move_z,-1,1),frame.jump_pressed,dt)
         for key,runtime in self.runtime.items():
             if runtime.tick(self.elapsed,self.loadout.weapons[key]):self.emit('reload_finished',weapon_id=key)
+
+    def step_world(self,dt):
         for aircraft in self.aircraft.values():
             aircraft.update(dt)
             if aircraft.status=='impact':self.fail('impact');return
-        for enemy in self.enemies.values():enemy.update(dt,player)
+        players=[p for p in self.combat_players() if p.hp>0]
+        if not players:self.fail('player');return
+        for enemy in self.enemies.values():
+            player=min(players,key=lambda p:(p.position-enemy.position).length())
+            enemy.update(dt,player)
         for enemy in self.enemies.values():
             if enemy.hp<=0 or enemy.phase!='ground':continue
+            alive=[p for p in players if p.hp>0]
+            if not alive:self.fail('player');return
+            player=min(alive,key=lambda p:(p.position-enemy.position).length())
             if (enemy.position-self.city.position).horizontal().length()<=10:self.city.hp=max(0,self.city.hp-10*dt)
             if self.city.hp<=0:self.fail('city');return
             if enemy.cooldown<=1e-9 and (enemy.position-player.position).horizontal().length()<=38 and world_visible(enemy.center,player.eye):
                 self.emit('player_hurt',damage=player.hurt(8),position=enemy.center.tuple());enemy.cooldown=1.5
-            if player.hp<=0:self.fail('player');return
+            if all(p.hp<=0 for p in players):self.fail('player');return
             if self.city.hp<=0:self.fail('city');return
+
+    def step_weapon(self,dt,frame):
+        player=self.player
         if self.stats.category=='anti_air':
             candidates=self.candidates()
             if self.stats.aim_assist and player.aiming:
@@ -164,6 +190,8 @@ class BattleState:
         if self.held and not self.require_release and stats.fire_mode=='auto':
             while runtime.error(self.elapsed) is None:
                 if self.fire(at=runtime.next_shot_at)!='applied':break
+
+    def step_projectiles(self,dt):
         self.tick_turrets(dt)
         for key,missile in list(self.missiles.items()):
             status=missile.update(dt,self.aircraft.get(missile.target_id))
@@ -175,9 +203,8 @@ class BattleState:
                 for e in explosion_targets(hit,rocket.blast_radius,self.enemies.values()):self.damage_enemy(e.id,rocket.damage,rocket.id)
                 self.emit('explosion',position=hit.point.tuple(),weapon_id=rocket.weapon_id)
             if status!='flying':self.rockets.pop(key,None)
-        self.check_outcome()
-        for key in list(self.enemies):
-            if self.enemies[key].hp<=0:del self.enemies[key]
+
+    def finish_player(self):
         for slot,wid in enumerate(self.loadout.weapon_slots,1):self.player.cooldowns[slot]=max(0,self.runtime[wid].next_shot_at-self.elapsed) if wid else 0
         self.player.rpg_ammo=self.runtime[self.active_weapon_id].quota_remaining or 0
 
@@ -281,7 +308,7 @@ class BattleState:
         self.phase='failure';self.failure_reason=reason;self.emit('failure',reason=reason);self.clear_transients()
     def check_outcome(self):
         if self.phase!='active':return
-        if self.player.hp<=0:self.fail('player')
+        if all(p.hp<=0 for p in self.combat_players()):self.fail('player')
         elif self.city.hp<=0:self.fail('city')
         elif all(a.status=='destroyed' for a in self.aircraft.values()) and all(e.hp<=0 for e in self.enemies.values()):
             self.phase='success';self.emit('success',reward=self.level.reward);self.clear_transients()
@@ -328,6 +355,7 @@ class AppState:
 
     def transaction(self,kind,operation_id=None,continuation=None,return_route=None,**fields):
         from .progression import transact
+        if kind=='coop_reward':return {'result_code':'rejected','reason':'phase'}
         if self.pending_save or self.profile is None:return {'result_code':'rejected','reason':'phase'}
         if kind in ('reward','failure'):
             b=self.battle

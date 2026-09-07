@@ -2353,3 +2353,445 @@ footer {
     --panel-bottom: 12px;
   }
 }
+
+/* Deployment is a viewport workspace; none of its panels scroll vertically. */
+.multiplayer-panel {
+  max-width: 860px;
+}
+.party-heading {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.party-heading > svg {
+  width: 44px;
+  height: 44px;
+  color: #9ae8d4;
+}
+.party-heading h1 {
+  font-size: clamp(1.5rem, 3vw, 2.3rem);
+  margin: 0;
+}
+.multiplayer-panel input {
+  background: #183e53;
+  color: #fff;
+  border-color: #527589;
+  min-height: 44px;
+  margin: 8px 0;
+}
+.party-create {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.party-create input {
+  flex: 1;
+  min-width: 0;
+}
+.party-room-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+.party-room-list article,
+.party-members article {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid #527589;
+  padding: 12px;
+  border-radius: 12px;
+  background: #1c3b50;
+}
+.party-room-list article > div {
+  flex: 1;
+}
+.party-room-list article strong,
+.party-room-list article div > span {
+  display: block;
+}
+.party-room-list article div > span {
+  color: #bfd6e4;
+  font-size: 0.875rem;
+  margin-top: 4px;
+}
+.party-empty {
+  padding: 32px;
+  text-align: center;
+  background: #1c3b50;
+  border-radius: 12px;
+}
+.party-room-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.party-room-summary span {
+  background: #234c5e;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+.party-rule {
+  font-size: 0.875rem;
+  margin: 14px 0;
+  color: #bfd6e4;
+}
+.party-members {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 18px 0;
+}
+.party-members article > span:last-child {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.875rem;
+  color: #9ae8d4;
+}
+.party-avatar {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  background: #367185;
+}
+.party-ready-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.party-start {
+  margin: 16px 0;
+  width: 100%;
+}
+.party-result {
+  padding: 20px;
+  background: #245b60;
+  border-radius: 12px;
+}
+.party-team-hud {
+  position: fixed;
+  top: 174px;
+  left: 20px;
+  z-index: 12;
+  display: grid;
+  gap: 5px;
+  pointer-events: none;
+}
+.party-team-hud span {
+  padding: 5px 10px;
+  font-size: 0.875rem;
+  background: #102e43dd;
+  border-radius: 6px;
+  color: #9ae8d4;
+}
+@media (max-width: 700px) {
+  .party-members {
+    grid-template-columns: 1fr;
+  }
+  .party-create {
+    flex-wrap: wrap;
+  }
+  .party-team-hud {
+    top: 190px;
+    left: 8px;
+  }
+}
+.game > .deployment-preparation {
+  height: calc(100dvh - var(--panel-top) - var(--panel-bottom));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 18px 22px;
+  scrollbar-gutter: auto;
+}
+.deployment-preparation > .eyebrow {
+  display: none;
+}
+.deployment-preparation .steps {
+  margin: 0 0 8px;
+}
+.deployment-preparation h1 {
+  font-size: 1.6rem;
+  margin: 0 0 8px;
+}
+.deployment-preparation > footer {
+  margin: 10px 0 0;
+  flex: none;
+}
+.deployment-preparation > .shortcut-hint {
+  margin: 5px 0 0;
+}
+.deployment-workspace {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  gap: 8px;
+}
+.deployment-summary {
+  padding: 0;
+  gap: 8px;
+  font-size: 0.875rem;
+}
+.deployment-summary strong {
+  font-size: 1rem;
+}
+.deployment-workspace > .callout {
+  margin: 0;
+  padding: 5px 10px;
+  font-size: 0.875rem;
+}
+.deployment-layout {
+  flex: 1;
+  min-height: 0;
+  align-items: stretch;
+  grid-template-columns: 245px minmax(0, 1fr);
+  gap: 16px;
+}
+.turret-stock {
+  min-height: 0;
+  display: block;
+}
+.turret-kind-tabs > [data-slot='tabs-list'] {
+  width: 100%;
+  height: 44px;
+  background: #1c3b50;
+}
+.turret-kind-tabs [data-slot='tabs-trigger'] {
+  color: var(--turret-color);
+  min-width: 0;
+}
+.turret-kind-tabs .turret-card {
+  margin: 0;
+  padding: 12px;
+}
+.deployment-board {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  gap: 6px;
+}
+.deployment-board-head {
+  display: none;
+}
+.deployment-board .map-tools {
+  margin: 0;
+  gap: 5px;
+  flex-wrap: nowrap;
+}
+.deployment-board .map-tools button {
+  height: 36px;
+  min-width: 32px;
+  padding: 5px 10px;
+}
+.deployment-selection {
+  min-height: 38px;
+  padding: 6px 10px;
+  margin: 0;
+  flex: none;
+}
+.deployment-selection small {
+  display: none;
+}
+.deployment-board .tactical-map {
+  flex: 1;
+  height: auto;
+  min-height: 60px;
+  margin: 0;
+  touch-action: none;
+}
+.deployment-board p.map-legend {
+  display: none;
+}
+.deployment-board .terrain-legend {
+  margin: 0;
+  font-size: 0.8125rem;
+}
+.deployment-picker {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 38px;
+}
+.deployment-picker > [data-slot='select-trigger'] {
+  flex: 1;
+  min-width: 0;
+}
+.deployment-picker button {
+  min-height: 36px;
+  padding: 5px 10px;
+}
+@media (max-width: 700px) {
+  .game > .deployment-preparation {
+    width: calc(100% - 16px);
+    padding: 10px;
+  }
+  .deployment-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .turret-stock {
+    flex: none;
+  }
+  .turret-kind-tabs {
+    gap: 4px;
+  }
+  .turret-kind-tabs .turret-card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 3px 8px;
+    padding: 8px;
+  }
+  .turret-card-title {
+    margin: 0;
+  }
+  .turret-kind-tabs .turret-symbol,
+  .turret-kind-tabs .turret-card-title div > span,
+  .turret-kind-tabs .turret-card > p {
+    display: none;
+  }
+  .turret-kind-tabs .turret-card h3 {
+    font-size: 0.875rem;
+    margin: 0;
+  }
+  .turret-kind-tabs .turret-card dl {
+    margin: 0;
+    gap: 8px;
+    grid-column: 1;
+    font-size: 0.8125rem;
+  }
+  .turret-kind-tabs .turret-card dl div {
+    display: flex;
+    gap: 4px;
+  }
+  .turret-kind-tabs .turret-card dl dt {
+    margin: 0;
+  }
+  .turret-kind-tabs .turret-stock-count {
+    margin: 0;
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 0.8125rem;
+  }
+  .turret-kind-tabs .turret-add {
+    grid-column: 2;
+    grid-row: 2 / span 2;
+    min-height: 36px;
+    padding: 4px 10px;
+  }
+  .turret-kind-tabs .turret-card > small {
+    margin: 0;
+    font-size: 0.8125rem;
+  }
+  .deployment-board {
+    flex: 1;
+  }
+  .deployment-preparation > .shortcut-hint {
+    display: none;
+  }
+}
+@media (max-height: 560px) {
+  .game > .deployment-preparation {
+    padding: 8px 12px;
+  }
+  .deployment-preparation h1,
+  .deployment-preparation > .shortcut-hint,
+  .deployment-workspace > .callout {
+    display: none;
+  }
+  .deployment-preparation .steps {
+    margin-bottom: 4px;
+  }
+  .deployment-layout {
+    display: grid;
+    grid-template-columns: 210px minmax(0, 1fr);
+    gap: 10px;
+  }
+  .turret-kind-tabs .turret-card {
+    padding: 8px;
+    display: block;
+  }
+  .turret-kind-tabs .turret-card-title,
+  .turret-kind-tabs .turret-card p,
+  .turret-kind-tabs .turret-card dl {
+    display: none;
+  }
+  .turret-kind-tabs .turret-stock-count {
+    margin: 5px 0;
+  }
+  .turret-kind-tabs .turret-card > small {
+    font-size: 0.8125rem;
+    margin-top: 4px;
+  }
+  .deployment-board .terrain-legend {
+    display: none;
+  }
+  .deployment-preparation > footer {
+    margin-top: 6px;
+  }
+  .deployment-preparation > footer button {
+    min-height: 32px;
+    padding: 5px 16px;
+  }
+}
+
+.party-pages {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+@media (max-height: 800px) {
+  .multiplayer-panel {
+    padding: 20px;
+  }
+  .party-heading {
+    margin-bottom: 12px;
+  }
+  .party-rule {
+    margin: 8px 0;
+  }
+  .party-members {
+    margin: 10px 0;
+    gap: 6px;
+  }
+  .party-members article {
+    padding: 8px;
+  }
+  .multiplayer-panel footer {
+    margin-top: 14px;
+  }
+}
+
+@media (max-width: 700px) and (min-height: 561px) {
+  .deployment-preparation h1,
+  .deployment-workspace > .callout {
+    display: none;
+  }
+  .turret-kind-tabs .turret-card-title,
+  .turret-kind-tabs .turret-card dl {
+    display: none;
+  }
+  .turret-kind-tabs .turret-card {
+    grid-template-columns: 1fr auto;
+  }
+  .turret-kind-tabs .turret-stock-count {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .turret-kind-tabs .turret-add {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+  .turret-kind-tabs .turret-card > small {
+    grid-column: 1;
+    grid-row: 2;
+  }
+}

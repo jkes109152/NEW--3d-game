@@ -77,7 +77,7 @@ REQUEST_FIELDS = {
  'upgrade_player':{'upgrade_id'},'upgrade_weapon':{'weapon_id','upgrade_id'},
  'purchase_attachment':{'weapon_id','attachment_id'},'purchase_cosmetic':{'weapon_id','cosmetic_kind','cosmetic_id'},
  'customize_weapon':{'weapon_id','selected_attachments','selected_color','selected_pattern'},
- 'confirm_loadout':{'loadout'},'reward':{'a','b','A'},'failure':{'a','b','A'},'rebirth':set()}
+ 'confirm_loadout':{'loadout'},'reward':{'a','b','A'},'failure':{'a','b','A'},'coop_reward':{'a','b','A','party_size'},'rebirth':set()}
 
 def valid_id(value):return type(value) is str and re.fullmatch('[0-9a-f]{32}',value) is not None
 
@@ -97,8 +97,11 @@ def validate_request(req):
  kind=req.get('kind')
  if type(kind) is not str or kind not in REQUEST_FIELDS or set(req)!=REQUEST_FIELDS[kind]|{'kind','profile_id','rebirth_count'}:raise ValueError('交易欄位無效')
  if not valid_id(req['profile_id']) or type(req['rebirth_count']) is not int or req['rebirth_count']<0:raise ValueError('交易身分無效')
- for key in REQUEST_FIELDS[kind]-{'a','b','A','loadout','selected_attachments'}:
+ for key in REQUEST_FIELDS[kind]-{'a','b','A','party_size','loadout','selected_attachments'}:
   if type(req[key]) is not str:raise ValueError('交易識別字無效')
+ if kind=='coop_reward':
+  if type(req['party_size']) is not int or not 1<=req['party_size']<=4:raise ValueError('房間人數無效')
+  roster_for(req['a'],req['b'],req['A'])
  if kind in ('reward','failure'):roster_for(req['a'],req['b'],req['A'])
  if kind=='confirm_loadout':
   load=req['loadout']
@@ -152,6 +155,10 @@ def _apply(p,req,op):
  elif kind=='confirm_loadout':
   from .loadout import validate_loadout
   reason=validate_loadout(p,req['loadout']);require(reason is None,reason);p['confirmed_loadout']=deepcopy(req['loadout']);summary['deployed_count']=len(req['loadout']['deployments'])
+ elif kind=='coop_reward':
+  require(req['A']<=p['rebirth_count']+2,'invalid_round');level=level_for(req['a'],req['b'],req['A'],p['rebirth_count'])
+  reward=floor(level.reward*1.5**(req['party_size']-1));p['coins']+=reward
+  summary.update(a=level.a,b=level.b,A=level.A,party_size=req['party_size'])
  elif kind in ('reward','failure'):
   require(req['A']==p['rebirth_count']+2,'invalid_round');level=level_for(req['a'],req['b'],req['A']);summary.update(a=level.a,b=level.b,A=level.A)
   if kind=='reward':p['coins']+=level.reward;p['last_completed_a_b']={'a':level.a,'b':level.b};p['rebirth_available']|=level.is_final

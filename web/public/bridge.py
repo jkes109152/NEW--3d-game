@@ -90,11 +90,7 @@ def initialize(storage):
 def catalog_json():
     return json.dumps(dict(weapons={k:asdict(v) for k,v in WEAPONS.items()},armors={k:asdict(v) for k,v in ARMORS.items()},turrets={k:asdict(v) for k,v in TURRETS.items()},attachments={k:asdict(v) for k,v in ATTACHMENTS.items()},upgrades=dict(UPGRADE_PRICES),upgrade_names=dict(UPGRADE_NAMES),colors=dict(COLORS),patterns=dict(PATTERNS),categories=dict(CATEGORY_NAMES),modes=dict(MODE_NAMES),recipes=dict(RECIPES),palette=dict(PALETTE),armor_parts=dict(ARMOR_PARTS),covers=COVERS,route=ROUTE),ensure_ascii=False)
 
-def state_json(message=None,transaction_result=None):
-    global ui_generation,ui_route
-    b=app.battle
-    route=(app.screen,app.slot,(app.profile or {}).get('profile_id'),id(app.draft) if app.draft else None,b.attempt_id if b else None,b.phase if b else None)
-    if route!=ui_route:ui_generation+=1;ui_route=route
+def battle_snapshot(b):
     snap=b.snapshot() if b else None
     if snap:
         rt=b.runtime[b.active_weapon_id]
@@ -116,6 +112,14 @@ def state_json(message=None,transaction_result=None):
             for item in snap[kind]:
                 projectile=objects[item['id']]
                 item.update(forward=projectile.forward.tuple(),weapon_id=projectile.weapon_id,age=projectile.age)
+    return snap
+
+def state_json(message=None,transaction_result=None):
+    global ui_generation,ui_route
+    b=app.battle
+    route=(app.screen,app.slot,(app.profile or {}).get('profile_id'),id(app.draft) if app.draft else None,b.attempt_id if b else None,b.phase if b else None)
+    if route!=ui_route:ui_generation+=1;ui_route=route
+    snap=battle_snapshot(b)
     return json.dumps(dict(screen=app.screen,generation=ui_generation,profile=app.profile,slot=app.slot,cursor=app.cursor,draft=app.draft.loadout if app.draft else None,battle=snap,result=app.last_result,error=app.error,message=message,transaction_result=transaction_result,quotes=upgrade_quotes(),shop=shop_details() if app.screen=='store' else None,slots=app.repository.list_slots() if app.screen=='slot_select' else None,delete_confirmation=delete_confirmation),ensure_ascii=False)
 
 WEAPON_STAT_FIELDS=('base_damage','interval','burst_interval','range','magazine_size','reload_seconds','pellet_count','spread_angle','lock_seconds','lock_box_scale','aim_assist','aim_factor','quota','projectile_speed','blast_radius')
@@ -206,6 +210,8 @@ def dispatch(raw):
         elif action=='weapon':message=app.set_draft_slot(int(p['slot']),p.get('id'))
         elif action=='place':message=app.place_turret(p['id'],p['x'],p['z'])
         elif action=='remove':app.remove_turret(p['id'])
+        elif action=='party_confirm':
+            if app.confirm_and_start():app.show_menu()
         elif action=='start':app.confirm_and_start()
         elif action=='pause' and app.battle:
             app.battle.pause()
@@ -227,3 +233,66 @@ def dispatch(raw):
             if app.battle.phase=='active' and not app.pending_save:app.repository.touch(app.slot)
     except (SaveError,ValueError,KeyError,TypeError) as e:message=str(e)
     return state_json(ERRORS.get(message,message),transaction_result)
+
+
+party_battle=None
+def party_start(raw):
+    global party_battle
+    from air_defense.multiplayer import CooperativeBattle
+    from air_defense.progression import level_for
+    data=json.loads(raw)
+    members=[dict(id=m['id'],name=m['name'],profile=validate_profile(m['profile'])) for m in data['roster']]
+    party_battle=CooperativeBattle(members,level_for(*data['level']),data['runId'])
+    return party_snapshot()
+
+def party_snapshot():
+    views={}
+    for key,actor in party_battle.actors.items():
+        view=battle_snapshot(actor)
+        view.update(attempt_id=party_battle.attempt_id,phase=party_battle.phase,players=party_battle.roster_snapshot(),self_id=key,
+                    party_size=party_battle.count,events=party_battle.events,cooperative=True,input_ack=getattr(actor,'input_ack',0),input_stream=getattr(actor,'input_stream',None),command_ack=actor.last_command,look_total_ack=getattr(actor,'look_total',[0,0]))
+        views[key]=view
+    return json.dumps(dict(phase=party_battle.phase,views=views),ensure_ascii=False)
+
+def party_tick(raw):
+    data=json.loads(raw);frames={}
+    for key,item in data['frames'].items():
+        if key not in party_battle.actors:continue
+        actor=party_battle.actors[key]
+        actor.input_ack=item.get('ackInput',getattr(actor,'input_ack',0))
+        if item.get('departed'):actor.player.hp=0
+        if item.get('suspended'):
+            actor.held=False;actor.require_release=True;actor.lock.clear();actor.player.aiming=False
+            frames[key]=InputFrame();continue
+        if item.get('stream') and item['stream']!=getattr(actor,'input_stream',None):
+            actor.input_stream=item['stream'];actor.last_command=-1;actor.held=False;actor.look_total=[0,0]
+        commands=tuple(InputCommand(**c) for c in item.get('commands',[])[:96] if c.get('kind') in ('fire_down','fire_up','select_slot','toggle_aim','reload','jump'))
+        actor.aspect=max(.2,min(6,float(item.get('aspect',16/9))))
+        look=item.get('look_delta',[0,0])
+        if 'look_total' in item:
+            total=item['look_total'];previous=getattr(actor,'look_total',[0,0]);look=[total[0]-previous[0],total[1]-previous[1]];actor.look_total=total
+        frames[key]=InputFrame(move_x=max(-1,min(1,float(item.get('move_x',0)))),move_z=max(-1,min(1,float(item.get('move_z',0)))),
+                               look_delta=tuple(max(-180,min(180,float(v))) for v in look[:2]),commands=commands)
+    party_battle.advance_group(data['dt'],frames)
+    return party_snapshot()
+
+def party_reward(raw):
+    from copy import deepcopy
+    from air_defense.progression import transact
+    from air_defense.state import PendingSave
+    receipt=json.loads(raw)
+    if app.pending_save:return state_json('請先重試保存')
+    if not app.profile or app.profile['profile_id']!=receipt['profile_id'] or app.profile['rebirth_count']!=receipt['rebirth']:
+        return state_json('此獎勵屬於出戰時的存檔與重生輪次。')
+    if receipt['reward']<=0:return state_json()
+    candidate=deepcopy(app.profile)
+    request=dict(kind='coop_reward',profile_id=receipt['profile_id'],rebirth_count=receipt['rebirth'],a=receipt['level_a'],b=receipt['level_b'],A=receipt['campaign'],party_size=receipt['party_size'])
+    result=transact(candidate,receipt['run_id'],request)
+    if result['result_code']!='applied' or result['coins_delta']!=receipt['reward']:
+        return state_json('獎勵驗證失敗，尚未更改存檔。')
+    try:app.repository.save(app.slot,candidate)
+    except SaveError as exc:
+        app.pending_save=PendingSave(candidate,receipt['run_id'],result,'profile_menu');app.screen='save_error';app.error=str(exc)
+        return state_json()
+    app.profile=candidate
+    return state_json()
