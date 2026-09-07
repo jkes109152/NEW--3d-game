@@ -89,6 +89,8 @@ try {
 
 2026-09-07 結算修訂可執行 `tools/result_navigation_probe.py --size 1280x720 --output artifacts/002-gameplay-expansion/result-navigation/1280x720`，再以 `--size 1920x1080` 及對應輸出目錄重跑另一解析度。工具驗敗北 3-1→1-1、四種勝利下一關、實際按鈕／Enter／Esc、過期按鈕與當局關卡，僅使用隔離檔案及離屏引擎入口。最新證據見 [結算導覽驗收](../../artifacts/002-gameplay-expansion/result-navigation/acceptance.md)。
 
+保存例外修正使用 `tools/save_recovery_probe.py --width 1280 --height 720 --output artifacts/002-gameplay-expansion/code-review/rerun-1280x720`，另一解析度改用 `--width 1920 --height 1080` 及獨立輸出目錄。工具驗購買／升級重試、損壞資料復原與過期確認，詳見 [本地審查](../../docs/CODE_REVIEW_V2.md)；所有存檔均為臨時資料，畫面為離屏 UI 回呼驗證。
+
 預期 A4 平均≥55 FPS、P1≥45 FPS、無連續兩幀各超過 250 ms；A8 十二塔加全自動／火箭負載量測足 60 秒，記錄硬體、原始幀時間及每秒物件數，結束回基準。十輪無持續新增 Entity／task／input handler／彈體／UI；快取單列。
 
 以含繁體中文及空白的測試路徑檢查啟動、離線後續啟動、無音訊與低畫質；無原生視窗／輸入能力時明列未驗證。所有工具必須傳回真實退出碼，最後以 `$speckit-converge` 對照需求並將尚未完成者交回任務，不可只憑產出檔案宣稱交付。

@@ -38,7 +38,7 @@ Windows 單機第一人稱空地防守遊戲。用二十種武器、六件裝甲
 
 ## 驗證與文件
 
-雙擊 `run_tests.cmd` 執行 compileall 與完整規則測試。退出碼及日誌保存於 `artifacts/tests.log` 和 `artifacts/002-gameplay-expansion/tests.log`。新版 [驗收入口](artifacts/002-gameplay-expansion/acceptance.md) 分別列出純規則、自動引擎、原生鍵鼠、效能與啟動證據；[舊版程式審查](docs/CODE_REVIEW.md) 保留為歷史紀錄。
+雙擊 `run_tests.cmd` 執行 compileall 與完整規則測試。退出碼及日誌保存於 `artifacts/tests.log` 和 `artifacts/002-gameplay-expansion/tests.log`。新版 [驗收入口](artifacts/002-gameplay-expansion/acceptance.md) 分別列出純規則、自動引擎、原生鍵鼠、效能與啟動證據；[002 本地審查](docs/CODE_REVIEW_V2.md) 記錄保存例外修正與 145 項測試，[舊版程式審查](docs/CODE_REVIEW.md) 保留為歷史紀錄。
 
 啟動或依賴失敗時查看 `artifacts/launcher-error.log`、`artifacts/dependency-install.log`；遊戲執行錯誤見 `artifacts/game-error.log`。素材來源見 [授權清單](assets/LICENSES.md)。
 

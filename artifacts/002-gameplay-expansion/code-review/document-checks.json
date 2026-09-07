@@ -1,0 +1,21 @@
+{
+  "markdown_files": 37,
+  "local_links": 269,
+  "broken_links": [],
+  "tasks": 106,
+  "completed": 106,
+  "traditional_chinese": "新增說明已目視核對；常見簡體字掃描通過",
+  "changed_documents": [
+    "README.md",
+    "docs/CODE_REVIEW_V2.md",
+    "docs/DECISIONS.md",
+    "specs/002-gameplay-expansion/plan.md",
+    "specs/002-gameplay-expansion/spec.md",
+    "specs/002-gameplay-expansion/quickstart.md",
+    "specs/002-gameplay-expansion/tasks.md",
+    "specs/002-gameplay-expansion/contracts/save-transactions.md",
+    "specs/002-gameplay-expansion/contracts/ui-deployment.md",
+    "artifacts/002-gameplay-expansion/acceptance.md",
+    "artifacts/002-gameplay-expansion/code-review/pr-body.md"
+  ]
+}
