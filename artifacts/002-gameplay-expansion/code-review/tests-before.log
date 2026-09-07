@@ -1,0 +1,178 @@
+test_delete_confirmation_rejects_changed_formal_file_or_backups (tests.test_review_v2_regressions.ReviewV2Tests.test_delete_confirmation_rejects_changed_formal_file_or_backups) ...
+  test_delete_confirmation_rejects_changed_formal_file_or_backups (tests.test_review_v2_regressions.ReviewV2Tests.test_delete_confirmation_rejects_changed_formal_file_or_backups) (change='formal') ... FAIL
+  test_delete_confirmation_rejects_changed_formal_file_or_backups (tests.test_review_v2_regressions.ReviewV2Tests.test_delete_confirmation_rejects_changed_formal_file_or_backups) (change='backup') ... FAIL
+  test_delete_confirmation_rejects_changed_formal_file_or_backups (tests.test_review_v2_regressions.ReviewV2Tests.test_delete_confirmation_rejects_changed_formal_file_or_backups) (change='added_backup') ... FAIL
+  test_delete_confirmation_rejects_changed_formal_file_or_backups (tests.test_review_v2_regressions.ReviewV2Tests.test_delete_confirmation_rejects_changed_formal_file_or_backups) (change='removed_formal') ... FAIL
+test_delete_preview_read_failure_is_visible_and_preserves_file (tests.test_review_v2_regressions.ReviewV2Tests.test_delete_preview_read_failure_is_visible_and_preserves_file) ... FAIL
+test_failed_retry_keeps_error_route_until_write_succeeds (tests.test_review_v2_regressions.ReviewV2Tests.test_failed_retry_keeps_error_route_until_write_succeeds) ... ERROR
+test_purchase_from_preview_retries_into_usable_customization (tests.test_review_v2_regressions.ReviewV2Tests.test_purchase_from_preview_retries_into_usable_customization) ... ERROR
+test_recovery_confirmation_rejects_changed_or_missing_source (tests.test_review_v2_regressions.ReviewV2Tests.test_recovery_confirmation_rejects_changed_or_missing_source) ...
+  test_recovery_confirmation_rejects_changed_or_missing_source (tests.test_review_v2_regressions.ReviewV2Tests.test_recovery_confirmation_rejects_changed_or_missing_source) (change='replace') ... FAIL
+  test_recovery_confirmation_rejects_changed_or_missing_source (tests.test_review_v2_regressions.ReviewV2Tests.test_recovery_confirmation_rejects_changed_or_missing_source) (change='remove') ... FAIL
+test_unrepresentable_coordinate_rejected_without_changing_draft (tests.test_review_v2_regressions.ReviewV2Tests.test_unrepresentable_coordinate_rejected_without_changing_draft) ...
+  test_unrepresentable_coordinate_rejected_without_changing_draft (tests.test_review_v2_regressions.ReviewV2Tests.test_unrepresentable_coordinate_rejected_without_changing_draft) (value='100000000000000000000000000000') ... ERROR
+  test_unrepresentable_coordinate_rejected_without_changing_draft (tests.test_review_v2_regressions.ReviewV2Tests.test_unrepresentable_coordinate_rejected_without_changing_draft) (value='-10000000000000000000000000000') ... ERROR
+test_unrepresentable_coordinates_and_deep_json_offer_recovery (tests.test_review_v2_regressions.ReviewV2Tests.test_unrepresentable_coordinates_and_deep_json_offer_recovery) ...
+  test_unrepresentable_coordinates_and_deep_json_offer_recovery (tests.test_review_v2_regressions.ReviewV2Tests.test_unrepresentable_coordinates_and_deep_json_offer_recovery) (payload=b'{"schema_version": 2, "profile_id": "111') ... ERROR
+  test_unrepresentable_coordinates_and_deep_json_offer_recovery (tests.test_review_v2_regressions.ReviewV2Tests.test_unrepresentable_coordinates_and_deep_json_offer_recovery) (payload=b'{"schema_version": 2, "profile_id": "111') ... ERROR
+test_upgrade_retry_updates_preview_and_preserves_unsaved_selection (tests.test_review_v2_regressions.ReviewV2Tests.test_upgrade_retry_updates_preview_and_preserves_unsaved_selection) ... FAIL
+
+======================================================================
+ERROR: test_failed_retry_keeps_error_route_until_write_succeeds (tests.test_review_v2_regressions.ReviewV2Tests.test_failed_retry_keeps_error_route_until_write_succeeds)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_v2_regressions.py", line 92, in test_failed_retry_keeps_error_route_until_write_succeeds
+    self.assertEqual(self.render_customization(c).weapon_id, 'W04')
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_v2_regressions.py", line 50, in render_customization
+    ui.show_weapon_customize()
+  File "C:\Users\lamuness\Desktop\game\air_defense\ui.py", line 247, in show_weapon_customize
+    for k in ('owned_attachments','owned_colors','owned_patterns'):draft[k]=deepcopy(owned[k])
+                                                                   ~~~~~^^^
+TypeError: 'NoneType' object does not support item assignment
+
+======================================================================
+ERROR: test_purchase_from_preview_retries_into_usable_customization (tests.test_review_v2_regressions.ReviewV2Tests.test_purchase_from_preview_retries_into_usable_customization)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_v2_regressions.py", line 57, in test_purchase_from_preview_retries_into_usable_customization
+    self.assertEqual(self.render_customization(c).weapon_id, 'W04')
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_v2_regressions.py", line 50, in render_customization
+    ui.show_weapon_customize()
+  File "C:\Users\lamuness\Desktop\game\air_defense\ui.py", line 247, in show_weapon_customize
+    for k in ('owned_attachments','owned_colors','owned_patterns'):draft[k]=deepcopy(owned[k])
+                                                                   ~~~~~^^^
+TypeError: 'NoneType' object does not support item assignment
+
+======================================================================
+ERROR: test_unrepresentable_coordinate_rejected_without_changing_draft (tests.test_review_v2_regressions.ReviewV2Tests.test_unrepresentable_coordinate_rejected_without_changing_draft) (value='100000000000000000000000000000')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_v2_regressions.py", line 123, in test_unrepresentable_coordinate_rejected_without_changing_draft
+    self.assertEqual(validate_placement(None, (value, 0)), 'invalid_position')
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lamuness\Desktop\game\air_defense\deployment.py", line 23, in validate_placement
+    if len(position)!=2 or any(type(v) not in (int,float) or not isfinite(v) for v in position):return 'invalid_position'
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lamuness\Desktop\game\air_defense\deployment.py", line 23, in <genexpr>
+    if len(position)!=2 or any(type(v) not in (int,float) or not isfinite(v) for v in position):return 'invalid_position'
+                                                                 ^^^^^^^^^^^
+OverflowError: int too large to convert to float
+
+======================================================================
+ERROR: test_unrepresentable_coordinate_rejected_without_changing_draft (tests.test_review_v2_regressions.ReviewV2Tests.test_unrepresentable_coordinate_rejected_without_changing_draft) (value='-10000000000000000000000000000')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_v2_regressions.py", line 123, in test_unrepresentable_coordinate_rejected_without_changing_draft
+    self.assertEqual(validate_placement(None, (value, 0)), 'invalid_position')
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lamuness\Desktop\game\air_defense\deployment.py", line 23, in validate_placement
+    if len(position)!=2 or any(type(v) not in (int,float) or not isfinite(v) for v in position):return 'invalid_position'
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lamuness\Desktop\game\air_defense\deployment.py", line 23, in <genexpr>
+    if len(position)!=2 or any(type(v) not in (int,float) or not isfinite(v) for v in position):return 'invalid_position'
+                                                                 ^^^^^^^^^^^
+OverflowError: int too large to convert to float
+
+======================================================================
+ERROR: test_unrepresentable_coordinates_and_deep_json_offer_recovery (tests.test_review_v2_regressions.ReviewV2Tests.test_unrepresentable_coordinates_and_deep_json_offer_recovery) (payload=b'{"schema_version": 2, "profile_id": "111')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_v2_regressions.py", line 109, in test_unrepresentable_coordinates_and_deep_json_offer_recovery
+    self.repo.load(1)
+  File "C:\Users\lamuness\Desktop\game\air_defense\save_data.py", line 146, in load
+    try: return validate_profile(json.loads(raw,object_pairs_hook=strict_object,parse_constant=lambda x:(_ for _ in ()).throw(ValueError(x))))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lamuness\Desktop\game\air_defense\save_data.py", line 59, in validate_profile
+    for axis in ('x','z'):require(type(tower[axis]) in (int,float) and isfinite(tower[axis]))
+                                                                       ^^^^^^^^^^^^^^^^^^^^^
+OverflowError: int too large to convert to float
+
+======================================================================
+ERROR: test_unrepresentable_coordinates_and_deep_json_offer_recovery (tests.test_review_v2_regressions.ReviewV2Tests.test_unrepresentable_coordinates_and_deep_json_offer_recovery) (payload=b'{"schema_version": 2, "profile_id": "111')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_v2_regressions.py", line 109, in test_unrepresentable_coordinates_and_deep_json_offer_recovery
+    self.repo.load(1)
+  File "C:\Users\lamuness\Desktop\game\air_defense\save_data.py", line 146, in load
+    try: return validate_profile(json.loads(raw,object_pairs_hook=strict_object,parse_constant=lambda x:(_ for _ in ()).throw(ValueError(x))))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lamuness\Desktop\game\air_defense\save_data.py", line 59, in validate_profile
+    for axis in ('x','z'):require(type(tower[axis]) in (int,float) and isfinite(tower[axis]))
+                                                                       ^^^^^^^^^^^^^^^^^^^^^
+OverflowError: int too large to convert to float
+
+======================================================================
+FAIL: test_delete_confirmation_rejects_changed_formal_file_or_backups (tests.test_review_v2_regressions.ReviewV2Tests.test_delete_confirmation_rejects_changed_formal_file_or_backups) (change='formal')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_v2_regressions.py", line 155, in test_delete_confirmation_rejects_changed_formal_file_or_backups
+    self.assertFalse(self.repo.confirm_delete(1, token))
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_delete_confirmation_rejects_changed_formal_file_or_backups (tests.test_review_v2_regressions.ReviewV2Tests.test_delete_confirmation_rejects_changed_formal_file_or_backups) (change='backup')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_v2_regressions.py", line 155, in test_delete_confirmation_rejects_changed_formal_file_or_backups
+    self.assertFalse(self.repo.confirm_delete(1, token))
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_delete_confirmation_rejects_changed_formal_file_or_backups (tests.test_review_v2_regressions.ReviewV2Tests.test_delete_confirmation_rejects_changed_formal_file_or_backups) (change='added_backup')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_v2_regressions.py", line 155, in test_delete_confirmation_rejects_changed_formal_file_or_backups
+    self.assertFalse(self.repo.confirm_delete(1, token))
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_delete_confirmation_rejects_changed_formal_file_or_backups (tests.test_review_v2_regressions.ReviewV2Tests.test_delete_confirmation_rejects_changed_formal_file_or_backups) (change='removed_formal')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_v2_regressions.py", line 155, in test_delete_confirmation_rejects_changed_formal_file_or_backups
+    self.assertFalse(self.repo.confirm_delete(1, token))
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_delete_preview_read_failure_is_visible_and_preserves_file (tests.test_review_v2_regressions.ReviewV2Tests.test_delete_preview_read_failure_is_visible_and_preserves_file)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_v2_regressions.py", line 167, in test_delete_preview_read_failure_is_visible_and_preserves_file
+    self.assertEqual(c.state.screen, 'profile_menu')
+AssertionError: 'delete_confirm' != 'profile_menu'
+- delete_confirm
++ profile_menu
+
+
+======================================================================
+FAIL: test_recovery_confirmation_rejects_changed_or_missing_source (tests.test_review_v2_regressions.ReviewV2Tests.test_recovery_confirmation_rejects_changed_or_missing_source) (change='replace')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_v2_regressions.py", line 137, in test_recovery_confirmation_rejects_changed_or_missing_source
+    with self.assertRaises(SaveError) as error:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: SaveError not raised
+
+======================================================================
+FAIL: test_recovery_confirmation_rejects_changed_or_missing_source (tests.test_review_v2_regressions.ReviewV2Tests.test_recovery_confirmation_rejects_changed_or_missing_source) (change='remove')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_v2_regressions.py", line 137, in test_recovery_confirmation_rejects_changed_or_missing_source
+    with self.assertRaises(SaveError) as error:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: SaveError not raised
+
+======================================================================
+FAIL: test_upgrade_retry_updates_preview_and_preserves_unsaved_selection (tests.test_review_v2_regressions.ReviewV2Tests.test_upgrade_retry_updates_preview_and_preserves_unsaved_selection)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lamuness\Desktop\game\tests\test_review_v2_regressions.py", line 74, in test_upgrade_retry_updates_preview_and_preserves_unsaved_selection
+    self.assertAlmostEqual(stats.base_damage, 1.4375)
+AssertionError: 1.15 != 1.4375 within 7 places (0.2875000000000001 difference)
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.177s
+
+FAILED (failures=8, errors=6)

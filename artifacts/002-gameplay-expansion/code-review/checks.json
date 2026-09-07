@@ -1,0 +1,51 @@
+{
+  "baseline": "86a0b613b4701f95183a24abb26f6b790aed1001",
+  "branch": "002-review-fixes",
+  "findings": 5,
+  "remaining_actionable_findings": 0,
+  "source_files": 92,
+  "tests_before": {
+    "command": ".venv/Scripts/python.exe -m unittest tests.test_review_v2_regressions -v",
+    "exit_code": 1,
+    "tests": 8,
+    "failures": 8,
+    "errors": 6
+  },
+  "deep_json_baseline": {
+    "commit": "86a0b6",
+    "depth": 10000,
+    "exception": "RecursionError",
+    "reproduction_exit_code": 0
+  },
+  "targeted": {
+    "exit_code": 0,
+    "tests": 33
+  },
+  "full_tests": {
+    "command": ".venv/Scripts/python.exe -m unittest discover -s tests -v",
+    "exit_code": 0,
+    "tests": 145
+  },
+  "compileall": {
+    "command": ".venv/Scripts/python.exe -m compileall -q air_defense tests tools",
+    "exit_code": 0
+  },
+  "engine": [
+    {
+      "resolution": "1280x720",
+      "exit_code": 0,
+      "cases": 6,
+      "screenshots": 7
+    },
+    {
+      "resolution": "1920x1080",
+      "exit_code": 0,
+      "cases": 6,
+      "screenshots": 7
+    }
+  ],
+  "git_diff_check_exit_code": 0,
+  "user_manual_report": "使用者於本輪開始前回報人工測試無問題；未列逐項覆蓋",
+  "native_retested": false,
+  "log_normalization": "僅移除日誌行尾空白並正規化 LF，保留錯誤、命令結果及退出碼。"
+}

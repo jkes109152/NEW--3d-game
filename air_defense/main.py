@@ -103,14 +103,17 @@ class GameController:
         self.route('store')
     def shop_action(self,kind,**fields):
         result=self.state.transaction(kind,**fields)
+        self.sync_custom_draft()
+        self.ui.show();self.ui.toast(ERRORS.get(result['reason'],result['reason']))
+        if result['result_code']=='applied':self.audio.play('shop')
+    def sync_custom_draft(self):
+        # 一般保存與重試共用；只更新能力及所有權，保留尚未套用的選擇。
         if self.state.screen=='weapon_customize' and self.custom_weapon in self.state.profile['owned_weapons']:
             from copy import deepcopy
             owned=self.state.profile['owned_weapons'][self.custom_weapon]
             if self.custom_draft is None:self.custom_draft=deepcopy(owned)
             else:
                 for key in ('upgrade_levels','owned_attachments','owned_colors','owned_patterns'):self.custom_draft[key]=deepcopy(owned[key])
-        self.ui.show();self.ui.toast(ERRORS.get(result['reason'],result['reason']))
-        if result['result_code']=='applied':self.audio.play('shop')
     def customize(self,weapon_id):
         from copy import deepcopy
         self.custom_weapon=weapon_id;self.custom_draft=deepcopy(self.state.profile['owned_weapons'].get(weapon_id));self.custom_tab='upgrade';self.route('weapon_customize')
@@ -197,9 +200,11 @@ class GameController:
         self.ui.toast(ERRORS.get(result,result))
 
     def request_delete(self,slot):
-        self.dialog_slot=slot
-        self.delete_token=self.state.repository.request_delete(slot)
-        self.route('delete_confirm')
+        try:
+            self.delete_token=self.state.repository.request_delete(slot)
+            self.dialog_slot=slot
+            self.route('delete_confirm')
+        except SaveError as exc:self.ui.toast(str(exc),5)
 
     def confirm_delete(self):
         try:
@@ -232,6 +237,7 @@ class GameController:
 
     def retry_save(self):
         if self.state.retry_save():
+            self.sync_custom_draft()
             self.ui.show()
             self.ui.toast('保存完成')
         else: self.ui.toast('保存仍未完成，請檢查資料夾後重試',4)

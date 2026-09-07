@@ -14,13 +14,17 @@ class WorldDefinition:
 
 WORLD=WorldDefinition()
 
+def finite_coordinate(value):
+    try:return type(value) in (int,float) and isfinite(value)
+    except OverflowError:return False
+
 def visible(start,end,world=None):
     world=world or WORLD;delta=end-start;length=delta.length()
     return length<1e-9 or all(ray_box(start,delta/length,c,size,max(0,length-1e-7)) is None for c,size in world.boxes)
 
 def validate_placement(world,position,others=()):
     world=world or WORLD
-    if len(position)!=2 or any(type(v) not in (int,float) or not isfinite(v) for v in position):return 'invalid_position'
+    if len(position)!=2 or any(not finite_coordinate(v) for v in position):return 'invalid_position'
     x,z=position;left,right,bottom,top=world.bounds;r=1.5
     if not left+r-1e-9<=x<=right-r+1e-9 or not bottom+r-1e-9<=z<=top-r+1e-9:return 'outside_map'
     for center,size in world.boxes:

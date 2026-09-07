@@ -337,7 +337,8 @@ T010–T011 提供共用驗證／保存框架；T075、T082、T086 在十二處�
 | 原始任務小計 | 96 |
 | 第 11 階段收斂追加 | 2 |
 | 第 12 階段結算導覽 | 4 |
-| 合計 | 102 |
+| 第 13 階段本地審查修正 | 4 |
+| 合計 | 106 |
 
 共 21 項標示 `[P]`；全部為獨立檔案的測試撰寫工作。任務 ID 連續、故事標籤與階段一致，所有任務附具體檔案路徑。
 
@@ -359,3 +360,14 @@ T010–T011 提供共用驗證／保存框架；T075、T082、T086 在十二處�
 - [X] T102 以 `tools/result_navigation_probe.py` 驗兩解析度的實際按鈕／Enter／舊按鈕連點、結算文字、準備／確認／新當局及清理；執行完整規則測試、compileall 與文件核對，在 `artifacts/002-gameplay-expansion/result-navigation/` 保存報告、截圖、來源雜湊及 PR 正文。
 
 完成驗證後，提交與 PR 合併／分支清理依憲章 VII／VIII 執行；真實遠端結果以 gh PR 紀錄與交付回報核對，不把預先撰寫正文視為已合併。
+
+## 階段 13：本地審查與例外路徑修正
+
+使用者回報人工測試無問題後，依 FR-008／FR-009、FR-029／FR-030 審查保存恢復、破損資料與確認操作；沿用 `002-review-fixes` 分支，不改玩法或資料版本。
+
+- [X] T103 在 `tests/test_review_v2_regressions.py` 重現工坊購買／升級重試、異常座標與深層 JSON、復原來源變更及刪除目標變更，保存修正前失敗日誌並同步 `contracts/ui-deployment.md`、`contracts/save-transactions.md`。
+- [X] T104 修正 `air_defense/main.py`、`air_defense/ui.py`、`air_defense/save_data.py` 及 `air_defense/deployment.py`，維持草稿選擇、交易冪等、確認內容綁定及五欄位隔離。
+- [X] T105 以 `tools/save_recovery_probe.py` 驗兩解析度實際工坊按鈕與重試、損壞復原及過期確認；執行完整規則測試、compileall，證據放 `artifacts/002-gameplay-expansion/code-review/`。
+- [X] T106 重新審查修正差異及相關契約，核對文件連結、任務統計與來源雜湊，在 `docs/CODE_REVIEW_V2.md` 記錄問題評估、驗證結果與人工回報，更新驗收入口及 PR 正文。
+
+完成本地關卡後，提交、PR 合併及分支清理依憲章 VII／VIII 執行，遠端結果以 gh 查證。

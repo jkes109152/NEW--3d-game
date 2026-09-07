@@ -243,8 +243,6 @@ class GameUI:
         self.heading('武器工坊  /  '+w.id,w.name,'配件與外觀各武器獨立擁有；購買不會自動選用。')
         if owned:
             preview=deepcopy(p);draft=c.custom_draft
-            # 新購入項目立即可供草稿選擇，尚未套用選擇仍保留。
-            for k in ('owned_attachments','owned_colors','owned_patterns'):draft[k]=deepcopy(owned[k])
             preview['owned_weapons'][wid]=deepcopy(draft);stats=resolve_weapon_stats(preview,wid)
         else:stats=w
         info=f'{"已擁有" if owned else "尚未擁有"}  /  {w.price} 金幣\n基礎傷害 {w.base_damage:.2f} → {stats.base_damage:.2f}\n射程 {w.range:.0f} → {stats.range:.0f}m\n間隔 {w.interval:.3g} → {stats.interval:.3g}s\n彈匣 {stats.magazine_size or "∞"}  換彈 {stats.reload_seconds:.2f}s\n{MODE_NAMES[w.fire_mode]} / {CATEGORY_NAMES[w.category]} / 瞄準 ×{stats.aim_factor:.2f}'

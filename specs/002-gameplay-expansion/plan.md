@@ -6,6 +6,8 @@
 
 **2026-09-07 修訂**：結算導覽沿用 002 功能編號與既有技術架構；第 12 階段 T099–T102 同步敗北 cursor 回 1-1、勝利結果進入準備、保存重試及兩解析度按鈕驗證，結果見 [結算導覽驗收](../../artifacts/002-gameplay-expansion/result-navigation/acceptance.md)。
 
+**2026-09-07 本地審查**：第 13 階段 T103–T106 修正工坊保存重試、異常資料與過期確認，沿用既有保存與 UI 架構。145 項測試與兩解析度離屏介面檢查通過，詳見 [002 審查紀錄](../../docs/CODE_REVIEW_V2.md)。
+
 **原改版階段狀態（2026-09-06）**：遊戲實作與自動／引擎驗證已完成，133 項測試通過；[驗收追蹤](../../artifacts/002-gameplay-expansion/acceptance.md) 列出實際證據與原生未驗項。收斂追加 T097／T098 已完成，PR #2 已合併至 main 並清理兩端功能分支，見 [交付紀錄](../../artifacts/002-gameplay-expansion/delivery.md)。
 
 ## 摘要

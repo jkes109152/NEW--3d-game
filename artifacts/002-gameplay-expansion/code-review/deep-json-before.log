@@ -1,0 +1,1 @@
+已重現：86a0b6 的 list_slots 對 10000 層 JSON 拋出未處理 RecursionError；原檔仍在。

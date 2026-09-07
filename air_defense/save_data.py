@@ -17,7 +17,7 @@ class SaveError(Exception):
 def integer(v,minimum=0): return type(v) is int and v>=minimum
 
 def validate_profile(data):
-    from math import isfinite
+    from .deployment import finite_coordinate
     from .catalog import WEAPONS, ARMORS, TURRETS, ATTACHMENTS, UPGRADE_PRICES, COLORS, PATTERNS, applicable_upgrade, upgrade_cap
     from .progression import valid_id, new_weapon, REQUEST_FIELDS
     def require(ok,message='存檔資料無效'):
@@ -56,7 +56,7 @@ def validate_profile(data):
     for tower in load['deployments']:
         require(closed(tower,['instance_id','x','z']));key=tower['instance_id']
         require(type(key) is str and key in instances and key not in seen);seen.add(key)
-        for axis in ('x','z'):require(type(tower[axis]) in (int,float) and isfinite(tower[axis]))
+        for axis in ('x','z'):require(finite_coordinate(tower[axis]))
     last=data['last_completed_a_b']
     require(last is None or closed(last,['a','b']) and all(integer(v,1) for v in last.values()) and last['a']<=r+2 and last['b']<=2*last['a']+1)
     require(type(data['operation_history']) is list);seen=set();previous=0
@@ -144,7 +144,7 @@ class SlotRepository:
             except UnicodeError as exc: raise SaveError('corrupt','存檔不是有效 UTF-8；原始檔案已保留，可備份後重建。') from exc
             except OSError as exc: raise SaveError('read_failed','無法讀取存檔：'+str(exc)) from exc
             try: return validate_profile(json.loads(raw,object_pairs_hook=strict_object,parse_constant=lambda x:(_ for _ in ()).throw(ValueError(x))))
-            except (ValueError,TypeError,UnicodeError) as exc: raise SaveError('corrupt','存檔損壞或版本不支援；原檔已保留。'+str(exc)) from exc
+            except (ValueError,TypeError,UnicodeError,RecursionError) as exc: raise SaveError('corrupt','存檔損壞或版本不支援；原檔已保留。'+str(exc)) from exc
 
     def save(self,slot,data):
         with self.lock:
@@ -172,7 +172,7 @@ class SlotRepository:
             if code['result_code']!='operation_conflict' and not code['replayed']: self.save(slot,p)
             return code
 
-    def prepare_recovery(self,slot):
+    def prepare_recovery(self,slot,expected_digest=None):
         """在顯示重建確認前保存原始位元組；重複預覽沿用相同備份。"""
         with self.lock:
             path=self.path(slot)
@@ -180,6 +180,8 @@ class SlotRepository:
                 try: raw=path.read_bytes()
                 except OSError as exc: raise SaveError('backup_failed','讀取備份來源失敗，禁止重建。') from exc
                 digest=hashlib.sha256(raw).hexdigest()
+                if expected_digest is not None and digest!=expected_digest:
+                    raise SaveError('recovery_changed','原始檔案已變更，請返回選檔重新確認；目前檔案已保留。')
                 previous=self.recovery_backups.get(slot)
                 if previous and previous[0]==digest:
                     try:
@@ -194,25 +196,43 @@ class SlotRepository:
                 except OSError as exc: raise SaveError('backup_failed','備份失敗，禁止重建；原檔保留。') from exc
                 self.recovery_backups[slot]=(digest,backup)
                 return backup
+            if expected_digest is not None:
+                raise SaveError('recovery_changed','原始檔案已移除，請返回選檔重新確認。')
 
     def recover(self,slot,confirm=False):
         if not confirm: return None
         with self.lock:
-            self.prepare_recovery(slot)
-            p=new_profile(); self.save(slot,p); return p
+            previous=self.recovery_backups.get(slot)
+            self.prepare_recovery(slot,expected_digest=previous[0] if previous else None)
+            p=new_profile(); self.save(slot,p)
+            self.recovery_backups.pop(slot,None)
+            return p
+
+    def _delete_snapshot(self,slot):
+        snapshot=[]
+        for path in [self.path(slot),*sorted(self.root.glob(f'slot-{slot}.corrupt.*.json'))]:
+            try:digest=hashlib.sha256(path.read_bytes()).hexdigest()
+            except FileNotFoundError:digest=None
+            snapshot.append((path,digest))
+        return tuple(snapshot)
 
     def request_delete(self,slot):
-        self.path(slot); token=uuid.uuid4().hex; self.tokens[token]=slot; return token
+        with self.lock:
+            try:snapshot=self._delete_snapshot(slot)
+            except OSError as exc:raise SaveError('delete_failed','無法讀取刪除目標，請稍後重試；資料已保留。') from exc
+            token=uuid.uuid4().hex; self.tokens[token]=(slot,snapshot); return token
 
     def cancel_delete(self,token): self.tokens.pop(token,None)
 
     def confirm_delete(self,slot,token):
         with self.lock:
-            if self.tokens.get(token)!=slot: return False
+            confirmation=self.tokens.get(token)
+            if confirmation is None or confirmation[0]!=slot: return False
             # 其餘舊確認不得在同欄位重新建立後刪除新資料。
-            self.tokens={key:value for key,value in self.tokens.items() if value!=slot}
-            self.recovery_backups.pop(slot,None)
+            self.tokens={key:value for key,value in self.tokens.items() if value[0]!=slot}
             try:
-                for path in [self.path(slot),*self.root.glob(f'slot-{slot}.corrupt.*.json')]: path.unlink(missing_ok=True)
+                if self._delete_snapshot(slot)!=confirmation[1]:return False
+                for path,_ in confirmation[1]: path.unlink(missing_ok=True)
             except OSError as exc: raise SaveError('delete_failed','刪除未完成，請重新選擇欄位。') from exc
+            self.recovery_backups.pop(slot,None)
             return True
