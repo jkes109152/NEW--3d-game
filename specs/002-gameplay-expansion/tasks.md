@@ -3,7 +3,7 @@
 **輸入**：[規格](spec.md)、[計畫](plan.md)、[數值表](balance.md)、[研究](research.md)、[資料模型](data-model.md)、[快速驗證](quickstart.md)。
 **契約**：[保存交易](contracts/save-transactions.md)、[戰鬥模擬](contracts/combat-simulation.md)、[介面部署](contracts/ui-deployment.md)、[呈現驗證](contracts/presentation-validation.md)。
 **分支**：`002-gameplay-expansion`　**憲章**：1.4.0　**日期**：2026-09-06。
-**狀態**：實作與驗收進行中；勾選代表已有實作及對應證據。既有 82 項基準不代表新版驗收。
+**狀態**：T001–T098 為 2026-09-06 已交付紀錄；其中原關重試／結果頁回主選單的舊描述由第 12 階段取代。2026-09-07 使用 `002-result-navigation` 分支修訂結算導覽，勾選以實際完成證據為準。
 
 ## 格式與執行約定
 
@@ -336,7 +336,8 @@ T010–T011 提供共用驗證／保存框架；T075、T082、T086 在十二處�
 | 整合與交付 | 10 |
 | 原始任務小計 | 96 |
 | 第 11 階段收斂追加 | 2 |
-| 合計 | 98 |
+| 第 12 階段結算導覽 | 4 |
+| 合計 | 102 |
 
 共 21 項標示 `[P]`；全部為獨立檔案的測試撰寫工作。任務 ID 連續、故事標籤與階段一致，所有任務附具體檔案路徑。
 
@@ -347,3 +348,14 @@ T010–T011 提供共用驗證／保存框架；T075、T082、T086 在十二處�
 
 - [X] T097 完成既有 T094–T096 的 GitHub PR、必要檢查、合併確認及安全分支清理，在 `artifacts/002-gameplay-expansion/delivery.md` 記錄實際結果與來源；依 T094–T096、憲章 VII／VIII（partial，HIGH，F1）。
 - [X] T098 更新 `specs/002-gameplay-expansion/spec.md` 與 `specs/002-gameplay-expansion/plan.md` 的實作／驗收階段狀態並連結實際證據，保留設計階段的歷史測試基準，核對文件連結與任務統計；依 T092／T093、憲章 III（partial，LOW，F2）。
+
+## 階段 12：結算導覽修訂
+
+依 2026-09-07 使用者補充及 decisions 最新對照，修訂 FR-024、US1 出戰與 US6 戰役導覽。前面已交付任務維持歷史紀錄，本階段結果取代其衝突描述。
+
+- [X] T099 同步 `README.md`、`docs/DECISIONS.md` 與 `specs/002-gameplay-expansion/` 的規格、計畫、數值、資料模型及 UI／保存契約：敗北回 1-1，勝利按鈕顯示實際下一關並進入準備。
+- [X] T100 在 `tests/test_campaign_v2.py` 及 `tests/test_result_navigation.py` 先覆蓋較後關卡敗北、保存失敗重試、持有成果保留、同大關／跨大關／最終關勝利與準備取消，確認舊行為失敗。
+- [X] T101 修改 `air_defense/state.py`、`air_defense/main.py` 及 `air_defense/ui.py` 的保存後 cursor、合法準備入口及勝利按鈕，通過 T100 回歸並維持保存與 UI generation 保護。
+- [X] T102 以 `tools/result_navigation_probe.py` 驗兩解析度的實際按鈕／Enter／舊按鈕連點、結算文字、準備／確認／新當局及清理；執行完整規則測試、compileall 與文件核對，在 `artifacts/002-gameplay-expansion/result-navigation/` 保存報告、截圖、來源雜湊及 PR 正文。
+
+完成驗證後，提交與 PR 合併／分支清理依憲章 VII／VIII 執行；真實遠端結果以 gh PR 紀錄與交付回報核對，不把預先撰寫正文視為已合併。

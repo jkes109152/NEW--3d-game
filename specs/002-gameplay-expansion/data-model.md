@@ -106,7 +106,7 @@ category 固定 `anti_air`、`pistol`、`rifle`、`smg`、`shotgun`、`sniper`�
 
 - 重生候選先建立新輪免費裝備、空裝甲／塔庫存、零等級、預設配置與零金幣；保留 profile_id、歷史完成關卡、全部 operation_history，再增加 r、revision 並追加本次紀錄。
 - 重生成功將 cursor 設 1-1，資格關閉；保存失敗保留完整重生候選但不允許繼續遊玩，不能只清掉一部分商品。
-- 成功小關依既有公式發獎勵並推進 cursor；最終成功可再由 1-1 開始相同規模並保留資格。失敗保留目前小關 cursor，重新載入檔案及重生仍回 1-1。
+- 成功小關依既有公式發獎勵並推進 cursor；最終成功可再由 1-1 開始相同規模並保留資格。敗北的 failure 保存成功後將 cursor 設為 1-1；若保存失敗，先留在 save_error 並阻擋出戰，重試成功後才套用重設。重新載入檔案及重生仍回 1-1。
 - reward／failure 的操作 ID 使用 AttemptId，僅 AppState 對自己持有且已結束的當局發出。重複 settle 不重複結算，舊 attempt 或舊輪次不能建立新資格。
 
 詳細交易邊界、保存形狀及操作回傳見 [保存與交易契約](contracts/save-transactions.md)。

@@ -354,7 +354,7 @@ class AppState:
 
     def begin_preparation(self):
         from .preparation import PreparationDraft
-        if self.profile is None or self.pending_save or self.screen!='profile_menu':return None
+        if self.profile is None or self.pending_save or self.screen not in ('profile_menu','result_success'):return None
         if self.battle:self.battle.teardown();self.battle=None
         self.draft=PreparationDraft.from_profile(self.profile);self.screen='prepare_armor';return self.draft
 
@@ -415,7 +415,7 @@ class AppState:
         self.settled.add(b.attempt_id);success=b.phase=='success';route='result_success' if success else 'result_failure'
         self.last_result=dict(success=success,reward=b.level.reward if success else 0,reason=b.failure_reason,level=b.level.level_id)
         def finished():
-            self.cursor=next_level(b.level) if success else (b.level.a,b.level.b);self.screen=route
+            self.cursor=next_level(b.level) if success else (1,1);self.screen=route
         self.transaction('reward' if success else 'failure',operation_id=b.attempt_id,continuation=finished,return_route=route,a=b.level.a,b=b.level.b,A=b.level.A)
 
     def purchase(self,key,operation_id=None):

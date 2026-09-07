@@ -67,7 +67,7 @@ class GameController:
 
     def start(self):
         if self.state.begin_preparation():
-            self.scene.teardown();self.ui.show();self.set_mouse_capture(False)
+            self.cleanup_battle();self.ui.show()
             if self.state.draft.messages:
                 self.ui.toast('失效部署已撤回庫存：'+ '、'.join(ERRORS.get(reason,reason) for reason in self.state.draft.messages),5)
 
