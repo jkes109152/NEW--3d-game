@@ -1,0 +1,29 @@
+{
+  "date": "2026-09-07T18:47:21.363424+08:00",
+  "markdown_files": 37,
+  "local_links_checked": 255,
+  "broken_links": [],
+  "language_findings": [],
+  "tasks": 102,
+  "unchecked_tasks": [],
+  "FR": 34,
+  "SC": 12,
+  "story_acceptance": 36,
+  "checklists": [
+    {
+      "file": "specs/002-gameplay-expansion/checklists/requirements.md",
+      "total": 16,
+      "unchecked": 0
+    }
+  ],
+  "source_files": 90,
+  "status": "PASS",
+  "convergence": {
+    "outcome": "converged",
+    "requirements_and_acceptance": 82,
+    "plan_decisions": 9,
+    "constitution_principles": 8,
+    "findings": 0,
+    "task_bytes_unchanged": true
+  }
+}

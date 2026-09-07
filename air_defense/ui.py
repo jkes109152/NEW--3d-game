@@ -420,11 +420,13 @@ class GameUI:
 
     def show_result(self,success):
         app=self.controller.state; result=app.last_result
+        next_stage=f'{app.cursor[0]}-{app.cursor[1]}'
         self.heading(f"防守報告  /  {result['level']}",'防線守住了' if success else '防線遭到突破',
                      '所有敵機與敵兵已清除。' if success else ERRORS.get(result['reason'],'本局結束'))
         self.text(f"+ {result['reward']:,} 元" if success else '本局獎勵  0 元',0,.17,2.1,ACCENT,center=True)
-        self.text(f"目前金幣 {app.profile['coins']:,} 元    下一次出擊 {app.cursor[0]}-{app.cursor[1]}",0,.058,.92,MUTED,center=True)
-        self.button('返回主選單',0,-.11,.53,.082,self.controller.show_menu,primary=True)
+        self.text(f"目前金幣 {app.profile['coins']:,} 元    下一次出擊 {next_stage}",0,.058,.92,MUTED,center=True)
+        self.button(f'前往下一關（{next_stage}）' if success else '返回主選單',0,-.11,.62 if success else .53,.082,
+                    self.controller.start if success else self.controller.show_menu,primary=True)
         if app.profile['rebirth_available']: self.text('已取得自願重生資格，可於主選單查看。',0,-.232,.82,TEAL,center=True)
 
     def show_battle(self):

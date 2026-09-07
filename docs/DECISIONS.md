@@ -26,3 +26,7 @@
 - Panda3D 使用 `Cull/Draw` 管線；Ursina 初始化後重新套用 `sync-video false`，繪製時鐘上限 120 FPS。[官方管線說明](https://docs.panda3d.org/1.10/python/programming/rendering-process/multithreaded-render-pipeline) 解釋其吞吐量與延遲取捨；本機結果見效能報告。畫質切換保留至多一份陰影緩衝區，低畫質停用陰影相機並使用基本材質。[Camera 文件](https://docs.panda3d.org/1.10/python/reference/panda3d.core.Camera) 定義停用後不繪製。
 - 自製材質使用 [Panda3D 標準 GLSL 輸入](https://docs.panda3d.org/1.10/cpp/programming/shaders/list-of-glsl-inputs)，保留頂點色、平滑法線及距離霧；清除合併幾何中的舊 shader 覆寫，讓既有／新建物件一致切換畫質。幾何診斷讀取器使用後立即 clear，避免測試本身持有讀取鎖而阻塞下一幀。
 - 原生鍵鼠、純規則、離屏畫面與性能負載分別報告。原生慢速輸入探測的 time_scale=0.1 僅證明綁定，不作時間、通關或性能證據；使用者停止桌面操作後，不再操作桌面，尚未驗證的原生焦點切換保持明列。
+
+## 2026-09-07 結算導覽
+
+依使用者最新要求，敗北保存完成後將執行關卡重設為 1-1，保留已取得金幣與裝備。勝利結算的主按鈕改為「前往下一關（實際關卡）」，共用原出戰準備入口；最終關後顯示 1-1。Esc 仍回主選單。重設放在保存成功的 continuation，失敗重試不能跳過保存、重發獎勵或部分清除成果。詳細來源與取代關係見 [功能決策](../specs/002-gameplay-expansion/decisions.md)。

@@ -2,7 +2,9 @@
 
 日期：2026-09-06；規格：[糖果風防空守衛](../../specs/002-gameplay-expansion/spec.md)；開發分支：002-gameplay-expansion。實作及下列驗證已完成；[PR #2](https://github.com/jkes109152/NEW--3d-game/pull/2) 已合併至 main，兩端功能分支已清理，實際結果見 [交付紀錄](delivery.md)。
 
-133 項測試、兩解析度各 66 畫面、二十武器／六裝甲／十二交易矩陣、免費七關及重生後首局、十輪清理與 A4／A8 繪製量測均有實際輸出。[完整命令與退出碼](verification.md) 列出測試種類及原始資料；[來源雜湊](verified-source-sha256.json) 對應本次驗證的程式。
+2026-09-06 基準的 133 項測試、兩解析度各 66 畫面、二十武器／六裝甲／十二交易矩陣、免費七關及重生後首局、十輪清理與 A4／A8 繪製量測均有實際輸出。[原始命令與退出碼](verification.md) 列出當時測試及資料；[來源雜湊](verified-source-sha256.json) 對應該次基準，保留原檔。
+
+2026-09-07 結算導覽修訂改為敗北下一局回 1-1、勝利主按鈕直接進入實際下一關準備。最新 137 項測試、兩解析度結算導覽及來源雜湊另見 [修訂驗收](result-navigation/acceptance.md)；以下 FR-024 的新行為以該紀錄為準，歷史原關重試證據不再用作目前行為依據。
 
 ## 功能需求
 
@@ -33,7 +35,7 @@
 | FR-021 | 鳥瞰互動、合法位置、遮擋及目標射程預覽 | [砲塔](us5.md)、[原生部署](us7.md)、引擎投影斷言 | 通過 |
 | FR-022 | 三塔選敵／鎖定／冷卻及 Boss 精確半血 | test_turret_targeting、[砲塔](us5.md) | 通過 |
 | FR-023 | 關卡生命／速度／轉彎成長及上限 | test_difficulty_v2、test_aircraft_rules、[戰役](us6.md) | 通過 |
-| FR-024 | 七關順序／獎勵、原關重試、重生資格與費用 | [戰役](us6.md)、test_campaign_v2、test_campaign_progression | 通過 |
+| FR-024 | 七關順序／獎勵、敗北回 1-1、勝利前往下一關準備、重生資格與費用 | [結算修訂](result-navigation/acceptance.md)、test_result_navigation、test_campaign_v2；[原戰役](us6.md) 保留未取代的順序／獎勵證據 | 通過 |
 | FR-025 | 重生清楚確認、全部清空、免費重發及 1-1 | test_rebirth_v2、[戰役](us6.md)、重生確認畫面 | 通過 |
 | FR-026 | 全付費成果清除、歷史／設定保留、拒絕舊輪重送 | test_rebirth_v2、test_transaction_v2、[戰役](us6.md) | 通過 |
 | FR-027 | 免費通關與可累積足夠重生金幣 | [完整合法輸入](economy.json)、[戰役](us6.md) | 通過 |
@@ -64,4 +66,4 @@
 
 ## 收斂與交付
 
-功能、規則及呈現的已發現缺陷均修正並重驗。speckit-converge 已核對 34 FR、12 SC、35 個故事驗收情境、11 個邊界情況、9 組技術決策及 8 項憲章原則。第一輪發現交付證據未齊（F1，T097）及 SDD 階段狀態過時（F2，T098），依技能只追加第 11 階段，返回 implement 後完成文件修訂與 gh 交付。全部 98 項任務按實際完成結果勾選，詳見 [收斂紀錄](convergence.md) 及 [交付紀錄](delivery.md)。原生未驗範圍仍維持明確標示。
+功能、規則及呈現的已發現缺陷均修正並重驗。speckit-converge 已核對 34 FR、12 SC、35 個故事驗收情境、11 個邊界情況、9 組技術決策及 8 項憲章原則。第一輪發現交付證據未齊（F1，T097）及 SDD 階段狀態過時（F2，T098），依技能只追加第 11 階段，返回 implement 後完成文件修訂與 gh 交付。原交付的 98 項任務按當時實際結果勾選；2026-09-07 的 T099–T102 另見修訂驗收，詳見 [收斂紀錄](convergence.md) 及 [交付紀錄](delivery.md)。原生未驗範圍仍維持明確標示。

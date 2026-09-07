@@ -1,0 +1,80 @@
+{
+  "date": "2026-09-07T18:37:52.250176+08:00",
+  "commands": [
+    {
+      "name": "tests",
+      "command": [
+        "C:\\Users\\lamuness\\Desktop\\game\\.venv\\Scripts\\python.exe",
+        "-m",
+        "unittest",
+        "discover",
+        "-v"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "compileall",
+      "command": [
+        "C:\\Users\\lamuness\\Desktop\\game\\.venv\\Scripts\\python.exe",
+        "-m",
+        "compileall",
+        "-q",
+        "air_defense",
+        "tests",
+        "tools"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "engine-1280x720",
+      "command": [
+        "C:\\Users\\lamuness\\Desktop\\game\\.venv\\Scripts\\python.exe",
+        "tools/result_navigation_probe.py",
+        "--size",
+        "1280x720",
+        "--output",
+        "artifacts/002-gameplay-expansion/result-navigation/1280x720"
+      ],
+      "exit_code": 0,
+      "screenshots": 16
+    },
+    {
+      "name": "engine-1920x1080",
+      "command": [
+        "C:\\Users\\lamuness\\Desktop\\game\\.venv\\Scripts\\python.exe",
+        "tools/result_navigation_probe.py",
+        "--size",
+        "1920x1080",
+        "--output",
+        "artifacts/002-gameplay-expansion/result-navigation/1920x1080"
+      ],
+      "exit_code": 0,
+      "screenshots": 16
+    },
+    {
+      "name": "compile-probe",
+      "command": [
+        "C:\\Users\\lamuness\\Desktop\\game\\.venv\\Scripts\\python.exe",
+        "-m",
+        "compileall",
+        "-q",
+        "tools/result_navigation_probe.py"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "expected_red_test": {
+    "command": [
+      "C:\\Users\\lamuness\\Desktop\\game\\.venv\\Scripts\\python.exe",
+      "-m",
+      "unittest",
+      "-v",
+      "tests.test_result_navigation",
+      "tests.test_campaign_v2"
+    ],
+    "exit_code": 1,
+    "tests": 6,
+    "failures_including_subtests": 10,
+    "reason": "舊行為仍保留敗北原關且拒絕勝利結果開始準備"
+  }
+}
