@@ -22,25 +22,28 @@ export function BattlePanel({
     aa = b.weapon_category === 'anti_air',
     scoped = b.weapon_category === 'sniper' && b.aiming,
     rt = b.weapon_runtime[b.active_weapon_id];
-  const status = paused
-    ? '已暫停'
-    : rt.reload_finish_at
-      ? `換彈中 · ${b.reload_remaining.toFixed(1)} 秒`
-      : rt.quota_remaining === 0 || rt.magazine_rounds === 0
-        ? '彈藥已用完'
-        : b.cooldown_remaining > 0.001
-          ? `${b.fire_mode === 'bolt' ? '上膛中' : '冷卻中'} · ${b.cooldown_remaining.toFixed(1)} 秒`
-          : aa
-            ? b.lock_ready && !b.fire_blocked
-              ? b.fire_mode === 'lock_multi'
-                ? '可齊射'
-                : '可發射'
-              : !b.aiming
-                ? '先切換瞄準'
-                : !b.lock_valid.length
-                  ? '將敵機保持在方框中'
-                  : `鎖定中 ${Math.floor(b.lock_progress * 100)}%`
-            : '可以射擊';
+  const status =
+    b.cooperative && b.player.hp <= 0
+      ? '已倒下，等待隊友完成防守'
+      : paused
+        ? '已暫停'
+        : rt.reload_finish_at
+          ? `換彈中 · ${b.reload_remaining.toFixed(1)} 秒`
+          : rt.quota_remaining === 0 || rt.magazine_rounds === 0
+            ? '彈藥已用完'
+            : b.cooldown_remaining > 0.001
+              ? `${b.fire_mode === 'bolt' ? '上膛中' : '冷卻中'} · ${b.cooldown_remaining.toFixed(1)} 秒`
+              : aa
+                ? b.lock_ready && !b.fire_blocked
+                  ? b.fire_mode === 'lock_multi'
+                    ? '可齊射'
+                    : '可發射'
+                  : !b.aiming
+                    ? '先切換瞄準'
+                    : !b.lock_valid.length
+                      ? '將敵機保持在方框中'
+                      : `鎖定中 ${Math.floor(b.lock_progress * 100)}%`
+                : '可以射擊';
   const mode = controls?.mode || 'mouse';
   const touchZone = (role: 'move' | 'look') => ({
     onPointerDown: (e: any) => {

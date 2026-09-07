@@ -257,7 +257,11 @@ export async function createGame(
   function applyEvents() {
     for (const e of state.battle?.events || []) {
       if (e.kind === 'weapon_fire') {
-        recoil = 0.07;
+        if (
+          !state.battle.cooperative ||
+          (e.player_id || partyClient.room?.hostId) === state.battle.self_id
+        )
+          recoil = 0.07;
         sound(e.audio_key || 'pistol');
       } else if (
         [
@@ -685,7 +689,7 @@ export async function createGame(
           180) /
         Math.PI;
       camera.updateProjectionMatrix();
-      gun.visible = true;
+      gun.visible = b.player.hp > 0;
       updateGun();
       recoil = Math.max(0, recoil - dt * 0.4);
       gun.position.z = -0.65 + recoil;
