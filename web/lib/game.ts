@@ -10,6 +10,7 @@ import {
   worldVector,
 } from './projectile-visuals';
 import { BattleInput, ControlMode, validMode, isEditable } from './controls';
+import { PvpSession } from './pvp-session';
 import { MultiplayerClient } from './multiplayer-client';
 import { AntiAirHud } from './aiming-hud';
 export async function createGame(
@@ -83,6 +84,7 @@ export async function createGame(
   const partyInputs = new Map<string, number>();
   const rewarded = new Set<string>();
   const partyClient = new MultiplayerClient(() => publish(), receivePartyRoom);
+  let pvpSession: PvpSession | null = null;
   const pyPartyStart = py.globals.get('party_start'),
     pyPartyTick = py.globals.get('party_tick'),
     pyPartyReward = py.globals.get('party_reward');
@@ -300,6 +302,7 @@ export async function createGame(
     state = {
       ...state,
       controls: { mode, pauseReason, requesting, sensitivity, muted },
+      pvp: pvpSession?.state(),
       party: {
         ...partyClient.state(),
         open: partyClient.open && !partyPreparing,
@@ -412,6 +415,23 @@ export async function createGame(
     }
   }
   function receivePartyRoom(room: any) {
+    if (partyLeaving) return;
+    if (room.mode === 'pvp') {
+      if (['countdown', 'playing', 'finished'].includes(room.status)) {
+        if (!pvpSession) {
+          releaseControl();
+          aimingHud.update(null, camera, host.clientWidth, host.clientHeight);
+          pvpSession = new PvpSession(py, partyClient, renderer, host, catalog);
+        }
+        pvpSession.receive(room);
+        state = { ...state, screen: 'pvp', battle: null };
+      } else if (pvpSession) {
+        pvpSession.dispose();
+        pvpSession = null;
+        state = { ...state, screen: 'profile_menu', battle: null };
+      }
+      return;
+    }
     if (partyLeaving || state.screen === 'save_error') return;
     if (room.connectionLost) {
       pause('connection_lost');
@@ -495,6 +515,10 @@ export async function createGame(
       return;
     }
     if (action === 'leave') {
+      if (pvpSession) {
+        pvpSession.dispose();
+        pvpSession = null;
+      }
       partyLeaving = true;
       releaseControl();
       partyRun = '';
@@ -820,9 +844,20 @@ export async function createGame(
   }
   function frame(now: number) {
     if (disposed) return;
-    const dt = Math.min((now - last) / 1000, 0.06);
+    const realDt = (now - last) / 1000;
+    const dt = Math.min(realDt, 0.06);
     last = now;
-    if (partyRun) {
+    if (pvpSession) {
+      try {
+        pvpSession.frame(now, realDt);
+      } catch {
+        pvpSession.fail();
+      }
+      if (now - notifyAt > 100) {
+        publish();
+        notifyAt = now;
+      }
+    } else if (partyRun) {
       try {
         partyFrame(dt);
         if (now - notifyAt > 100) {
@@ -854,7 +889,7 @@ export async function createGame(
         publish();
       }
     }
-    draw(dt);
+    if (!pvpSession) draw(dt);
     raf = requestAnimationFrame(frame);
   }
   raf = requestAnimationFrame(frame);
@@ -863,6 +898,13 @@ export async function createGame(
   return {
     catalog,
     partyAction,
+    pvpAction: (action: string, payload: any = {}) => {
+      if (action === 'begin') void pvpSession?.begin();
+      else if (action === 'settings') pvpSession?.openSettings();
+      else if (action === 'configure') pvpSession?.configure(payload);
+      else if (action === 'spectate') pvpSession?.nextSpectator();
+      publish();
+    },
     send,
     command,
     begin,
@@ -886,6 +928,7 @@ export async function createGame(
       publish();
     },
     dispose() {
+      pvpSession?.dispose();
       partyClient.dispose();
       pyPartyStart.destroy();
       pyPartyTick.destroy();

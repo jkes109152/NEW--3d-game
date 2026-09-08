@@ -296,3 +296,33 @@ def party_reward(raw):
         return state_json()
     app.profile=candidate
     return state_json()
+
+
+# PvP 使用獨立入口，不讀取 app、Repository 或合作交易。
+from air_defense.pvp import PvpBattle, predict as predict_pvp_actor
+pvp_battle = None
+
+
+def pvp_start(raw):
+    global pvp_battle
+    data = json.loads(raw)
+    pvp_battle = PvpBattle(data['runId'], data['roster'], data['timeLimitSeconds'])
+    return json.dumps(pvp_battle.snapshot(), ensure_ascii=False, allow_nan=False)
+
+
+def pvp_tick(raw):
+    if pvp_battle is None:
+        raise ValueError('對戰尚未開始')
+    data = json.loads(raw)
+    return json.dumps(pvp_battle.advance(data['dt'], data.get('frames', {}), data.get('departedIds', [])), ensure_ascii=False, allow_nan=False)
+
+
+def pvp_predict(raw):
+    data = json.loads(raw)
+    return json.dumps(predict_pvp_actor(data['actor'], data['frames']), ensure_ascii=False, allow_nan=False)
+
+
+def pvp_dispose(raw='{}'):
+    global pvp_battle
+    pvp_battle = None
+    return '{}'

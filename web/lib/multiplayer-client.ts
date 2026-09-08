@@ -1,3 +1,4 @@
+import { neutralInput } from './pvp-types.ts';
 export class MultiplayerClient {
   open = false;
   me: any = null;
@@ -6,6 +7,7 @@ export class MultiplayerClient {
   error = '';
   busy = false;
   private timer: ReturnType<typeof setTimeout> | null = null;
+  private timerDelay = 0;
   private stopped = false;
   private polling = false;
   private queue: Promise<any> = Promise.resolve();
@@ -17,6 +19,13 @@ export class MultiplayerClient {
   private pendingCommands = new Map<number, any>();
   private sequence = 0;
   private started = 0;
+  readonly instanceId = crypto.randomUUID();
+  private pvpBound = '';
+  private pvpEvicted = false;
+  private pvpCancel = 0;
+  private pvpCancelPending = false;
+  private pvpCancelSeq = 0;
+  private pvpInput = neutralInput();
   constructor(
     private changed: () => void,
     private received: (room: any) => void,
@@ -41,8 +50,12 @@ export class MultiplayerClient {
         body: JSON.stringify(data),
         cache: 'no-store',
         signal: AbortSignal.timeout(8000),
+      }).catch(() => {
+        throw Error('目前無法連線，請確認網路後重試');
       });
-      const value: any = await response.json();
+      const value: any = await response.json().catch(() => {
+        throw Error('連線服務暫時無法回應，請稍後重試');
+      });
       if (!response.ok) throw Error(value.error || '連線失敗');
       return value;
     };
@@ -69,6 +82,9 @@ export class MultiplayerClient {
       const data = await this.request({
         action,
         roomId: this.room?.id,
+        runId: this.room?.runId,
+        instanceId: this.instanceId,
+        protocolVersion: 1,
         ...payload,
       });
       if (data.me) this.me = data.me;
@@ -81,6 +97,8 @@ export class MultiplayerClient {
       if (action === 'leave') {
         this.room = null;
         this.outgoing = null;
+        this.pvpBound = '';
+        this.pvpEvicted = false;
         await this.lobby();
       }
       this.schedule();
@@ -101,6 +119,7 @@ export class MultiplayerClient {
       this.room = { id: data.roomId, status: 'connecting', members: [] };
       await this.poll();
     }
+    this.changed();
   }
   private accept(room: any) {
     if (room.runId !== this.room?.runId) {
@@ -109,12 +128,43 @@ export class MultiplayerClient {
       this.pendingCommands.clear();
       this.input = { suspended: true };
       this.stream = crypto.randomUUID();
+      this.pvpBound = '';
+      this.pvpEvicted = false;
+      this.pvpCancel = 0;
+      this.pvpCancelPending = false;
+      this.pvpCancelSeq = 0;
+      this.pvpInput = neutralInput();
+    }
+    if (
+      room.mode === 'pvp' &&
+      room.inputInstance === this.instanceId &&
+      room.currentStream
+    ) {
+      this.pvpBound = room.currentStream;
+      this.stream = room.currentStream;
+    }
+    if (room.mode === 'pvp' && room.view?.inputAck?.stream === this.pvpBound) {
+      const ack = room.view.inputAck;
+      for (const sequence of this.pendingCommands.keys())
+        if (sequence <= ack.command_seq) this.pendingCommands.delete(sequence);
+      if (
+        this.pvpCancelPending &&
+        ack.command_seq >= this.pvpCancel &&
+        ack.input_seq >= this.pvpCancelSeq &&
+        this.pvpCancelSeq > 0
+      )
+        this.pvpCancelPending = false;
     }
     this.room = room;
     this.received(room);
     this.changed();
+    if (this.open) this.schedule();
   }
   setInput(frame: any) {
+    if (this.room?.mode === 'pvp') {
+      this.setPvpInput(frame);
+      return;
+    }
     if (frame.suspended) {
       this.pendingCommands.clear();
       this.input = { suspended: true, commands: [], look_delta: [0, 0] };
@@ -137,6 +187,10 @@ export class MultiplayerClient {
     };
   }
   setSnapshot(snapshot: any) {
+    if (snapshot.mode === 'pvp') {
+      this.outgoing = snapshot;
+      return;
+    }
     if (
       this.outgoing &&
       (Object.values(this.outgoing.views)[0] as any)?.attempt_id ===
@@ -193,6 +247,20 @@ export class MultiplayerClient {
       if (this.open) await this.lobby();
       return;
     }
+    if (this.room.status === 'connecting') {
+      const data = await this.request({
+        action: 'sync',
+        roomId: this.room.id,
+        protocolVersion: 1,
+        instanceId: this.instanceId,
+      });
+      this.accept(data.room);
+      return;
+    }
+    if (this.room.mode === 'pvp') {
+      await this.pollPvp();
+      return;
+    }
     const input = this.input;
     this.input = { ...input, commands: [], look_delta: [0, 0] };
     const room = this.room,
@@ -233,31 +301,147 @@ export class MultiplayerClient {
     }
   }
   private schedule() {
-    if (this.timer || this.stopped) return;
-    this.timer = setTimeout(
-      async () => {
-        this.timer = null;
-        if (this.stopped) return;
-        if (!this.busy && !this.polling) {
-          this.polling = true;
-          try {
-            await this.poll();
-          } catch (error: any) {
-            this.error = `連線中斷：${error.message}，正在重試`;
-            if (Date.now() - this.started > 10000 && this.room)
-              this.received({ ...this.room, connectionLost: true });
-            this.changed();
-          } finally {
-            this.polling = false;
-          }
+    if (this.stopped) return;
+    const delay = ['playing', 'countdown'].includes(this.room?.status)
+      ? 120
+      : this.room
+        ? 800
+        : 2000;
+    if (this.timer && this.timerDelay === delay) return;
+    if (this.timer) clearTimeout(this.timer);
+    this.timerDelay = delay;
+    this.timer = setTimeout(async () => {
+      this.timer = null;
+      if (this.stopped) return;
+      if (!this.busy && !this.polling) {
+        this.polling = true;
+        try {
+          await this.poll();
+        } catch (error: any) {
+          this.error = `連線中斷：${error.message}，正在重試`;
+          if (Date.now() - this.started > 10000 && this.room)
+            this.received({ ...this.room, connectionLost: true });
+          this.changed();
+        } finally {
+          this.polling = false;
         }
-        this.schedule();
-      },
-      this.room?.status === 'playing' ? 120 : this.room ? 800 : 2000,
-    );
+      }
+      this.schedule();
+    }, delay);
   }
   dispose() {
     this.stopped = true;
     if (this.timer) clearTimeout(this.timer);
+  }
+  pvpControlState() {
+    return {
+      stream: this.pvpBound,
+      inputSeq: this.inputSeq,
+      input: {
+        ...this.pvpInput,
+        commands: [...this.pendingCommands.values()],
+        look_total: [...this.lookTotals],
+      },
+      waiting: this.pvpCancelPending,
+      evicted: this.pvpEvicted,
+    };
+  }
+  private setPvpInput(frame: any) {
+    if (frame.suspended || this.pendingCommands.size >= 96) {
+      if (!this.pvpInput.suspended) {
+        this.pvpCancel = Math.max(
+          this.pvpCancel,
+          ...this.pendingCommands.keys(),
+          0,
+        );
+        this.pvpCancelPending = true;
+        this.pvpCancelSeq = 0;
+      }
+      this.pendingCommands.clear();
+      this.pvpInput = {
+        ...neutralInput(),
+        look_total: [this.lookTotals[0], this.lookTotals[1]],
+        cancelThrough: this.pvpCancel,
+      };
+      return;
+    }
+    if (this.pvpCancelPending || this.pvpEvicted || !this.pvpBound) return;
+    this.lookTotals[0] += frame.look_delta?.[0] || 0;
+    this.lookTotals[1] += frame.look_delta?.[1] || 0;
+    for (const c of frame.commands || [])
+      this.pendingCommands.set(c.sequence, c);
+    this.pvpInput = {
+      ...neutralInput(),
+      ...frame,
+      suspended: false,
+      cancelThrough: this.pvpCancel,
+      look_total: [this.lookTotals[0], this.lookTotals[1]],
+      commands: [...this.pendingCommands.values()],
+    };
+  }
+  private async pollPvp() {
+    let room = this.room;
+    const base = () => ({
+      roomId: room.id,
+      runId: room.runId,
+      protocolVersion: 1,
+      instanceId: this.instanceId,
+    });
+    if (this.pvpEvicted) return;
+    if (!room.runId || ['finished', 'closed'].includes(room.status)) {
+      this.accept((await this.request({ action: 'sync', ...base() })).room);
+      return;
+    }
+    try {
+      if (!this.pvpBound) {
+        const sync = await this.request({ action: 'sync', ...base() });
+        this.accept(sync.room);
+        room = this.room;
+        if (!room.runId || !['countdown', 'playing'].includes(room.status))
+          return;
+        this.accept(
+          (
+            await this.request({
+              action: 'resume',
+              ...base(),
+              expectedStream: room.currentStream,
+            })
+          ).room,
+        );
+        room = this.room;
+      }
+      const sequence = ++this.inputSeq;
+      if (this.pvpCancelPending && !this.pvpCancelSeq)
+        this.pvpCancelSeq = sequence;
+      const snapshot =
+        room.hostId === this.me?.id &&
+        room.status === 'playing' &&
+        this.outgoing?.runId === room.runId
+          ? this.outgoing
+          : null;
+      const result = await this.request({
+        action: 'exchange',
+        ...base(),
+        inputStream: this.pvpBound,
+        inputSeq: sequence,
+        input: {
+          ...this.pvpInput,
+          commands: [...this.pendingCommands.values()],
+          look_total: this.lookTotals,
+        },
+        ...(snapshot ? { snapshot, sequence: ++this.sequence } : {}),
+      });
+      this.error = '';
+      this.started = Date.now();
+      this.accept(result.room);
+      if (snapshot?.phase === 'finished' && result.room.status === 'playing')
+        this.accept((await this.request({ action: 'finish', ...base() })).room);
+    } catch (error: any) {
+      if (error.message.includes('另一分頁')) {
+        this.pvpEvicted = true;
+        this.setPvpInput({ suspended: true });
+      }
+      throw error;
+    }
   }
 }

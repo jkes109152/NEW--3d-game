@@ -2,7 +2,7 @@
 
 **分支**：`005-air-ground-pvp` | **日期**：2026-09-08 | **規格**：[spec.md](spec.md)
 
-**輸入**：`specs/005-air-ground-pvp/spec.md`；本階段補齊 tasks 必要設計，不表示程式已完成。
+**輸入**：`specs/005-air-ground-pvp/spec.md`；實作進度與尚待驗收項目見 tasks 及 acceptance，本文保留設計與責任分工。
 
 ## 摘要
 
@@ -50,10 +50,12 @@
 | web/public/bridge.py、web/scripts/prepare.mjs | PvP 專用橋接、純規則複製與模組清單；不複製存檔 |
 | web/lib/pvp-types.ts、pvp-session.ts、pvp-controls.ts、pvp-scene.ts | 型別、生命週期／預測、輸入偏好、唯讀場景呈現 |
 | web/lib/multiplayer-rules.ts、multiplayer-server.ts、multiplayer-client.ts | 依模式容量、房間協定、可靠輸入與序號 |
+| web/lib/pvp-room-server.ts、pvp-hud.ts | PvP SQL／權限分支與既有單目標 HUD 的資料適配 |
 | web/lib/game.ts、web/app/page.tsx | 模式切入／退出、停止其他場景並恢復，不重複輪詢 |
 | web/components/multiplayer-lobby.tsx、pvp-panel.tsx、web/app/globals.css | 固定房間、設定、戰鬥 HUD 與結算 |
 | web/db/schema.ts、web/drizzle/ | 模式、倒數、串流、輸入接收時刻、退出帳本與結果欄位的新增遷移 |
 | tests/test_pvp_*.py、web/scripts/test-pvp-*.mjs | 規則、橋接、控制、HTTP 與回歸測試 |
+| web/scripts/pvp-test-db.mjs、pvp-test-core.mjs、pvp-local-*.mjs | 真實遷移的記憶體資料庫、Pyodide 測試核心及僅本機使用的獨立連線夾具 |
 
 **結構決策**：重用現有框架與工具；獨立狀態機避免 PvP 觸發 AI／城市／獎勵副作用。副本由 prepare 產生，根目錄與 web/public/rules 的模組內容必須一致。
 

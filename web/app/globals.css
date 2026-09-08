@@ -2795,3 +2795,373 @@ footer {
     grid-row: 2;
   }
 }
+
+.party-mode {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0;
+}
+.game > .panel.multiplayer-panel {
+  overflow: hidden;
+  padding: 18px;
+}
+.party-wait-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 10px 0;
+}
+.party-wait-actions .party-ready-actions {
+  margin: 0;
+}
+.party-wait-actions .party-start {
+  width: auto;
+  flex: 1;
+  margin: 0;
+}
+.multiplayer-panel .party-heading .eyebrow {
+  margin-bottom: 4px;
+}
+.multiplayer-panel .party-heading h1 {
+  margin: 0;
+}
+.multiplayer-panel .party-heading {
+  margin-bottom: 12px;
+}
+.multiplayer-panel .party-members article strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.multiplayer-panel footer {
+  margin-top: 10px;
+}
+.party-mode [aria-pressed='true'] {
+  background: #9cecd5;
+  color: #123244;
+}
+.pvp-countdown {
+  display: block;
+  font-size: 3rem;
+  color: #9cecd5;
+}
+.multiplayer-panel {
+  max-height: calc(100dvh - 100px);
+  overflow: hidden;
+}
+
+/* 空地對戰：戰場 HUD 與固定分頁面板。 */
+.pvp-layer {
+  position: fixed;
+  inset: 70px 0 0;
+  pointer-events: none;
+  z-index: 20;
+  font-size: 16px;
+}
+.pvp-layer button,
+.pvp-layer input,
+.pvp-layer select {
+  pointer-events: auto;
+}
+.pvp-status {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: #123346ee;
+  border: 1px solid #77bdbb;
+  padding: 12px 24px;
+  border-radius: 16px;
+  white-space: nowrap;
+}
+.pvp-status > span {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.pvp-status > strong {
+  font-size: 1.7rem;
+  font-variant-numeric: tabular-nums;
+  color: #ffe09a;
+}
+.pvp-air .pvp-status {
+  border-color: #eeafcb;
+}
+.pvp-card {
+  pointer-events: auto;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(690px, calc(100vw - 40px));
+  max-height: calc(100dvh - 155px);
+  overflow: hidden;
+  background: #16374df5;
+  border: 1px solid #5e879b;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 20px 60px #15334344;
+}
+.pvp-card h1 {
+  font-size: 2rem;
+  margin-bottom: 12px;
+}
+.pvp-card p {
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+.pvp-card footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+}
+.pvp-countdown-card {
+  text-align: center;
+}
+.pvp-countdown-card footer {
+  justify-content: center;
+}
+.pvp-settings {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding-top: 12px;
+}
+.pvp-settings label {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pvp-settings select {
+  background: #244c62;
+  border: 1px solid #5d8294;
+  border-radius: 8px;
+  padding: 10px;
+  color: #fff;
+}
+.pvp-settings input[type='checkbox'] {
+  width: 22px;
+  height: 22px;
+  accent-color: #96e5d1;
+}
+.pvp-help p {
+  font-size: 15px;
+  line-height: 1.65;
+}
+.pvp-team,
+.pvp-instruments {
+  position: absolute;
+  bottom: 85px;
+  background: #15384ce6;
+  border: 1px solid #6e98ac;
+  border-radius: 14px;
+  padding: 16px;
+  min-width: 200px;
+}
+.pvp-team {
+  left: 20px;
+  max-width: 270px;
+}
+.pvp-team > strong {
+  display: block;
+  margin-bottom: 10px;
+}
+.pvp-team > div {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  margin: 5px 0;
+}
+.pvp-team span {
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pvp-team small {
+  font-size: 14px;
+  white-space: nowrap;
+  color: #acdccc;
+}
+.pvp-instruments {
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pvp-instruments > div {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  justify-content: space-between;
+}
+.pvp-instruments strong {
+  font-variant-numeric: tabular-nums;
+}
+.pvp-instruments small {
+  font-size: 14px;
+  font-weight: 400;
+}
+.pvp-shortcuts {
+  position: absolute;
+  bottom: 16px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.pvp-shortcuts > span {
+  background: #123346d9;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+}
+.pvp-threat {
+  position: absolute;
+  top: 77px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pvp-threat > * {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #5c2b41ed;
+  color: #fff1b8;
+  border: 1px solid #efa2b0;
+  padding: 9px 14px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+.pvp-control-card {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  border-radius: 18px;
+  border: 1px solid #8dd9cc;
+  background: #14384fee;
+  padding: 20px;
+  pointer-events: auto;
+}
+.pvp-error {
+  position: absolute;
+  top: 140px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #573e36ee;
+  color: #fff3cc;
+  border: 1px solid #edc574;
+  border-radius: 8px;
+  padding: 8px 15px;
+  max-width: 70vw;
+  z-index: 3;
+}
+.pvp-spectating {
+  position: absolute;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #15384ce8;
+  border-radius: 10px;
+  padding: 12px;
+}
+.pvp-results > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 65px minmax(100px, 1fr);
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid #43647b;
+}
+.pvp-results strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (max-height: 740px) {
+  .pvp-layer {
+    top: 62px;
+  }
+  .pvp-card {
+    padding: 18px;
+    max-height: calc(100dvh - 140px);
+  }
+  .pvp-card h1 {
+    font-size: 1.65rem;
+  }
+  .pvp-card p {
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+  .pvp-card footer {
+    margin-top: 12px;
+  }
+  .pvp-settings {
+    gap: 12px;
+  }
+  .pvp-status {
+    padding: 8px 20px;
+  }
+  .pvp-team,
+  .pvp-instruments {
+    bottom: 70px;
+    padding: 12px;
+  }
+  .pvp-team > div {
+    margin: 3px 0;
+  }
+  .pvp-threat {
+    top: 65px;
+  }
+  .pvp-results > div {
+    padding: 10px 0;
+  }
+  .multiplayer-panel {
+    padding: 16px;
+  }
+  .party-heading h1 {
+    font-size: 1.7rem;
+    margin-bottom: 8px;
+  }
+  .party-heading {
+    margin-bottom: 8px;
+  }
+  .party-identity {
+    margin-bottom: 8px;
+  }
+  .party-room-list article {
+    padding: 8px;
+  }
+  .party-create {
+    gap: 8px;
+  }
+  .multiplayer-panel .party-room-summary {
+    font-size: 14px;
+  }
+  .multiplayer-panel p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .multiplayer-panel footer {
+    margin-top: 10px;
+  }
+}

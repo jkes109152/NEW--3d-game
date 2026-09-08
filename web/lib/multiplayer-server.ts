@@ -3,7 +3,8 @@ import {
   MAX_PLAYERS,
   personalReward,
   publicLoadout,
-} from './multiplayer-rules';
+} from './multiplayer-rules.ts';
+import { pvpRoomRequest, PvpRequestError } from './pvp-room-server.ts';
 
 const COOKIE = 'defense_party';
 const id = () => crypto.randomUUID().replaceAll('-', '');
@@ -30,9 +31,12 @@ function requireValue(
 ): asserts value {
   if (!value) throw new RequestError(message, status);
 }
-export async function multiplayerRequest(request: Request, db: D1Database) {
-  const now = Date.now(),
-    url = new URL(request.url);
+export async function multiplayerRequest(
+  request: Request,
+  db: D1Database,
+  now = Date.now(),
+) {
+  const url = new URL(request.url);
   const reply = (data: unknown, extra: Record<string, string> = {}) =>
     Response.json(data, { headers: { 'Cache-Control': 'no-store', ...extra } });
   try {
@@ -58,7 +62,7 @@ export async function multiplayerRequest(request: Request, db: D1Database) {
     const raw = await request.text();
     requireValue(raw.length < 750000, '房間資料過大', 413);
     const data = JSON.parse(raw),
-      action = data.action;
+      action = data.action === 'sync' ? 'exchange' : data.action;
     const token = request.headers
       .get('cookie')
       ?.split(';')
@@ -100,7 +104,7 @@ export async function multiplayerRequest(request: Request, db: D1Database) {
     if (action === 'lobby') {
       const rooms = await db
         .prepare(
-          "SELECT r.id,r.name,r.status,r.level_a,r.level_b,p.name AS host_name,(SELECT count(*) FROM mp_members m WHERE m.room_id=r.id AND m.seen_at>?) AS count FROM mp_rooms r JOIN mp_players p ON p.id=r.host_id WHERE r.status IN ('waiting','playing') AND r.updated_at>? ORDER BY r.created_at DESC LIMIT 40",
+          "SELECT r.id,r.name,r.status,r.mode,r.level_a,r.level_b,p.name AS host_name,CASE WHEN r.mode='pvp' THEN 8 ELSE 4 END AS capacity,(SELECT count(*) FROM mp_members m WHERE m.room_id=r.id AND (r.mode='pvp' OR m.seen_at>?)) AS count FROM mp_rooms r JOIN mp_players p ON p.id=r.host_id WHERE r.status IN ('waiting','countdown','playing') AND r.updated_at>? ORDER BY r.created_at DESC LIMIT 40",
         )
         .bind(now - 20000, now - 20000)
         .all();
@@ -126,6 +130,14 @@ export async function multiplayerRequest(request: Request, db: D1Database) {
       });
     }
     requireValue(me, '請先設定玩家名稱', 401);
+    if (action === 'create') {
+      requireValue(
+        data.mode === undefined || ['coop', 'pvp'].includes(data.mode),
+        '房間模式無效',
+      );
+      if (data.mode === 'pvp')
+        return reply(await pvpRoomRequest(db, me, data, now));
+    }
     if (action === 'ack') {
       requireValue(typeof data.runId === 'string', '局次無效');
       await db
@@ -141,12 +153,14 @@ export async function multiplayerRequest(request: Request, db: D1Database) {
         roomId = id();
       const old: any = await db
         .prepare(
-          'SELECT r.status,r.updated_at FROM mp_members m JOIN mp_rooms r ON r.id=m.room_id WHERE m.player_id=?',
+          'SELECT r.status,r.updated_at,r.mode FROM mp_members m JOIN mp_rooms r ON r.id=m.room_id WHERE m.player_id=?',
         )
         .bind(me.id)
         .first();
       requireValue(
-        !old || old.status === 'closed' || old.updated_at < now - 20000,
+        !old ||
+          (old.mode !== 'pvp' &&
+            (old.status === 'closed' || old.updated_at < now - 20000)),
         '請先離開目前房間',
       );
       await db.batch([
@@ -174,6 +188,8 @@ export async function multiplayerRequest(request: Request, db: D1Database) {
       .bind(roomId)
       .first();
     requireValue(room, '找不到房間', 404);
+    if (room.mode === 'pvp')
+      return reply(await pvpRoomRequest(db, me, data, now, room));
     if (action === 'join') {
       requireValue(
         room.status === 'waiting' && room.updated_at > now - 20000,
@@ -493,7 +509,7 @@ export async function multiplayerRequest(request: Request, db: D1Database) {
       },
     });
   } catch (error) {
-    if (error instanceof RequestError)
+    if (error instanceof RequestError || error instanceof PvpRequestError)
       return Response.json(
         { error: error.message },
         { status: error.status, headers: { 'Cache-Control': 'no-store' } },

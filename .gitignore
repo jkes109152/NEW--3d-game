@@ -18,3 +18,8 @@ tools/wheels/
 .pnpm-store/
 artifacts/*-site.tar.gz
 artifacts/003-web-deployment/dns-*.json
+
+# Generated dependencies and transient logs
+node_modules/
+build/
+*.log
