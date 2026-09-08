@@ -52,7 +52,7 @@
 | web/lib/multiplayer-rules.ts、multiplayer-server.ts、multiplayer-client.ts | 依模式容量、房間協定、可靠輸入與序號 |
 | web/lib/game.ts、web/app/page.tsx | 模式切入／退出、停止其他場景並恢復，不重複輪詢 |
 | web/components/multiplayer-lobby.tsx、pvp-panel.tsx、web/app/globals.css | 固定房間、設定、戰鬥 HUD 與結算 |
-| web/db/schema.ts、web/drizzle/ | 模式、倒數、串流與結果欄位的新增遷移 |
+| web/db/schema.ts、web/drizzle/ | 模式、倒數、串流、輸入接收時刻、退出帳本與結果欄位的新增遷移 |
 | tests/test_pvp_*.py、web/scripts/test-pvp-*.mjs | 規則、橋接、控制、HTTP 與回歸測試 |
 
 **結構決策**：重用現有框架與工具；獨立狀態機避免 PvP 觸發 AI／城市／獎勵副作用。副本由 prepare 產生，根目錄與 web/public/rules 的模組內容必須一致。
@@ -62,8 +62,8 @@
 1. 固定資料與協定，新增規則模組、橋接契約與測試入口。
 2. US1 交付可獨立測試的房間與分隊 MVP；未接好戰鬥前僅本機驗證，不將半成品發布為可玩 PvP。
 3. US2／US3 在固定核心上實作地面鎖定與飛行場景；共同檔案按任務順序修改。
-4. US4 完成中止、重連、結果隔離；全流程通過後才進行整體驗收與發布。
-5. 使用 quickstart 驗證，記錄真實結果；兩個 Git 根的 web 內容一致，GitHub PR 合併後依 Sites 正式流程建置、保存版本、發布與核對。
+4. US1 先完成基本串流取得、原子離開與倒數交換；US4 強化戰鬥中止、重連、結果隔離；全流程通過後才進行整體驗收與發布。
+5. 使用 quickstart 驗證，記錄真實結果；兩個 Git 根的 web 內容一致，GitHub PR 合併後依 Sites 正式流程建置、保存版本、發布與核對；部署證據另以文件 PR 合併及清理，保持已驗證網頁來源不變。
 
 ## 複雜度與例外記錄
 
