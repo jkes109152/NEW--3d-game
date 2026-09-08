@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { PlayGuide } from '@/components/play-guide';
 import { BattlePanel } from '@/components/battle-panel';
+import { PvpPanel } from '@/components/pvp-panel';
 import { MultiplayerLobby } from '@/components/multiplayer-lobby';
 import { DeploymentMap } from '@/components/deployment-map';
 import { ArmoryShop } from '@/components/armory-shop';
@@ -122,6 +123,10 @@ export default function Home() {
     }
   };
   const openHelp = () => {
+    if (screen === 'pvp') {
+      runtime.current?.pvpAction('settings');
+      return;
+    }
     runtime.current?.pause('help');
     setHelp(true);
   };
@@ -159,12 +164,13 @@ export default function Home() {
         isEditable(e.target)
       )
         return;
+      if (screen === 'pvp') return;
       if (e.code === 'KeyH') {
         e.preventDefault();
         openHelp();
         return;
       }
-      if (screen === 'battle') return;
+      if (screen === 'battle' || screen === 'pvp') return;
       // Let a focused button or open selector handle its own activation exactly once.
       if (
         ['Enter', 'Space'].includes(e.code) &&
@@ -211,7 +217,9 @@ export default function Home() {
     custom,
   ]);
   return (
-    <main className={`game ${screen === 'battle' ? 'in-battle' : ''}`}>
+    <main
+      className={`game ${['battle', 'pvp'].includes(screen) ? 'in-battle' : ''}`}
+    >
       <div ref={surface} className="world" aria-label="3D 糖果防線戰場" />
       <header className="topbar">
         <div className="brand">
@@ -221,7 +229,7 @@ export default function Home() {
           </span>
         </div>
         <div className="top-actions">
-          {p && (
+          {p && screen !== 'pvp' && (
             <span className="wallet">
               <Coins size={18} />
               {p.coins.toLocaleString()}
@@ -327,6 +335,9 @@ export default function Home() {
                 選擇存檔。日期依本機時區顯示；舊存檔再次遊玩後會補上日期。進度保存在此瀏覽器，不同網址的存檔彼此獨立。
               </p>
             </section>
+          )}
+          {screen === 'pvp' && s.pvp && (
+            <PvpPanel pvp={s.pvp} party={s.party} runtime={runtime} />
           )}
           {s.party?.open && screen === 'profile_menu' && (
             <MultiplayerLobby party={s.party} runtime={runtime} profile={p} />

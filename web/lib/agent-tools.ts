@@ -33,6 +33,33 @@ export function registerGameTools(
             lockReady: b?.lock_ready,
             lockProgress: b?.lock_progress,
             validTargets: b?.lock_valid,
+            pvp: s.pvp
+              ? {
+                  status: s.pvp.room?.status,
+                  phase: s.pvp.view?.phase,
+                  team: s.pvp.view?.team,
+                  elapsed: s.pvp.view?.elapsed,
+                  remaining: s.pvp.view?.remainingSeconds,
+                  actors: s.pvp.view?.actors.map((a: any) => ({
+                    name: a.name,
+                    team: a.team,
+                    position: a.position,
+                    yaw: a.yaw,
+                    pitch: a.pitch,
+                    roll: a.roll,
+                    speed: a.speed,
+                    hp: a.hp,
+                    alive: a.alive,
+                    eliminationReason: a.eliminationReason,
+                  })),
+                  camera: s.pvp.camera,
+                  controls: s.pvp.settings,
+                  controlling: s.pvp.controlling,
+                  locks: s.pvp.view?.locks,
+                  threats: s.pvp.view?.threats,
+                  diagnostics: s.pvp.diagnostics,
+                }
+              : null,
           };
         },
       },
