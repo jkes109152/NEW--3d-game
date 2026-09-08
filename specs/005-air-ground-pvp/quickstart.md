@@ -25,7 +25,7 @@
 在 `web/` 執行：
 
 ```powershell
-node --experimental-transform-types --test scripts/test-pvp-controls.mjs scripts/test-pvp-client.mjs
+node --experimental-transform-types --test scripts/test-pvp-room.mjs scripts/test-pvp-hud.mjs scripts/test-pvp-controls.mjs scripts/test-pvp-client.mjs
 node scripts/test-pvp-bridge.mjs
 node --experimental-transform-types scripts/test-pvp-http.mjs
 node scripts/test-multiplayer.mjs
@@ -33,6 +33,8 @@ pnpm test
 & ./node_modules/.bin/tsc.cmd --noEmit
 pnpm build
 ```
+
+T002 應將上述四支 Node 測試註冊為 `test:pvp:unit`，橋接為 `test:pvp:bridge`、HTTP 為 `test:pvp:http`；`test:pvp` 依序執行三者，任一失敗須回傳非零。Python 測試仍由根目錄命令執行，不因 Node 彙總取代。尚未建立全部新測試前，T003 只跑既有基線；完整驗收時缺檔必須失敗，不能跳過。
 
 預期：新測試及既有單人／合作／fetch receiver 回歸全數通過；本機 HTTP 使用各自 Cookie 的二人和八人、七種時限、跨局／過時串流、非房主偽造拒絕；PvP 前後 mp_results 新增零筆且個人存檔內容相同。
 
@@ -50,12 +52,14 @@ pnpm build
 
 驗證 0.99／1.00 秒輸入停用、9.99／10.00 秒斷線與重連、尚無第一張快照的房主重載、已有快照重載、房主背景停頓超過一秒，以及十秒無模擬前進。正常結算後再斷線不得覆寫勝負。
 
+另驗證 sync／同序號重送不延長 input_received_at、舊串流不能續連線、房主 hostInputs 含正確時刻；玩家退出後立即加入／建立別房、舊局遲到 leave 不刪除新資格且舊輸入不可控制新局。預測測試涵蓋固定步回放、亂序確認、取消水位與 120 步滿載後恢復。
+
 反覆進出十次，核對只剩一份多人輪詢與當前場景的監聽／動畫，離開後無殘留導彈、HUD、Python 當局或持續音效；資源數不隨局次增加。
 
 ## 證據與發布
 
 結果記於 `artifacts/005-air-ground-pvp/acceptance.md`：測試命令、日期、退出碼、測試人數、延遲設定、視窗、實測時間與證據檔案；沒有完成就列待辦。禁止保存正式 Cookie、憑證或玩家存檔至 Git。
 
-確認所有規格與憲章關卡後：提交真實原始碼至 GitHub 工作分支、PR 合併與核對；web 自有 Git 提交與根目錄 web 子樹一致；依 Sites 技能以成功建置、推送後完整 SHA、驗證封裝保存新版本，再部署既有公開網址。新增遷移向後相容，回退前端不得刪除已部署資料欄位；失敗時保留舊版，明示部署狀態。
+確認所有規格與憲章關卡後：提交真實原始碼至 GitHub 工作分支、PR 合併與核對；web 自有 Git 提交與根目錄 web 子樹一致；依 Sites 技能以成功建置、推送後完整 SHA、驗證封裝保存新版本，再部署既有公開網址。實作 PR 合併／分支清理後，部署證據使用從最新 main 建立的 005 文件分支另送 PR，核對合併並清理；不直接提交 main。新增遷移向後相容，回退前端不得刪除已部署資料欄位；失敗時保留舊版，明示部署狀態。
 
 本次 tasks 文件生成不執行以上實作、測試或正式部署。
