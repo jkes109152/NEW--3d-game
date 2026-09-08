@@ -45,7 +45,7 @@ resume 使用 expectedStream 條件比對，產生新 input_stream 並清空舊�
 ## 狀態轉移與優先順序
 
 1. waiting → countdown：2–8 人全員準備、開始名單原子確認、服務端抽選，建立 runId 與 startsAt。
-2. countdown → waiting：成員退出或一秒無新心跳，清除 ready／run／分隊。倒數舊包一律失效。
+2. countdown → waiting：成員退出或五秒無新心跳，清除 ready／run／分隊。倒數舊包一律失效。
 3. countdown → playing：到 startsAt 且名單仍有效，配發基礎角色，elapsed=0；同步初始狀態可早於開始時間發布，但不得累積飛行或鎖定。
 4. playing → finished：房主先處理連線退出與中止，再推進至截止時刻內的移動／命中／淘汰，最後判斷地面全退、空中全滅或時間結束。雙隊全退／房主失效優先 aborted。
 5. finished → waiting：房主 again；先依十秒連線期限清理逾時資格，保留本房間仍有效的成員名稱，清除舊退出帳本，重置 ready／輸入／結果，下一局重新抽選。
