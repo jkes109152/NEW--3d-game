@@ -2,6 +2,35 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { MultiplayerClient } from '../lib/multiplayer-client.ts';
 
+test('default transport preserves the browser fetch receiver for identity and lobby requests', async (t) => {
+  const actions = [];
+  let me = null;
+  t.mock.method(globalThis, 'fetch', async function (_url, options) {
+    if (this !== globalThis) throw new TypeError('Illegal invocation');
+    const data = JSON.parse(options.body);
+    actions.push(data.action);
+    if (data.action === 'identity') {
+      me = { id: 'player', name: data.name };
+      return Response.json({ me });
+    }
+    return Response.json({ me, rooms: [], roomId: null, receipts: [] });
+  });
+  const client = new MultiplayerClient(
+    () => {},
+    () => {},
+  );
+  try {
+    await client.action('open');
+    assert.equal(client.error, '');
+    await client.action('identity', { name: '防守玩家' });
+    assert.equal(client.error, '');
+    assert.equal(client.me.name, '防守玩家');
+    assert.deepEqual(actions, ['lobby', 'identity', 'lobby']);
+  } finally {
+    client.dispose();
+  }
+});
+
 test('commands survive a missed host poll; cumulative look recovers skipped packets', async () => {
   const sent = [];
   const transport = async (_url, options) => {

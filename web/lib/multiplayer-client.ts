@@ -20,7 +20,8 @@ export class MultiplayerClient {
   constructor(
     private changed: () => void,
     private received: (room: any) => void,
-    private transport: typeof fetch = fetch,
+    private transport: typeof fetch = (input, init) =>
+      globalThis.fetch(input, init),
   ) {}
   state() {
     return {
