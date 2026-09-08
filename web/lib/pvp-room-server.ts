@@ -1,6 +1,9 @@
 import { cleanName, pvpTimeLimit, splitPvpTeams } from './multiplayer-rules.ts';
 import { neutralInput } from './pvp-types.ts';
 
+// 房間在線、開局與倒數共用心跳寬限；戰鬥操作仍以一秒判定過期。
+const ROOM_PRESENCE_TIMEOUT_MS = 5000;
+
 export class PvpRequestError extends Error {
   constructor(
     message: string,
@@ -188,7 +191,11 @@ export async function pvpRoomRequest(
   )
     await abort('host_timeout');
   if (room.status === 'countdown') {
-    if ((await memberRows()).some((m) => now - m.seen_at >= 1000))
+    if (
+      (await memberRows()).some(
+        (m) => now - m.seen_at >= ROOM_PRESENCE_TIMEOUT_MS,
+      )
+    )
       await cancelCountdown();
     else if (now >= room.starts_at) {
       await db
@@ -278,7 +285,9 @@ export async function pvpRoomRequest(
     requirePvp(
       rows.length >= 2 &&
         rows.length <= 8 &&
-        rows.every((m) => m.ready && now - m.seen_at < 1000),
+        rows.every(
+          (m) => m.ready && now - m.seen_at < ROOM_PRESENCE_TIMEOUT_MS,
+        ),
       '至少兩人，且所有玩家需在線並準備完成',
     );
     const roster = splitPvpTeams(
@@ -302,7 +311,7 @@ export async function pvpRoomRequest(
           roomId,
           rows.length,
           roomId,
-          now - 1000,
+          now - ROOM_PRESENCE_TIMEOUT_MS,
         ),
       ...rows.map((m) =>
         db
@@ -491,7 +500,7 @@ export async function pvpRoomRequest(
         id: m.player_id,
         name: m.name,
         ready: !!m.ready,
-        online: now - m.seen_at < 5000,
+        online: now - m.seen_at < ROOM_PRESENCE_TIMEOUT_MS,
       })),
       view: snapshot?.views?.[me.id] ?? null,
       result: parse(room.result),

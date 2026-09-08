@@ -58,7 +58,7 @@ snapshot 含 mode=pvp、protocolVersion、runId、phase、tick、elapsed、resul
 - 只有已認證且 instance 相符的房主可取得 hostInputs：每筆包含 playerId、inputStream、inputInstance、inputSeq、input、inputReceivedAt、lastSeenAt；涵蓋固定 roster 中尚未退出的成員。查詢同時限定 roomId 與 playerId，不能讀到該玩家新房間的操作。departures 為同局完整退出帳本；退出者不再出現在 hostInputs，但仍保留於 roster／views。非房主不可提交或覆寫這些伺服器欄位。
 - serverNow、inputReceivedAt、lastSeenAt 與退出時刻使用同一伺服器毫秒時基。新控制包 inputReceivedAt 與 inputSeq 原子更新；初始或換代為空時視為 suspended。sync 只續 lastSeenAt；重送同序號不延長輸入有效性。有效 exchange 即使重送可續連線，但舊 instance／串流不得續租。
 - 房主在收到回覆的本機單調時刻記錄 serverNow。每步以 serverNow 加收到回覆後的單調經過時間，計算 inputReceivedAt 的年齡；年齡大於等於 1000 毫秒即取消控制，取消水位不倒退。這是依伺服器接收時刻定義的一秒，並非客戶端取樣至網路送達的一秒；網路中的延遲另外由 SC-004／SC-005 驗證。不得以 online 布林或玩家自行上傳時間取代。
-- 服務端在更新 seen_at 之前判斷：playing 非房主 lastSeenAt 相差大於等於 10000 毫秒即記 timeout；countdown 任一成員相差大於等於 1000 毫秒取消。截止值本身算逾時。房主在收到退出帳本的下一固定步套用 departedIds，不自行依網路估計永久退出；操作停用仍由房主逐步判定。
+- 服務端在更新 seen_at 之前判斷：playing 非房主 lastSeenAt 相差大於等於 10000 毫秒即記 timeout；等待室 online、start（含原子更新條件）與 countdown 共用五秒心跳寬限：相差小於 5000 毫秒為在線，滿 5000 毫秒禁止開局或取消倒數。截止值本身算逾時。房主在收到退出帳本的下一固定步套用 departedIds，不自行依網路估計永久退出；操作停用仍由房主逐步判定。
 - 原子離開、逾時清理與 resume 都比對當前 roomId／runId／成員資格及 departures。重送 leave 對已記帳的同局玩家回覆成功，但不能刪除其新房間成員列；其餘舊局控制均拒絕。again 保留仍在本房間的成員，不把已離開者重新加入。
 
 ## 本機預測時間線與回放

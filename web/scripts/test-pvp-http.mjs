@@ -48,11 +48,16 @@ try {
   await call(host, 'ready', { roomId, ready: true });
   await call(guest, 'ready', { roomId, ready: true });
   await call(guest, 'start', { roomId }, 403);
+  now += 1500;
+  const readyRoom = (await call(host, 'sync', { roomId })).room;
+  assert.ok(readyRoom.members.every((m) => m.ready && m.online));
   const start = (await call(host, 'start', { roomId })).room;
   assert.equal(start.status, 'countdown');
   assert.equal(start.timeLimitSeconds, 180);
   assert.equal(start.roster.filter((x) => x.team === 'air').length, 1);
+  now += 1500;
   const sync = (await call(guest, 'sync', { roomId })).room;
+  assert.equal(sync.status, 'countdown', '正常心跳延遲不可取消倒數');
   const resumed = (
     await call(guest, 'resume', {
       roomId,
@@ -79,6 +84,36 @@ try {
   await call(guest, 'leave', { roomId, runId: start.runId });
   assert.equal((await call(host, 'sync', { roomId })).room.status, 'waiting');
   await call(host, 'leave', { roomId });
+  for (const age of [4999, 5000]) {
+    roomId = (await call(host, 'create', { mode: 'pvp' })).roomId;
+    await call(guest, 'join', { roomId });
+    await call(host, 'ready', { roomId, ready: true });
+    await call(guest, 'ready', { roomId, ready: true });
+    now += age;
+    const presence = (await call(host, 'sync', { roomId })).room;
+    assert.equal(
+      presence.members.find((m) => m.id === guest.id).online,
+      age < 5000,
+    );
+    const response = await call(
+      host,
+      'start',
+      { roomId },
+      age < 5000 ? 200 : 400,
+    );
+    if (age < 5000) {
+      assert.equal(response.room.status, 'countdown');
+      const runId = response.room.runId;
+      now += 1;
+      const cancelled = (await call(host, 'sync', { roomId })).room;
+      assert.equal(cancelled.status, 'waiting', '滿五秒未連線須取消倒數');
+      assert.ok(cancelled.members.every((m) => !m.ready));
+      assert.equal(cancelled.runId, null);
+      await call(guest, 'resume', { roomId, runId }, 409);
+    }
+    await call(guest, 'leave', { roomId });
+    await call(host, 'leave', { roomId });
+  }
   roomId = (await call(host, 'create', { mode: 'pvp' })).roomId;
   for (const c of clients.slice(1, 7)) await call(c, 'join', { roomId });
   const contenders = await Promise.allSettled(
