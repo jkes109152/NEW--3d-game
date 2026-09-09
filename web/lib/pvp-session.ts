@@ -14,6 +14,7 @@ import {
 } from './pvp-controls.ts';
 import { PvpScene } from './pvp-scene';
 import { isEditable } from './controls';
+import { bindPvpMouse } from './pvp-mouse.ts';
 import type { WebGLRenderer } from 'three';
 
 export class PvpSession {
@@ -106,14 +107,13 @@ export class PvpSession {
       if (document.pointerLockElement === renderer.domElement)
         this.controls.mouse(e.movementX, e.movementY);
     });
-    listen(renderer.domElement, 'mousedown', (e: MouseEvent) => {
-      if (!this.controls.enabled || this.me()?.team !== 'ground') return;
-      if (e.button === 0) this.controls.command('fire_down');
-      if (e.button === 2) this.controls.command('toggle_aim');
-    });
-    listen(window, 'mouseup', (e: MouseEvent) => {
-      if (e.button === 0) this.controls.command('fire_up');
-    });
+    this.off.push(
+      bindPvpMouse(
+        renderer.domElement,
+        this.controls,
+        () => this.me()?.team === 'ground',
+      ),
+    );
   }
   private me() {
     return this.view?.actors.find((a) => a.id === this.client.me?.id);
