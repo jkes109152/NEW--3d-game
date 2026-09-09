@@ -165,3 +165,7 @@ PvP 規則、服務、操作／預測、場景、設定與結算已實作；依�
 - HTTP 連線測試量測追蹤／鎖定／傷害對齊為 446–474 毫秒，結算為 0–172 毫秒。這是本機注入延遲的測試結果，不代表所有正式連線延遲。未建立正式測試身分。
 - 官方 build-site.mjs 在 Windows 呼叫套件管理器時回報找不到路徑；改以既有 prepare.mjs 與 vinext build 完成相同建置，沒有修改套件管理器或依賴。
 - 本輪未進行瀏覽器尺寸／互動驗收；排版依使用者截圖與樣式來源定位修正。先前原生滑鼠實機驗收仍保留未驗證。
+- 發布來源：Sites `24d3c06af47ee0afe4fb7ffc6dfec85d23039500`；GitHub 與 Sites 網頁樹均為 `cd84b6fa44dbe0d41d39070d1a523341509370ab`。修正與證據由 [PR #12](https://github.com/jkes109152/NEW--3d-game/pull/12) 保存，沒有設定遠端 CI。
+- 正式版本 12：`appgprj_6a9eafb956ac8191b8edb17687af6668~appgver_36a82600c2188191aa2a07da38d0cb80`；部署 `appgdep_6aa17aad35c081918a0b60691e4c8e8c` 於 `2026-09-09T15:26:51.488905+00:00` 回報 succeeded。
+- 部署後唯讀請求正式首頁及其 CSS 均成功，確認正式 CSS 包含 `.turret-kind-tabs` 的 `flex-direction: column` 修正；不將靜態樣式檢查視為瀏覽器互動驗收。
+- 封裝 Node 包裝器預設呼叫 Windows Bash 失敗；直接使用 Git Bash 執行同版官方封裝腳本成功，149 個項目包含 Worker、資源與既有遷移，未帶入機密。
