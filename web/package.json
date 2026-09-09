@@ -13,7 +13,7 @@
     "lint": "oxlint",
     "format": "oxfmt",
     "test:multiplayer": "node scripts/test-multiplayer.mjs",
-    "test:pvp:unit": "node --experimental-transform-types --test scripts/test-pvp-room.mjs scripts/test-pvp-hud.mjs scripts/test-pvp-controls.mjs scripts/test-pvp-client.mjs",
+    "test:pvp:unit": "node --experimental-transform-types --test scripts/test-pvp-room.mjs scripts/test-pvp-hud.mjs scripts/test-pvp-controls.mjs scripts/test-pvp-client.mjs scripts/test-pvp-playback.mjs",
     "test:pvp:bridge": "node scripts/test-pvp-bridge.mjs",
     "test:pvp:http": "node --experimental-transform-types scripts/test-pvp-http.mjs",
     "test:pvp": "pnpm test:pvp:unit && pnpm test:pvp:bridge && pnpm test:pvp:http"

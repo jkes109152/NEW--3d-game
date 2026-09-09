@@ -50,21 +50,25 @@ export async function pvpRoomRequest(
   }
   let room = initial;
   const roomId = room.id;
+  let cachedMembers: any[] | null = null;
+  const roomStatement = () =>
+    db.prepare('SELECT * FROM mp_rooms WHERE id=?').bind(roomId);
+  const membersStatement = () =>
+    db
+      .prepare(
+        'SELECT m.*,p.name FROM mp_members m JOIN mp_players p ON p.id=m.player_id WHERE m.room_id=? ORDER BY m.player_id',
+      )
+      .bind(roomId);
   const reload = async () => {
-    room = await db
-      .prepare('SELECT * FROM mp_rooms WHERE id=?')
-      .bind(roomId)
-      .first();
+    cachedMembers = null;
+    room = await roomStatement().first();
   };
-  const memberRows = async () =>
-    (
-      await db
-        .prepare(
-          'SELECT m.*,p.name FROM mp_members m JOIN mp_players p ON p.id=m.player_id WHERE m.room_id=? ORDER BY m.player_id',
-        )
-        .bind(roomId)
-        .all()
-    ).results as any[];
+  const memberRows = async () => {
+    if (!cachedMembers)
+      cachedMembers = (await membersStatement().all()).results;
+    return cachedMembers!;
+  };
+  const updates: D1PreparedStatement[] = [];
   const ended = () => ['finished', 'closed'].includes(room.status);
   const host = room.host_id === me.id;
   async function abort(reason: string) {
@@ -162,10 +166,7 @@ export async function pvpRoomRequest(
     );
     return { roomId };
   }
-  let membership: any = await db
-    .prepare('SELECT * FROM mp_members WHERE room_id=? AND player_id=?')
-    .bind(roomId, me.id)
-    .first();
+  let membership: any = (await memberRows()).find((m) => m.player_id === me.id);
   if (
     action === 'leave' &&
     !membership &&
@@ -211,10 +212,7 @@ export async function pvpRoomRequest(
     for (const m of await memberRows())
       if (m.player_id !== room.host_id && now - m.seen_at >= 10000)
         await depart(m.player_id, 'timeout');
-    membership = await db
-      .prepare('SELECT * FROM mp_members WHERE room_id=? AND player_id=?')
-      .bind(roomId, me.id)
-      .first();
+    membership = (await memberRows()).find((m) => m.player_id === me.id);
     requirePvp(membership, '已超過十秒重連期限，請返回大廳', 403);
   }
   if (room.status === 'waiting' && host) {
@@ -365,21 +363,22 @@ export async function pvpRoomRequest(
       '操作序號無效',
     );
     const input = validatePvpInput(data.input);
-    await db
-      .prepare(
-        'UPDATE mp_members SET input=?,input_seq=?,input_received_at=? WHERE room_id=? AND player_id=? AND input_stream=? AND input_instance=? AND input_seq<?',
-      )
-      .bind(
-        JSON.stringify(input),
-        data.inputSeq,
-        now,
-        roomId,
-        me.id,
-        data.inputStream,
-        data.instanceId,
-        data.inputSeq,
-      )
-      .run();
+    updates.push(
+      db
+        .prepare(
+          'UPDATE mp_members SET input=?,input_seq=?,input_received_at=? WHERE room_id=? AND player_id=? AND input_stream=? AND input_instance=? AND input_seq<?',
+        )
+        .bind(
+          JSON.stringify(input),
+          data.inputSeq,
+          now,
+          roomId,
+          me.id,
+          data.inputStream,
+          data.instanceId,
+          data.inputSeq,
+        ),
+    );
     if (data.snapshot) {
       requirePvp(host, '只有房主可同步戰場', 403);
       requirePvp(room.status === 'playing', '倒數中不能推進戰鬥');
@@ -388,22 +387,23 @@ export async function pvpRoomRequest(
         Number.isSafeInteger(data.sequence) && data.sequence > 0,
         '戰場序號無效',
       );
-      await db
-        .prepare(
-          "UPDATE mp_rooms SET snapshot=?,sequence=?,simulation_seen_at=CASE WHEN simulation_tick<? THEN ? ELSE simulation_seen_at END,simulation_tick=? WHERE id=? AND run_id=? AND status='playing' AND sequence<? AND simulation_tick<=?",
-        )
-        .bind(
-          JSON.stringify(data.snapshot),
-          data.sequence,
-          data.snapshot.tick,
-          now,
-          data.snapshot.tick,
-          roomId,
-          room.run_id,
-          data.sequence,
-          data.snapshot.tick,
-        )
-        .run();
+      updates.push(
+        db
+          .prepare(
+            "UPDATE mp_rooms SET snapshot=?,sequence=?,simulation_seen_at=CASE WHEN simulation_tick<? THEN ? ELSE simulation_seen_at END,simulation_tick=? WHERE id=? AND run_id=? AND status='playing' AND sequence<? AND simulation_tick<=?",
+          )
+          .bind(
+            JSON.stringify(data.snapshot),
+            data.sequence,
+            data.snapshot.tick,
+            now,
+            data.snapshot.tick,
+            roomId,
+            room.run_id,
+            data.sequence,
+            data.snapshot.tick,
+          ),
+      );
     }
   } else if (action === 'finish') {
     requirePvp(host, '只有房主可結算戰場', 403);
@@ -459,23 +459,31 @@ export async function pvpRoomRequest(
   } else
     requirePvp(['sync', 'exchange', 'resume'].includes(action), '未知房間操作');
   if (!ended() && host)
-    await db
-      .prepare('UPDATE mp_rooms SET updated_at=? WHERE id=?')
-      .bind(now, roomId)
-      .run();
+    updates.push(
+      db
+        .prepare('UPDATE mp_rooms SET updated_at=? WHERE id=?')
+        .bind(now, roomId),
+    );
   if (
     action !== 'sync' ||
     !membership.input_instance ||
     membership.input_instance === data.instanceId
   )
-    await db
-      .prepare(
-        'UPDATE mp_members SET seen_at=? WHERE room_id=? AND player_id=?',
-      )
-      .bind(now, roomId, me.id)
-      .run();
-  await reload();
-  const rows = await memberRows(),
+    updates.push(
+      db
+        .prepare(
+          'UPDATE mp_members SET seen_at=? WHERE room_id=? AND player_id=?',
+        )
+        .bind(now, roomId, me.id),
+    );
+  // 同一交易提交新操作／戰場並讀回回覆，省去逐句遠端往返。
+  const result = await db.batch([
+    ...updates,
+    roomStatement(),
+    membersStatement(),
+  ]);
+  room = result[result.length - 2].results[0];
+  const rows = result[result.length - 1].results as any[],
     mine = rows.find((m) => m.player_id === me.id),
     snapshot = parse(room.snapshot);
   return {

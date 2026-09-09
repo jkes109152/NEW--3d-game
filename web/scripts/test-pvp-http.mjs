@@ -231,8 +231,19 @@ try {
     { roomId, runId: guest.runId, reason: 'simulation_error' },
     403,
   );
+  db.metrics.roundTrips = 0;
   await exchange(host, { snapshot: snap, sequence: 1 });
+  const hostTrips = db.metrics.roundTrips;
+  db.metrics.roundTrips = 0;
   await exchange(guest);
+  console.log({
+    hostDatabaseTrips: hostTrips,
+    guestDatabaseTrips: db.metrics.roundTrips,
+  });
+  assert.ok(
+    hostTrips <= 4 && db.metrics.roundTrips <= 4,
+    '穩態交換最多四次資料庫往返',
+  );
   const received = now;
   now += 990;
   await call(guest, 'sync', { roomId });

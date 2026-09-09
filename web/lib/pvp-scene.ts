@@ -3,6 +3,7 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 import { ArmoryModels } from './armory-models';
 import { AntiAirHud } from './aiming-hud';
 import { pvpGroundHud } from './pvp-hud.ts';
+import { playbackFraction } from './pvp-playback.ts';
 import type { PvpActor, PvpView } from './pvp-types.ts';
 const vec = (p: number[]) => new THREE.Vector3(p[0], p[1], -p[2]);
 export class PvpScene {
@@ -151,22 +152,10 @@ export class PvpScene {
       if (!predicted || predicted.id !== a.id) {
         if (older && this.previous && view.elapsed > this.previous.elapsed) {
           const gap = (view.elapsed - this.previous.elapsed) * 1000;
-          const t = Math.min(
-            1.2,
-            Math.max(0, (now - this.receivedAt) / Math.max(1, gap)),
+          pos = vec(older.position).lerp(
+            pos,
+            playbackFraction(gap, now - this.receivedAt),
           );
-          const extrap = Math.min(
-            0.2,
-            Math.max(0, (now - this.receivedAt - gap) / 1000),
-          );
-          pos =
-            t <= 1
-              ? vec(older.position).lerp(pos, t)
-              : pos.add(
-                  vec(a.position)
-                    .sub(vec(older.position))
-                    .multiplyScalar(extrap / Math.max(gap / 1000, 0.001)),
-                );
         }
       }
       if (node.position.distanceTo(pos) > 10 || node.userData.fresh !== true)
