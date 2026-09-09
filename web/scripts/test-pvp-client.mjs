@@ -43,7 +43,7 @@ test('倒數轉換立即取代等待室慢速排程', () => {
     c.room = { mode: 'pvp', status: 'waiting' };
     c.schedule();
     c.accept({ mode: 'pvp', status: 'countdown', runId: 'new' });
-    assert.deepEqual(delays, [800, 120]);
+    assert.deepEqual(delays, [800, 50]);
     c.dispose();
   } finally {
     globalThis.setTimeout = oldSet;
@@ -175,4 +175,84 @@ test('新局隔離舊輸入與佇列滿載取消確認', async () => {
   assert.deepEqual(c.pvpControlState().input.look_total, [0, 0]);
   assert.equal(c.pvpControlState().input.suspended, true);
   c.dispose();
+});
+
+test('慢連線完成後立即交換最新操作，不疊加輪詢等待且不並送', async () => {
+  const oldSet = globalThis.setTimeout,
+    oldClear = globalThis.clearTimeout;
+  const callbacks = [],
+    delays = [];
+  globalThis.setTimeout = (fn, ms) => {
+    callbacks.push(fn);
+    delays.push(ms);
+    return callbacks.length;
+  };
+  globalThis.clearTimeout = () => {};
+  try {
+    let now = 0,
+      active = 0,
+      peak = 0;
+    const c = new MultiplayerClient(
+      () => {},
+      () => {},
+      undefined,
+      () => now,
+    );
+    c.open = true;
+    c.room = { mode: 'pvp', status: 'playing', runId: 'run' };
+    c.poll = async () => {
+      peak = Math.max(peak, ++active);
+      now += 200;
+      c.accept(c.room);
+      active--;
+    };
+    c.schedule();
+    await callbacks.shift()();
+    assert.deepEqual(delays, [50, 0]);
+    assert.equal(peak, 1);
+    c.poll = async () => {
+      throw Error('測試斷線');
+    };
+    await callbacks.shift()();
+    assert.equal(delays.at(-1), 800, '失敗時退避，不能空轉重試');
+    c.dispose();
+  } finally {
+    globalThis.setTimeout = oldSet;
+    globalThis.clearTimeout = oldClear;
+  }
+});
+
+test('快連線以五十毫秒週期交換，不把往返時間額外加上去', async () => {
+  const oldSet = globalThis.setTimeout,
+    oldClear = globalThis.clearTimeout;
+  const callbacks = [],
+    delays = [];
+  globalThis.setTimeout = (fn, ms) => {
+    callbacks.push(fn);
+    delays.push(ms);
+    return callbacks.length;
+  };
+  globalThis.clearTimeout = () => {};
+  try {
+    let now = 0;
+    const c = new MultiplayerClient(
+      () => {},
+      () => {},
+      undefined,
+      () => now,
+    );
+    c.open = true;
+    c.room = { status: 'playing' };
+    c.poll = async () => {
+      now += 20;
+      c.accept(c.room);
+    };
+    c.schedule();
+    await callbacks.shift()();
+    assert.deepEqual(delays, [50, 30]);
+    c.dispose();
+  } finally {
+    globalThis.setTimeout = oldSet;
+    globalThis.clearTimeout = oldClear;
+  }
 });

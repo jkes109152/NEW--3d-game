@@ -31,6 +31,7 @@ export class MultiplayerClient {
     private received: (room: any) => void,
     private transport: typeof fetch = (input, init) =>
       globalThis.fetch(input, init),
+    private clock: () => number = () => performance.now(),
   ) {}
   state() {
     return {
@@ -158,7 +159,7 @@ export class MultiplayerClient {
     this.room = room;
     this.received(room);
     this.changed();
-    if (this.open) this.schedule();
+    if (this.open && !this.polling) this.schedule();
   }
   setInput(frame: any) {
     if (this.room?.mode === 'pvp') {
@@ -300,34 +301,40 @@ export class MultiplayerClient {
       this.accept(result.room);
     }
   }
-  private schedule() {
+  private schedule(elapsed = 0, failed = false) {
     if (this.stopped) return;
     const delay = ['playing', 'countdown'].includes(this.room?.status)
-      ? 120
+      ? 50
       : this.room
         ? 800
         : 2000;
     if (this.timer && this.timerDelay === delay) return;
     if (this.timer) clearTimeout(this.timer);
     this.timerDelay = delay;
-    this.timer = setTimeout(async () => {
-      this.timer = null;
-      if (this.stopped) return;
-      if (!this.busy && !this.polling) {
-        this.polling = true;
-        try {
-          await this.poll();
-        } catch (error: any) {
-          this.error = `連線中斷：${error.message}，正在重試`;
-          if (Date.now() - this.started > 10000 && this.room)
-            this.received({ ...this.room, connectionLost: true });
-          this.changed();
-        } finally {
-          this.polling = false;
+    this.timer = setTimeout(
+      async () => {
+        this.timer = null;
+        if (this.stopped) return;
+        const began = this.clock();
+        let failed = false;
+        if (!this.busy && !this.polling) {
+          this.polling = true;
+          try {
+            await this.poll();
+          } catch (error: any) {
+            failed = true;
+            this.error = `連線中斷：${error.message}，正在重試`;
+            if (Date.now() - this.started > 10000 && this.room)
+              this.received({ ...this.room, connectionLost: true });
+            this.changed();
+          } finally {
+            this.polling = false;
+          }
         }
-      }
-      this.schedule();
-    }, delay);
+        this.schedule(this.clock() - began, failed);
+      },
+      failed ? Math.max(800, delay) : Math.max(0, delay - elapsed),
+    );
   }
   dispose() {
     this.stopped = true;

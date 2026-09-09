@@ -2555,12 +2555,26 @@ footer {
 }
 .turret-stock {
   min-height: 0;
+  min-width: 0;
   display: block;
+}
+.turret-kind-tabs {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  width: 100%;
+  gap: 8px;
+}
+.turret-kind-tabs > [data-slot='tabs-content'] {
+  min-width: 0;
+  width: 100%;
+  flex: none;
 }
 .turret-kind-tabs > [data-slot='tabs-list'] {
   width: 100%;
   height: 44px;
   background: #1c3b50;
+  flex: none;
 }
 .turret-kind-tabs [data-slot='tabs-trigger'] {
   color: var(--turret-color);
@@ -2569,6 +2583,9 @@ footer {
 .turret-kind-tabs .turret-card {
   margin: 0;
   padding: 12px;
+  width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .deployment-board {
   display: flex;

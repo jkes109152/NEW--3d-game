@@ -16,7 +16,7 @@
 | sync | roomId、instanceId | 驗證成員後只查詢房間／本人 runId、currentStream、inputInstance 與 view，僅續連線 seen_at，不換串流、不續模擬租約；用於首次得知開局與重載初始化 |
 | ready | roomId、ready | PvP 不傳 profile，服務端不使用存檔；僅 waiting 可修改 |
 | start | roomId、instanceId | 僅房主；完整名單與 ready 版本須在條件式更新中再次檢查，Fisher–Yates 等機率抽選 ceil(N/2) 空中。回覆 runId、roster、startsAt、serverNow、timeLimitSeconds、自己的 inputStream |
-| exchange | roomId、runId、instanceId、inputStream、inputSeq、input；房主另可送 snapshot、sequence | countdown 每 120 毫秒排程，playing 同頻率。拒絕非房主 snapshot、舊局、舊串流、無效角色資料；低序號操作不覆蓋。回覆 serverNow、完整房間摘要及本人 view；房主另取得下節定義的 hostInputs 與 departures |
+| exchange | roomId、runId、instanceId、inputStream、inputSeq、input；房主另可送 snapshot、sequence | countdown 與 playing 以 50 毫秒為目標請求起始間隔，扣除本次往返時間；慢連線完成後立即排下一次，僅容許單一進行中輪詢，失敗至少退避 800 毫秒。拒絕非房主 snapshot、舊局、舊串流、無效角色資料；低序號操作不覆蓋。回覆 serverNow、完整房間摘要及本人 view；房主另取得下節定義的 hostInputs 與 departures |
 | resume | roomId、runId、instanceId、expectedStream | 首次開局所有人（含同 instance 房主）可綁定串流；之後僅仍在十秒窗口內的非房主可換 instance 接回既有狀態。同 instance 重試冪等；房主新 instance 直接中止該局，不能重置損傷或時限 |
 | finish | roomId、runId、instanceId | 僅原房主，先驗證逾時／instance，再從已儲存完整終局快照建立唯一 result，不信任額外客戶端 result；不寫 mp_results |
 | abort | roomId、runId、instanceId、reason | 僅已認證房主可主動中止，reason 限 host_reload、simulation_gap、simulation_error、host_left；其他成員只能透過 exchange 觸發服務端超時判定 |
